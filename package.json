@@ -1,0 +1,38 @@
+{
+  "name": "stream-analytics",
+  "version": "0.0.0",
+  "description": "Analytics JS client for GetStream.io.",
+  "main": "src/stream-analytics.js",
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/GetStream/stream-analytics.git"
+  },
+  "keywords": [
+    "npm",
+    "stream-analytics",
+    "getstream.io",
+    "stream.io"
+  ],
+  "author": "Tommaso Barbugli <tommaso@getstream.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GetStream/stream-analytics/issues"
+  },
+  "homepage": "https://github.com/GetStream/stream-analytics",
+  "dependencies": {
+    "keen-js": "^3.2.4"
+  },
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-awspublish": "^1.0.6",
+    "browserify": "^9.0.3",
+    "gulp-yuicompressor": "0.0.3",
+    "gulp-rename": "^1.2.0",
+    "gulp-remove-empty-lines": "0.0.2",
+    "gulp-strip-comments": "^1.0.1",
+    "vinyl-transform": "^1.0.0"
+  }
+}
