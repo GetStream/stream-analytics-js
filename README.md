@@ -4,14 +4,11 @@ Get the library
 ```bash
 # via npm
 $ npm install stream-analytics
-
-# or bower
-$ bower install stream-analytics
 ```
 
 Or load the library from our CDN:
 
-```
+```html
 <script src="https://xxx.cloudfront.net/..." type="text/javascript"></script>
 ```
 
@@ -24,70 +21,61 @@ var client = new StreamAnalytics({
 });
 ```
 
+Set current user
+----------------
+```js
+client.setUser('user:Thierry');
+```
+
 Track impressions
 -----------------
-Every activity (eg. messages) shown to the user should be tracked as an impression
+Every activity (eg. messages) shown to the user should be tracked as an impression.
 
 ```js
 var impression = {
-    viewerId: 'user:Thierry',
-    activityId: 'message:34349698',
-    feedId: 'user:ChartMill',
-    timestamp: new Date().toISOString() // optional
+    activityIds: ['message:34349698', 'message:34349699'],
+    feedId: 'user:ChartMill'
 };
 
-// sends an impression to the APIs
-client.trackImpression(impression);
-// sends multilple impressions to the APIs in one request
+// track impressions for two messages presented to the user
 client.trackImpressions(impressions);
 ```
 
 Engagement tracking
 -------------------
 
-Every meaningful user interactions should be tracked with content (activity_id) and source (sourceFeedId) information and provide a label and a score (the modifier) for the engagement. modifier is a signed integer. Positive values boost source and content for the user that trigger the engagement, negative values work as a discount for the same context. The value of the modifier can be used to differentiate engagements according to their importants (eg. sharing a message is probably more important than just clicking it).
+Every meaningful user interactions should be tracked with content (activity_id) and source (sourceFeedId) information and provide a label and a score (the score) for the engagement. score is a signed integer. Positive values boost source and content for the user that trigger the engagement, negative values work as a discount for the same context. The value of the score can be used to differentiate engagements according to their importants (eg. sharing a message is probably more important than just clicking it).
 
 ```js
 engagement = {...}
 // Sends one engagement event to the APIs
-client.trackEngagementEvent(engagement);
-// Sends multiple engagement events to the APIs in one request
-client.trackEngagementEvents(engagements);
+client.trackEngagement(engagement);
 
 // Click on a message
 var engagement = {
-    engagement: {
-        label: 'click',
-        modifier: 10
-    },
-    userId: 'user:Thierry',
+    label: 'click',
+    score: 10,
     activityId: 'message:34349698',
-    sourceFeedId: 'user:ChartMill',
-    timestamp: new Date().toISOString() // optional
+    feedId: 'user:ChartMill',
 };
 client.trackEngagementEvent(engagement);
 
 // Share message
 var engagement = {
-    engagement: {
-        label: 'share',
-        modifier: 100
-    },
-    userId: 'user:Thierry',
+    label: 'share',
+    score: 100,
     activityId: 'message:34349698',
     feedId: 'user:ChartMill',
-    timestamp: new Date().toISOString() // optional
 };
-client.trackEngagementEvent(engagement);
+client.trackEngagement(engagement);
 ```
 
 Update user data
 ----------------
-this allows for storing extra information about users such as public profile IDs
+this allows for storing extra information about the current user such as public profiles
 
 ```js
 var userData = {
-    userId: 'user:Thierry',
     twitterId: '15875029',
     facebookId: '784785430'
 };

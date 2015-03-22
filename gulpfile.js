@@ -5,15 +5,41 @@ var aws = require('gulp-awspublish'),
     browserify = require('browserify'),
     compress = require('gulp-yuicompressor'),
     rename = require('gulp-rename'),
+    connect = require('gulp-connect'),
     squash = require('gulp-remove-empty-lines'),
     strip = require('gulp-strip-comments'),
     transform = require('vinyl-transform');
 
 // -------------------------
+// Development tasks
+// -------------------------
+
+gulp.task('connect', function() {
+  connect.server({
+    root: './',
+    livereload: true
+  });
+});
+
+gulp.task('html', function () {
+  gulp.src('./examples/*.html')
+    .pipe(connect.reload());
+  gulp.src('./dist/*.js')
+    .pipe(connect.reload());
+});
+
+gulp.task('watch', ['connect', 'build'], function() {
+  gulp.watch('examples/*.html', ['build']);
+  gulp.watch('src/**/*.js', ['build']);
+  gulp.watch('src/*.js', ['build']);
+  gulp.watch('gulpfile.js', ['build']);
+});
+
+// -------------------------  
 // Build tasks
 // -------------------------
 
-gulp.task('build', ['build:browserify', 'build:minify']);
+gulp.task('build', ['build:browserify', 'build:minify', 'html']);
 
 gulp.task('build:browserify', function() {
   return gulp.src([
@@ -55,12 +81,9 @@ gulp.task('aws', ['build'], function() {
     bucket: pkg.name
   });
 
-  var cacheLife = (1000 * 60 * 60 * 24 * 365); // 1 year
+  var cacheLife = (1000 * 60 * 60 * 24 * 365);
 
   var headers = {
-    // Cache policy (1000 * 60 * 60 * 1) // 1 hour
-    // 'Cache-Control': 'max-age=3600000, public',
-    // 'Expires': new Date(Date.now() + 3600000).toUTCString()
     'Cache-Control': 'max-age=' + cacheLife + ', public',
     'Expires': new Date(Date.now() + cacheLife).toUTCString()
   };
