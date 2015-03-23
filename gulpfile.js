@@ -80,31 +80,6 @@ function awsPublisher() {
 
 gulp.task('deploy', ['build', 'aws']);
 
-gulp.task('promote', ['aws'], function() {
-  var links = ['stream-analytics', 'stream-analytics.min'];
-  var publisher = awsPublisher();
-  for (var i in links) {
-    var f = links[i]; 
-    require('fs').writeFile('dist/latest_' + f + '.js', '');
-    var cacheLife = (1000 * 60 * 60 * 24 * 365);
-    var headers = {
-      'Cache-Control': 'max-age=' + cacheLife + ', public',
-      'Expires': new Date(Date.now() + cacheLife),
-    };
-  }
-  gulp.src([
-      './dist/latest_stream-analytics.js',
-      './dist/latest_stream-analytics.min.js'])
-    .pipe(rename(function(path) {
-      path.basename = path.basename.split('latest_')[1],
-      path.dirname = 'latest'
-      headers['WebsiteRedirectLocation'] = '/' + pkg['version'] + '/' + path.basename + '.js'
-    }))
-    .pipe(publisher.publish(headers, { force: true }))
-    .pipe(publisher.cache())
-    .pipe(aws.reporter());
-});
-
 gulp.task('aws', ['build'], function() {
   var publisher = awsPublisher();
   var cacheLife = (1000 * 60 * 60 * 24 * 365);
@@ -122,7 +97,7 @@ gulp.task('aws', ['build'], function() {
     }))
     .pipe(aws.gzip())
     .pipe(publisher.publish(headers, { force: true }))
+    .pipe(publisher.publish(headers, { force: true }))
     .pipe(publisher.cache())
     .pipe(aws.reporter());
-
 });
