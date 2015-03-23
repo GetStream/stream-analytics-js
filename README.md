@@ -37,8 +37,8 @@ var impression = {
     feedId: 'user:ChartMill'
 };
 
-// track impressions for two messages presented to the user
-client.trackImpressions(impressions);
+// track impression for two messages presented to the user
+client.trackImpression(impression);
 ```
 
 Engagement tracking
@@ -58,7 +58,7 @@ var engagement = {
     activityId: 'message:34349698',
     feedId: 'user:ChartMill',
 };
-client.trackEngagementEvent(engagement);
+client.trackEngagement(engagement);
 
 // Share message
 var engagement = {

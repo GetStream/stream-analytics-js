@@ -62,7 +62,7 @@
     this._client.addEvent(eventLabel, eventData, callbackFn);
   }
 
-  StreamAnalytics.prototype.trackImpressions = StreamAnalytics.prototype._sendEventFactory('impressions', specs.impressionSpec);
+  StreamAnalytics.prototype.trackImpression = StreamAnalytics.prototype._sendEventFactory('impressions', specs.impressionSpec);
   StreamAnalytics.prototype.trackEngagement = StreamAnalytics.prototype._sendEventFactory('engagements', specs.engagementSpec);
   StreamAnalytics.prototype.updateUserData = StreamAnalytics.prototype._sendEventFactory('updateUserData', specs.userData);
 

@@ -6,8 +6,8 @@
     <!-- <script src="//d2j1fszo1axgmp.cloudfront.net/latest/stream-analytics.min.js" type="text/javascript"></script> -->
     <script type="text/javascript">
         var client = new StreamAnalytics({
-          projectId: "5508945890e4bd0ed4a8bb23",
-          writeKey: "9b9ca6e8f40f9823c21226ebc8bfc59a5873ad5091d18bc18834d356a6c00c2edf2c2eea5b5e92a92a4d6e4d992ad4c79071267bde2860f0c06cd0c0996c67871fe1d1d2b538e9a388f007afb4f2f51c9d98398751d7e19201ef93c52bfd00173522c5f427c3b402cbb8a468b64e6390"
+          projectId: "",
+          writeKey: ""
         });
         client.setUser('user:Thierry');
         var impression = {
@@ -15,7 +15,7 @@
             feedId: 'user:ChartMill'
         };
         // sends many impression to the APIs
-        client.trackImpressions(impression, function(){console.log(arguments);});
+        client.trackImpression(impression, function(){console.log(arguments);});
         // Click on a message
         var engagement = {
             label: 'click',
