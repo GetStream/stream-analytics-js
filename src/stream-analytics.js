@@ -24,6 +24,7 @@
 
   var validate = require("validate.js");
   var specs = require('./specs.js');
+  var errors = require('./errors.js');
 
   function StreamAnalytics(config) {
     this.configure(config || {});
@@ -32,13 +33,13 @@
   StreamAnalytics.prototype.configure = function(cfg){
     var _Client = require('keen-js');
     this._client = new _Client();
-    this._user = null;
+    this._userId = null;
     // cfg.host = 'analytics.getstream.io';
     this._client.configure(cfg);
   }
 
   StreamAnalytics.prototype.setUser = function(userId){
-    this._user = userId;
+    this._userId = userId;
   }
 
   StreamAnalytics.prototype._sendEventFactory = function(eventLabel, dataSpec){
@@ -53,13 +54,10 @@
   }
 
   StreamAnalytics.prototype._sendEvent = function(eventLabel, eventData, callbackFn){
+    if (this._userId === null) {
+      throw new errors.MissingUserId('userId was not set.');
+    }
     this._client.addEvent(eventLabel, eventData, callbackFn);
-  }
-
-  StreamAnalytics.prototype._sendEvents = function(eventLabel, eventsData, callbackFn){
-    var data = {};
-    data[eventLabel] = eventsData;
-    this._client.addEvents(data, callbackFn);
   }
 
   StreamAnalytics.prototype.trackImpressions = StreamAnalytics.prototype._sendEventFactory('impressions', specs.impressionSpec);

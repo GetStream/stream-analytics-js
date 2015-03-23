@@ -9,7 +9,7 @@ $ npm install stream-analytics
 Or load the library from our CDN:
 
 ```html
-<script src="https://xxx.cloudfront.net/..." type="text/javascript"></script>
+<script src="//d2j1fszo1axgmp.cloudfront.net/latest/stream-analytics.min.js" type="text/javascript"></script>
 ```
 
 Configure an instance for your project
