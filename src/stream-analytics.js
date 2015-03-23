@@ -22,7 +22,7 @@
 })(function() {
   "use strict";
 
-  var validate = require("validate.js");
+  var validate = require('validate.js');
   var specs = require('./specs.js');
   var errors = require('./errors.js');
 
@@ -34,7 +34,8 @@
     var _Client = require('keen-js');
     this._client = new _Client();
     this._userId = null;
-    // cfg.host = 'analytics.getstream.io';
+    cfg.host = 'analytics.getstream.io/3.0';
+    cfg.protocol = 'http';
     this._client.configure(cfg);
   }
 
@@ -57,6 +58,7 @@
     if (this._userId === null) {
       throw new errors.MissingUserId('userId was not set.');
     }
+    eventData.userId = this._userId;
     this._client.addEvent(eventLabel, eventData, callbackFn);
   }
 
