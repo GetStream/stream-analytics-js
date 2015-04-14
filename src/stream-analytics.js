@@ -30,10 +30,19 @@
     this.configure(config || {});
   }
 
+  function djb2Code(str){
+    var hash = 5381;
+    for (var i = 0; i < str.length; i++) {
+        hash = ((hash << 5) + hash) + str.charCodeAt(i);
+    }
+    return hash;
+  }
+
   StreamAnalytics.prototype.configure = function(cfg){
     var _Client = require('keen-js');
     this._client = new _Client();
     this._userId = null;
+    this.sampling = cfg.sampling || 0.3;
     cfg.host = 'analytics.getstream.io/3.0';
     cfg.protocol = 'http';
     this._client.configure(cfg);
@@ -54,12 +63,19 @@
     };
   }
 
+  StreamAnalytics.prototype.isSampled = function(userId){
+    var userIdInt = djb2Code(String(userId));
+    return ((userIdInt % 100.0)/100) < this.sampling;
+  }
+
   StreamAnalytics.prototype._sendEvent = function(eventLabel, eventData, callbackFn){
     if (this._userId === null) {
       throw new errors.MissingUserId('userId was not set.');
     }
     eventData.userId = this._userId;
-    this._client.addEvent(eventLabel, eventData, callbackFn);
+    if (this.isSampled(this._userId)) {
+      this._client.addEvent(eventLabel, eventData, callbackFn);
+    }
   }
 
   StreamAnalytics.prototype.trackImpression = StreamAnalytics.prototype._sendEventFactory('impressions', specs.impressionSpec);
