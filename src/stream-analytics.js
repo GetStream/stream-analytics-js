@@ -42,7 +42,7 @@
     var _Client = require('keen-js');
     this._client = new _Client();
     this._userId = null;
-    this.sampling = cfg.sampling || 0.3;
+    this.sampling = cfg.sampling || 0.01;
     cfg.host = 'analytics.getstream.io/3.0';
     cfg.protocol = 'http';
     this._client.configure(cfg);
