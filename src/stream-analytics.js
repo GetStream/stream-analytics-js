@@ -64,7 +64,10 @@
   }
 
   StreamAnalytics.prototype.isSampled = function(userId){
-    var userIdInt = djb2Code(String(userId));
+    var userIdInt = parseInt(userId);
+    if (isNaN(userIdInt)) {
+      userIdInt = djb2Code(String(userId));
+    }
     return ((userIdInt % 100.0)/100) < this.sampling;
   }
 
