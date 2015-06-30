@@ -44,7 +44,7 @@
     this._userId = null;
     this.sampling = cfg.sampling || 0.01;
     cfg.host = 'analytics.getstream.io/3.0';
-    cfg.protocol = cfg.sampling || 'http';
+    cfg.protocol = cfg.protocol || 'https';
     this._client.configure(cfg);
   }
 
