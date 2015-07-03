@@ -43,8 +43,10 @@
     this._client = new _Client();
     this._userId = null;
     this.sampling = cfg.sampling || 0.01;
-    cfg.host = 'analytics.getstream.io/3.0';
-    cfg.protocol = cfg.protocol || 'https';
+    cfg.protocol = cfg.protocol || 'http';
+    if (cfg.protocol === 'http') {
+      cfg.host = 'analytics.getstream.io/3.0';
+    }
     this._client.configure(cfg);
   }
 
