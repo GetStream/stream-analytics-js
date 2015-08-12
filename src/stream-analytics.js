@@ -43,16 +43,13 @@
     this._client = new _Client();
     this._userId = null;
     this.sampling = cfg.sampling || 0.01;
-    cfg.protocol = cfg.protocol || 'http';
-    if (cfg.protocol === 'http') {
-      cfg.host = 'analytics.getstream.io/3.0';
-    }
+    cfg.protocol = cfg.protocol || 'https';
     this._client.configure(cfg);
-  }
+  };
 
   StreamAnalytics.prototype.setUser = function(userId){
     this._userId = userId;
-  }
+  };
 
   StreamAnalytics.prototype._sendEventFactory = function(eventLabel, dataSpec){
     return function(eventData, callbackFn){
@@ -63,7 +60,7 @@
         callbackFn(errors);
       }
     };
-  }
+  };
 
   StreamAnalytics.prototype.isSampled = function(userId){
     var userIdInt = parseInt(userId);
@@ -71,7 +68,7 @@
       userIdInt = djb2Code(String(userId));
     }
     return ((userIdInt % 100.0)/100) < this.sampling;
-  }
+  };
 
   StreamAnalytics.prototype._sendEvent = function(eventLabel, eventData, callbackFn){
     if (this._userId === null) {
@@ -81,7 +78,7 @@
     if (this.isSampled(this._userId)) {
       this._client.addEvent(eventLabel, eventData, callbackFn);
     }
-  }
+  };
 
   StreamAnalytics.prototype.trackImpression = StreamAnalytics.prototype._sendEventFactory('impressions', specs.impressionSpec);
   StreamAnalytics.prototype.trackEngagement = StreamAnalytics.prototype._sendEventFactory('engagements', specs.engagementSpec);
