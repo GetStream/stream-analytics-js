@@ -1,22 +1,52 @@
+var validate = require('validate.js');
+
+validate.validators.features = function(value, options, key, attributes) {
+    if (typeof(value) === "undefined" || value === null)
+        return value;
+    if (!validate.isArray(value))
+        return 'needs to be a list of features';
+    for (var i = value.length - 1; i >= 0; i--) {
+        if (validate(value[i], feature))
+            return 'should have group and value keys';
+    }
+};
+
+validate.validators.isArray = function(value, options, key, attributes) {
+    if (!validate.isArray(value))
+        return 'needs to be an array';
+};
+
+var feature = {
+    group: {presence: true},
+    value: {presence: true}
+};
+
 var engagement = {
     label: {presence: true},
-    score: {
-        presence: true,
+    boost: {
+        presence: false,
         numericality: true
     },
-    activityId: {presence: true}
+    features: {
+        features: true
+    }
 };
 
 var impression = {
-  activityIds: {
-    presence: true
-  }
+    foreign_ids: {
+        presence: true,
+        isArray: true
+    },
+    boost: {
+        presence: false,
+        numericality: true
+    },
+    features: {
+        features: true
+    }
 };
-
-var userData = {};
 
 module.exports = {
     engagementSpec: engagement,
-    impressionSpec: impression,
-    userDataSpec: userData,
+    impressionSpec: impression
 };

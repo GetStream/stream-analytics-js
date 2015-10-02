@@ -24,3 +24,8 @@ errors.MissingUserId = function MissingUserId(msg) {
     ErrorAbstract.call(this, msg);
 };
 errors.MissingUserId.prototype = new ErrorAbstract();
+
+errors.MisconfiguredClient = function MisconfiguredClient(msg) {
+    ErrorAbstract.call(this, msg);
+};
+errors.MisconfiguredClient.prototype = new ErrorAbstract();

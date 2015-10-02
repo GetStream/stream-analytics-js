@@ -30,59 +30,37 @@
     this.configure(config || {});
   }
 
-  function djb2Code(str){
-    var hash = 5381;
-    for (var i = 0; i < str.length; i++) {
-        hash = ((hash << 5) + hash) + str.charCodeAt(i);
-    }
-    return hash;
-  }
-
   StreamAnalytics.prototype.configure = function(cfg){
-    var _Client = require('keen-js');
-    this._client = new _Client();
-    this._userId = null;
-    this.sampling = cfg.sampling || 0.01;
-    cfg.protocol = cfg.protocol || 'https';
-    this._client.configure(cfg);
+    var Client = require('./client.js');
+    this.client = new Client(cfg);
+    this.userId = null;
   };
 
   StreamAnalytics.prototype.setUser = function(userId){
-    this._userId = userId;
+    this.userId = userId;
   };
 
-  StreamAnalytics.prototype._sendEventFactory = function(eventLabel, dataSpec){
-    return function(eventData, callbackFn){
+  StreamAnalytics.prototype._sendEventFactory = function(resourceName, dataSpec){
+    return function(eventData, callback){
       var errors = validate(eventData, dataSpec, {flatten: true});
       if (typeof(errors) === 'undefined') {
-        this._sendEvent(eventLabel, eventData, callbackFn);
-      } else if (callbackFn !== null) {
-        callbackFn(errors);
+        this._sendEvent(resourceName, eventData, callback);
+      } else if (typeof(callback) === 'function') {
+        callback(errors);
       }
     };
   };
 
-  StreamAnalytics.prototype.isSampled = function(userId){
-    var userIdInt = parseInt(userId);
-    if (isNaN(userIdInt)) {
-      userIdInt = djb2Code(String(userId));
-    }
-    return ((userIdInt % 100.0)/100) < this.sampling;
-  };
-
-  StreamAnalytics.prototype._sendEvent = function(eventLabel, eventData, callbackFn){
+  StreamAnalytics.prototype._sendEvent = function(resourceName, eventData, callback){
     if (this._userId === null) {
-      throw new errors.MissingUserId('userId was not set.');
+      callback('userId was not set');
     }
-    eventData.userId = this._userId;
-    if (this.isSampled(this._userId)) {
-      this._client.addEvent(eventLabel, eventData, callbackFn);
-    }
+    eventData.user_id = this.userId;
+    return this.client.send(resourceName, eventData, callback);
   };
 
-  StreamAnalytics.prototype.trackImpression = StreamAnalytics.prototype._sendEventFactory('impressions', specs.impressionSpec);
-  StreamAnalytics.prototype.trackEngagement = StreamAnalytics.prototype._sendEventFactory('engagements', specs.engagementSpec);
-  StreamAnalytics.prototype.updateUserData = StreamAnalytics.prototype._sendEventFactory('updateUserData', specs.userData);
+  StreamAnalytics.prototype.trackImpression = StreamAnalytics.prototype._sendEventFactory('impression', specs.impressionSpec);
+  StreamAnalytics.prototype.trackEngagement = StreamAnalytics.prototype._sendEventFactory('engagement', specs.engagementSpec);
 
   module.exports = StreamAnalytics;
   return StreamAnalytics;

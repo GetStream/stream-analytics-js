@@ -1,5 +1,7 @@
 var gulp = require('gulp'),
     pkg = require('./package.json');
+    jshint = require('gulp-jshint');
+    mocha = require('gulp-mocha');
 
 var aws = require('gulp-awspublish'),
     browserify = require('browserify'),
@@ -13,6 +15,23 @@ var aws = require('gulp-awspublish'),
 // -------------------------
 // Development tasks
 // -------------------------
+
+// check for jshint errors
+gulp.task('lint', function() {
+  return gulp.src('./src/*.js')
+    .pipe(jshint())
+    .pipe(jshint.reporter('default'));
+});
+
+// run the mocha tests
+gulp.task('mocha', function () {
+    return gulp.src('./tests/index.js', {read: false})
+        .pipe(mocha());
+});
+
+gulp.task('test', ['lint', 'mocha'], function () {
+    return;
+});
 
 gulp.task('connect', function() {
   connect.server({
