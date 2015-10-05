@@ -41,6 +41,7 @@ StreamAnalytics.prototype.trackEngagement = StreamAnalytics.prototype._sendEvent
 StreamAnalytics.Client = Client;
 StreamAnalytics.errors = errors;
 
-require('./async.js')(StreamAnalytics);
+if (typeof(window) !== "undefined")
+  require('./async.js')(StreamAnalytics);
 
 module.exports = StreamAnalytics;
