@@ -1,39 +1,35 @@
-Get the library
--------------------
+## Get the library
 
-```bash
-# via npm
-$ npm install stream-analytics
-```
-
-Or load the library from our CDN:
+Load the library asynchronously
 
 ```html
-<script src="//d2j1fszo1axgmp.cloudfront.net/1.10.0/stream-analytics.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+!function(a,b){a("StreamAnalytics","//d2j1fszo1axgmp.cloudfront.net/2.0.0/stream-analytics.min.js",b)}(function(a,b,c){var d,e,f;c["_"+a]={},c[a]=function(b){c["_"+a].clients=c["_"+a].clients||{},c["_"+a].clients[b.projectId]=this,this._config=b},d=["setUser","trackImpression","trackEngagement"];for(var g=0;g<d.length;g++){var h=d[g],i=function(a){return function(){return this["_"+a]=this["_"+a]||[],this["_"+a].push(arguments),this}};c[a].prototype[h]=i(h)}e=document.createElement("script"),e.async=!0,e.src=b,f=document.getElementsByTagName("script")[0],f.parentNode.insertBefore(e,f)},this);
+</script>
 ```
 
-Configure an instance for your project
---------------------------------------
+## Configure an instance for your project
+
 ```js
 var client = new StreamAnalytics({
-  projectId: "YOUR_PROJECT_ID",
-  writeKey: "YOUR_WRITE_KEY"
+  apiKey: "API_KEY",
+  token: "ANALYTICS_TOKEN"
 });
 ```
 
-Set current user
-----------------
+## Set current user
+
 ```js
-client.setUser('user:Thierry');
+client.setUser('7b22b0b8-6bb0-11e5-9d70-feff819cdc9f');
 ```
 
-Track impressions
------------------
+## Track impressions
+
 Every activity (eg. messages) shown to the user should be tracked as an impression.
 
 ```js
 var impression = {
-    activityIds: ['message:34349698', 'message:34349699'],
+    foreign_ids: ['message:34349698'],
     feedId: 'user:ChartMill'
 };
 
@@ -41,10 +37,9 @@ var impression = {
 client.trackImpression(impression);
 ```
 
-Engagement tracking
--------------------
+## Engagement tracking
 
-Every meaningful user interactions should be tracked with content (activity_id) and source (sourceFeedId) information and provide a label and a score (the score) for the engagement. score is a signed integer. Positive values boost source and content for the user that trigger the engagement, negative values work as a discount for the same context. The value of the score can be used to differentiate engagements according to their importants (eg. sharing a message is probably more important than just clicking it).
+Every meaningful user interactions should be tracked with a label, optional extra information can be tracked as well.
 
 ```js
 engagement = {...}
@@ -54,30 +49,59 @@ client.trackEngagement(engagement);
 // Click on a message
 var engagement = {
     label: 'click',
-    score: 10,
-    activityId: 'message:34349698',
-    feedId: 'user:ChartMill',
+    foreignId: 'message:34349698',
+    feedId: 'user:ChartMill'
 };
-client.trackEngagement(engagement);
+client.trackEngagement(engagement, function(){console.log(arguments);});
 
 // Share message
 var engagement = {
     label: 'share',
-    score: 100,
-    activityId: 'message:34349698',
-    feedId: 'user:ChartMill',
+    foreignId: 'message:34349698',
+    feedId: 'user:ChartMill'
 };
 client.trackEngagement(engagement);
 ```
 
-Update user data
-----------------
-this allows for storing extra information about the current user such as public profiles
+## Fields reference
 
-```js
-var userData = {
-    twitterId: '15875029',
-    facebookId: '784785430'
-};
-client.updateUserData(userData);
+### features 
+
+If necessary, you can send additional information about the data involved or the specific event. The features field must be a list of feature objects. A feature object is made of two mandatory fields: "group" and "value"
+
+eg.
+
+```javascript
+[{
+    'group': 'topic',
+    'value': 'coffee'
+}]
 ```
+
+### location 
+
+A string representing the location of the content (eg. 'notification_feed')
+
+### feed_id 
+
+A string representing the origin feed for the content
+
+### boost 
+
+An integer that multiplies the score of the interaction (eg. 2 or -1)
+
+### position 
+
+When tracking interactions with content, it might be useful to provide the oridinal position (eg. 2)
+
+### foreign_id
+
+The ID for the content as you store that in your database (or/and on Stream's feeds) (eg. 'user:42') (engagement only)
+
+### foreign_ids
+
+An Array of foreign_ids (impressions only)
+
+### label
+
+The event identifier (eg. click, share, ...) this field is mandatory for every engagement event

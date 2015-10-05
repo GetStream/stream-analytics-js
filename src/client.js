@@ -7,6 +7,7 @@ var Client = function() {
 
 Client.prototype = {
     baseUrl: 'https://analytics.getstream.io/analytics/v1.0/',
+    // baseUrl: 'http://localhost:8000/analytics/v1.0/',
     initialize: function(cfg) {
         var configs = cfg || {};
         if (!configs.apiKey || !configs.token) {

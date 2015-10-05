@@ -1,16 +1,33 @@
 var gulp = require('gulp'),
+    gutil = require('gulp-util');
     pkg = require('./package.json');
     jshint = require('gulp-jshint');
     mocha = require('gulp-mocha');
+    async = require('async');
 
 var aws = require('gulp-awspublish'),
     browserify = require('browserify'),
-    compress = require('gulp-yuicompressor'),
+    uglify = require('gulp-uglify'),
     rename = require('gulp-rename'),
     connect = require('gulp-connect'),
     squash = require('gulp-remove-empty-lines'),
     strip = require('gulp-strip-comments'),
     transform = require('vinyl-transform');
+
+var webpack = require("webpack");
+var webpackConfig = require('./webpack.config.js');
+
+
+function runSynchronized(tasks, callback){
+    var sync = tasks.map(function(task){
+        return function(callback){
+            gulp.run(task, function(err){
+                callback(err);
+            });
+        };
+    });
+    async.series(sync, callback);
+}
 
 // -------------------------
 // Development tasks
@@ -47,10 +64,9 @@ gulp.task('html', function () {
     .pipe(connect.reload());
 });
 
-gulp.task('watch', ['connect', 'build'], function() {
+gulp.task('watch', ["build"], function() {
   gulp.watch('examples/*.html', ['build']);
-  gulp.watch('src/**/*.js', ['build']);
-  gulp.watch('src/*.js', ['build']);
+  gulp.watch('lib/*.js', ['build']);
   gulp.watch('gulpfile.js', ['build']);
 });
 
@@ -58,28 +74,26 @@ gulp.task('watch', ['connect', 'build'], function() {
 // Build tasks
 // -------------------------
 
-gulp.task('build', ['build:browserify', 'build:minify', 'html']);
-
-gulp.task('build:browserify', function() {
-  return gulp.src([
-      './src/stream-analytics.js',
-    ])
-    .pipe(transform(function(filename) {
-      var b = browserify(filename);
-      return b.bundle();
-    }))
-    .pipe(strip({ line: true }))
-    .pipe(squash())
-    .pipe(gulp.dest('./dist/'));
+gulp.task("build", function() {
+  runSynchronized(['build:webpack', 'build:optimize']);
 });
 
-gulp.task('build:minify', ['build:browserify'], function(){
-  return gulp.src([
-      './dist/stream-analytics.js',
-    ])
-    .pipe(compress({ type: 'js' }))
-    .pipe(rename({ suffix: '.min' }))
-    .pipe(gulp.dest('./dist/'));
+
+gulp.task("build:webpack", function(callback) {
+    var myConfig = Object.create(webpackConfig);
+    webpack(myConfig, function(err, stats) {
+    if(err) throw new gutil.PluginError("webpack:build", err);
+    gutil.log("[webpack:build]", stats.toString({
+      colors: true
+    }));
+    callback();
+  });
+});
+
+gulp.task("build:optimize", function(callback) {
+  gulp.src('./dist/js/getstream-analytics.js')
+  .pipe(uglify())
+  .pipe(gulp.dest('./dist/js_min'));
 });
 
 // -------------------------

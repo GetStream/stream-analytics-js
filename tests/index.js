@@ -1,7 +1,15 @@
 var expect = expect || require('expect.js');
-var Client = require('../src/client.js');
-var errors = require('../src/errors.js');
-var StreamAnalytics = require('../src/stream-analytics.js');
+
+var node = typeof process != "undefined";
+
+if (node) {
+    var Client = require('../src/client.js');
+    var errors = require('../src/errors.js');
+    var StreamAnalytics = require('../src/stream-analytics.js');
+} else {
+    var Client = StreamAnalytics.Client;
+    var errors = StreamAnalytics.errors;
+}
 
 var misconfiguredClientError = function (e) {
   expect(e).to.be.a(errors.MisconfiguredClient);
