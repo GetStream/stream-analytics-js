@@ -68,7 +68,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var StreamAnalytics = function(config) {
 	  this.configure(config || {});
-	}
+	};
 
 	StreamAnalytics.prototype.configure = function(cfg){
 	  this.client = new Client(cfg);
@@ -104,7 +104,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	StreamAnalytics.Client = Client;
 	StreamAnalytics.errors = errors;
 
-	__webpack_require__(9)(StreamAnalytics);
+	if (typeof(window) !== "undefined")
+	  __webpack_require__(9)(StreamAnalytics);
 
 	module.exports = StreamAnalytics;
 
@@ -1105,8 +1106,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	Client.prototype = {
-	    // baseUrl: 'https://analytics.getstream.io/analytics/v1.0/',
-	    baseUrl: 'http://localhost:8000/analytics/v1.0/',
+	    baseUrl: 'https://analytics.getstream.io/analytics/v1.0/',
+	    // baseUrl: 'http://localhost:8000/analytics/v1.0/',
 	    initialize: function(cfg) {
 	        var configs = cfg || {};
 	        if (!configs.apiKey || !configs.token) {
