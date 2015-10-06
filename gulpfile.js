@@ -6,7 +6,6 @@ var gulp = require('gulp'),
     async = require('async');
 
 var aws = require('gulp-awspublish'),
-    browserify = require('browserify'),
     uglify = require('gulp-uglify'),
     rename = require('gulp-rename'),
     connect = require('gulp-connect'),
