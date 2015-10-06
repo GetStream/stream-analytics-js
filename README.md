@@ -1,3 +1,7 @@
+# GetStream JS Analytics Client
+
+[![Build Status](https://travis-ci.org/GetStream/stream-analytics-js.svg?branch=master)](https://travis-ci.org/GetStream/stream-analytics-js)
+
 ## Get the library
 
 Load the library asynchronously
@@ -25,12 +29,10 @@ client.setUser('7b22b0b8-6bb0-11e5-9d70-feff819cdc9f');
 
 ## Track impressions
 
-Every activity (eg. messages) shown to the user should be tracked as an impression.
-
 ```js
 var impression = {
     foreign_ids: ['message:34349698'],
-    feedId: 'user:ChartMill'
+    feed_id: 'user:ChartMill'
 };
 
 // track impression for two messages presented to the user
@@ -39,7 +41,7 @@ client.trackImpression(impression);
 
 ## Engagement tracking
 
-Every meaningful user interactions should be tracked with a label, optional extra information can be tracked as well.
+User interactions must be tracked with a label, optional extra information can be sent as well.
 
 ```js
 engagement = {...}
@@ -49,16 +51,16 @@ client.trackEngagement(engagement);
 // Click on a message
 var engagement = {
     label: 'click',
-    foreignId: 'message:34349698',
-    feedId: 'user:ChartMill'
+    foreign_id: 'message:34349698',
+    feed_id: 'user:ChartMill'
 };
 client.trackEngagement(engagement, function(){console.log(arguments);});
 
 // Share message
 var engagement = {
     label: 'share',
-    foreignId: 'message:34349698',
-    feedId: 'user:ChartMill'
+    foreign_id: 'message:34349698',
+    feed_id: 'user:ChartMill'
 };
 client.trackEngagement(engagement);
 ```

@@ -16,7 +16,7 @@
         client.setUser('thierry');
         var impression = {
             foreign_ids: ['message:34349698'],
-            feedId: 'user:ChartMill'
+            feed_id: 'user:ChartMill'
         };
         // sends many impression to the APIs
         client.trackImpression(impression, function(){console.log(arguments);});
@@ -25,7 +25,7 @@
             label: 'click',
             score: 10,
             foreignId: 'message:34349698',
-            feedId: 'user:ChartMill',
+            feed_id: 'user:ChartMill',
         };
         client.trackEngagement(engagement, function(){console.log(arguments);});
     </script>
