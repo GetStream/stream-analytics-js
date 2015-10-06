@@ -93,7 +93,8 @@ gulp.task("build:webpack", function(callback) {
 gulp.task("build:optimize", function(callback) {
   gulp.src('./dist/js/getstream-analytics.js')
   .pipe(uglify())
-  .pipe(gulp.dest('./dist/js_min'));
+  .pipe(rename('getstream-analytics.min.js'))
+  .pipe(gulp.dest('./dist/js/'));
 });
 
 // -------------------------
@@ -122,8 +123,8 @@ gulp.task('aws', ['build'], function() {
   };
 
   return gulp.src([
-      './dist/stream-analytics.js',
-      './dist/stream-analytics.min.js'
+      './dist/js/getstream-analytics.js',
+      './dist/js/getstream-analytics.min.js'
     ])
     .pipe(rename(function(path) {
       path.dirname += '/' + pkg['version'];
