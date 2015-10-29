@@ -25,12 +25,19 @@
   "dependencies": {
     "json-loader": "^0.5.3",
     "request": "^2.64.0",
-    "validate.js": "^0.6.1"
+    "browser-request": "git://github.com/matthisk/browser-request",
+    "validate.js": "^0.9.0"
+  },
+  "browser": {
+    "request": "browser-request",
+    "crypto": false,
+    "fs": false,
+    "net": false,
+    "tls": false 
   },
   "devDependencies": {
     "async": "^1.4.2",
     "bower": "^1.5.3",
-    "browser-request": "git://github.com/iriscouch/browser-request",
     "expect.js": "^0.3.1",
     "gulp": "^3.8.11",
     "gulp-awspublish": "^1.0.6",
