@@ -8,7 +8,7 @@ module.exports = function(StreamAnalytics) {
   if (loaded && cached) {
     clients = cached.clients || {};
 
-    each(clients, function(client, id) {
+    each(clients, function(client/*, id */) {
 
       each(StreamAnalytics.prototype, function(method, key) {
         loaded.prototype[key] = method;

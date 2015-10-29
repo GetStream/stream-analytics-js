@@ -10,17 +10,17 @@
     this._config = e;
   };
 
+  var action = function(method) {
+    return function() {
+      this['_' + method] = this['_' + method] || [];
+      this['_' + method].push(arguments);
+      return this;
+    };
+  };
+
   methods = ['setUser', 'trackImpression', 'trackEngagement'];
   for (var i = 0; i < methods.length; i++) {
     var method = methods[i];
-    var action = function(method) {
-      return function() {
-        this['_' + method] = this['_' + method] || [];
-        this['_' + method].push(arguments);
-        return this;
-      };
-    };
-
     x[t].prototype[method] = action(method);
   }
 

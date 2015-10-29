@@ -1,6 +1,6 @@
 var validate = require('validate.js');
 
-validate.validators.features = function(value, options, key, attributes) {
+validate.validators.features = function(value/*, options, key, attributes */) {
   if (typeof (value) === 'undefined' || value === null)
       return value;
   if (!validate.isArray(value))
@@ -11,7 +11,7 @@ validate.validators.features = function(value, options, key, attributes) {
   }
 };
 
-validate.validators.isArray = function(value, options, key, attributes) {
+validate.validators.isArray = function(value/*, options, key, attributes */) {
   if (!validate.isArray(value))
       return 'needs to be an array';
 };
@@ -22,26 +22,26 @@ var feature = {
 };
 
 var engagement = {
-  label: {presence: true},
-  boost: {
+  'label': {presence: true},
+  'boost': {
     presence: false,
     numericality: true,
   },
-  features: {
+  'features': {
     features: true,
   },
 };
 
 var impression = {
-  foreign_ids: {
+  'foreign_ids': {
     presence: true,
     isArray: true,
   },
-  boost: {
+  'boost': {
     presence: false,
     numericality: true,
   },
-  features: {
+  'features': {
     features: true,
   },
 };

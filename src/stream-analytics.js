@@ -32,7 +32,7 @@ StreamAnalytics.prototype._sendEvent = function(resourceName, eventData, callbac
     callback('userId was not set');
   }
 
-  eventData.user_id = this.userId;
+  eventData['user_id'] = this.userId;
   return this.client.send(resourceName, eventData, callback);
 };
 
