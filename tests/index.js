@@ -168,8 +168,8 @@ describe('analytics client integration', function () {
             {'group':'user', 'value':'tommaso'}
         ]
     }, function(error, response, body) {
-        done();
         expect(response.statusCode).to.eql(201);
+        done();
     });
   });
 
@@ -183,8 +183,8 @@ describe('analytics client integration', function () {
             {'group':'user', 'value':'tommaso'}
         ]
     }, function(error, response, body) {
-        done();
         expect(response.statusCode).to.eql(201);
+        done();
     });
   });
 

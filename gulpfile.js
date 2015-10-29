@@ -50,8 +50,8 @@ gulp.task('mocha', function () {
         .pipe(mocha());
 });
 
-gulp.task('test', ['lint', 'mocha'], function () {
-    return;
+gulp.task('test', function () {
+  runSynchronized(['lint', 'mocha']);
 });
 
 gulp.task('connect', function() {
