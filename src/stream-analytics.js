@@ -7,30 +7,31 @@ var StreamAnalytics = function(config) {
   this.configure(config || {});
 };
 
-StreamAnalytics.prototype.configure = function(cfg){
+StreamAnalytics.prototype.configure = function(cfg) {
   this.client = new Client(cfg);
   this.userId = null;
 };
 
-StreamAnalytics.prototype.setUser = function(userId){
+StreamAnalytics.prototype.setUser = function(userId) {
   this.userId = userId;
 };
 
-StreamAnalytics.prototype._sendEventFactory = function(resourceName, dataSpec){
-  return function(eventData, callback){
+StreamAnalytics.prototype._sendEventFactory = function(resourceName, dataSpec) {
+  return function(eventData, callback) {
     var errors = validate(eventData, dataSpec, {flatten: true});
-    if (typeof(errors) === 'undefined') {
+    if (typeof (errors) === 'undefined') {
       this._sendEvent(resourceName, eventData, callback);
-    } else if (typeof(callback) === 'function') {
+    } else if (typeof (callback) === 'function') {
       callback(errors);
     }
   };
 };
 
-StreamAnalytics.prototype._sendEvent = function(resourceName, eventData, callback){
+StreamAnalytics.prototype._sendEvent = function(resourceName, eventData, callback) {
   if (this._userId === null) {
     callback('userId was not set');
   }
+
   eventData.user_id = this.userId;
   return this.client.send(resourceName, eventData, callback);
 };
@@ -41,7 +42,7 @@ StreamAnalytics.prototype.trackEngagement = StreamAnalytics.prototype._sendEvent
 StreamAnalytics.Client = Client;
 StreamAnalytics.errors = errors;
 
-if (typeof(window) !== "undefined")
+if (typeof (window) !== 'undefined')
   require('./async.js')(StreamAnalytics);
 
 module.exports = StreamAnalytics;

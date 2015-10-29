@@ -1,6 +1,6 @@
-var each = require("./utils/each");
+var each = require('./utils/each');
 
-module.exports = function(StreamAnalytics){
+module.exports = function(StreamAnalytics) {
   var loaded = window.StreamAnalytics || null,
       cached = window._StreamAnalytics || null,
       clients;
@@ -8,9 +8,9 @@ module.exports = function(StreamAnalytics){
   if (loaded && cached) {
     clients = cached.clients || {};
 
-    each(clients, function(client, id){
+    each(clients, function(client, id) {
 
-      each(StreamAnalytics.prototype, function(method, key){
+      each(StreamAnalytics.prototype, function(method, key) {
         loaded.prototype[key] = method;
       });
 
@@ -26,25 +26,25 @@ module.exports = function(StreamAnalytics){
 
       // Send Queued Events
       if (client._trackImpression) {
-        each(client._trackImpression, function(obj){
+        each(client._trackImpression, function(obj) {
           client.trackImpression.apply(client, obj);
         });
       }
 
       // Send Queued Events
       if (client._trackEngagement) {
-        each(client._trackEngagement, function(obj){
+        each(client._trackEngagement, function(obj) {
           client.trackEngagement.apply(client, obj);
         });
       }
 
       // unset config
-      each(["_config", "_setUser", "_trackEngagement", "_trackImpression"], function(name){
+      each(['_config', '_setUser', '_trackEngagement', '_trackImpression'], function(name) {
         if (client[name]) {
           client[name] = undefined;
-          try{
+          try {
             delete client[name];
-          } catch(e){}
+          } catch (e) {}
         }
       });
 
@@ -54,6 +54,6 @@ module.exports = function(StreamAnalytics){
 
   window._StreamAnalytics = undefined;
   try {
-    delete window[_StreamAnalytics]
-  } catch(e) {}
+    delete window['_StreamAnalytics'];
+  } catch (e) {}
 };
