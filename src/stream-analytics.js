@@ -18,7 +18,7 @@ StreamAnalytics.prototype.setUser = function(userId) {
 
 StreamAnalytics.prototype._sendEventFactory = function(resourceName, dataSpec) {
   return function(eventData, callback) {
-    var errors = validate(eventData, dataSpec, {flatten: true});
+    var errors = validate(eventData, dataSpec, {format: 'flat'});
     if (typeof (errors) === 'undefined') {
       this._sendEvent(resourceName, eventData, callback);
     } else if (typeof (callback) === 'function') {
