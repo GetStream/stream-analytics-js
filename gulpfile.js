@@ -1,8 +1,10 @@
 var gulp = require('gulp'),
-    gutil = require('gulp-util');
-    pkg = require('./package.json');
-    jshint = require('gulp-jshint');
-    mocha = require('gulp-mocha');
+    gutil = require('gulp-util'),
+    pkg = require('./package.json'),
+    jshint = require('gulp-jshint'),
+    jscs = require('gulp-jscs'),
+    stylish = require('gulp-jscs-stylish'),
+    mocha = require('gulp-mocha'),
     async = require('async');
 
 var aws = require('gulp-awspublish'),
@@ -34,9 +36,12 @@ function runSynchronized(tasks, callback){
 
 // check for jshint errors
 gulp.task('lint', function() {
-  return gulp.src('./src/*.js')
-    .pipe(jshint())
-    .pipe(jshint.reporter('default'));
+  return gulp.src('./src/**/*.js')
+    .pipe(jshint({ lookup: true }))
+    .pipe(jscs())
+    .pipe(stylish.combineWithHintResults())
+    .pipe(jshint.reporter('jshint-stylish'))
+    .pipe(jshint.reporter('fail'));
 });
 
 // run the mocha tests
