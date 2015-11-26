@@ -4,7 +4,10 @@
 
 ## Get the library
 
-Load the library asynchronously
+
+### Async loading
+
+The best way to add the client to your application is to load it asyncronously. You can paste the following snippet anywhere in the HTML and the client will load without interfering with the page load.
 
 ```html
 <script type="text/javascript">
@@ -12,7 +15,16 @@ Load the library asynchronously
 </script>
 ```
 
+
+### For Angular/Ember/... apps that use webpack or browserify
+
+TODO: explain the steps to do that
+
 ## Configure an instance for your project
+
+Once your application is enabled to use Stream's Analytics platform, you will get an `API_KEY` and a `token` to access the APIs. Reach support@getstream.io to set that up.
+
+Analytics tracking is done using a client object, here's the code that initializes it.
 
 ```js
 var client = new StreamAnalytics({
@@ -23,11 +35,18 @@ var client = new StreamAnalytics({
 
 ## Set current user
 
+Before you can track events, you need to set the current user. All analytics events are related to the users of your application.
+
 ```js
 client.setUser('7b22b0b8-6bb0-11e5-9d70-feff819cdc9f');
 ```
 
 ## Track impressions
+
+Everytime you display content to the user, you should track the impression. The `trackImpression` method allows you to track what content is displayed to the user. There are 2 required fields that you need to provide:
+
+* foreign_ids: the list of IDs for the content you are showing to the user.
+* feed_id: the feed_id (eg. "flat:123", "newsfeed:42") from where the content origins, if the content does not come from a Stream's powered feed you should use a clear and unique indentifier (eg. "user_search_page", "user42_profile_page", etc.)
 
 ```js
 var impression = {
