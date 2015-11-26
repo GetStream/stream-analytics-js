@@ -48,9 +48,11 @@ Everytime you display content to the user, you should track the impression. The 
 * foreign_ids: the list of IDs for the content you are showing to the user.
 * feed_id: the feed_id (eg. "flat:123", "newsfeed:42") from where the content origins, if the content does not come from a Stream's powered feed you should use a clear and unique indentifier (eg. "user_search_page", "user42_profile_page", etc.)
 
+Here's an example of how you would track the display of the "user:ChartMill" feed to the current user, the example implies that the user was presented with a list of contents: one message with ID 34349698 and one comment with ID 414416008. Using a combiantion of content_type and ID is a very simple way to avoid collision between objects of different types.
+
 ```js
 var impression = {
-    foreign_ids: ['message:34349698'],
+    foreign_ids: ['message:34349698', 'comment:414416008'],
     feed_id: 'user:ChartMill'
 };
 
@@ -58,15 +60,18 @@ var impression = {
 client.trackImpression(impression);
 ```
 
+You can find a comprehensive list of all optional parameters that you can send with the `trackImpression` method in the API reference docs.
+
 ## Engagement tracking
 
-User interactions must be tracked with a label, optional extra information can be sent as well.
+User interactions are tracked using the `trackEngagement` method, the mechanism is very similar to `trackImpressions`. 
+An engagement event is composed by the following fields:
+
+* label: the label for the type of engagement you are about to track (eg. "click", "like")
+* foreign_id: the ID of the content the user is engaging with (eg. "post:42")
+* feed_id: the feed_id where the content origins, if not applicable the identifier of the current context (eg. "homepage", "search_page")
 
 ```js
-engagement = {...}
-// Sends one engagement event to the APIs
-client.trackEngagement(engagement);
-
 // Click on a message
 var engagement = {
     label: 'click',
@@ -84,7 +89,13 @@ var engagement = {
 client.trackEngagement(engagement);
 ```
 
-## Fields reference
+## Additional fields reference
+
+You can get more information out of analytics by adding extra information regarding impressions and engagements. Below you can fine the list of additional fields that you can provide to both `trackEngagement` and `trackImpression` methods.
+
+### boost 
+
+An integer that multiplies the score of the interaction (eg. 2 or -1)
 
 ### features 
 
@@ -103,26 +114,14 @@ eg.
 
 A string representing the location of the content (eg. 'notification_feed')
 
-### feed_id 
-
-A string representing the origin feed for the content
-
-### boost 
-
-An integer that multiplies the score of the interaction (eg. 2 or -1)
-
 ### position 
 
 When tracking interactions with content, it might be useful to provide the oridinal position (eg. 2)
 
-### foreign_id
+### location 
 
-The ID for the content as you store that in your database (or/and on Stream's feeds) (eg. 'user:42') (engagement only)
+A string representing the location of the content (eg. 'notification_feed')
 
-### foreign_ids
+### location 
 
-An Array of foreign_ids (impressions only)
-
-### label
-
-The event identifier (eg. click, share, ...) this field is mandatory for every engagement event
+A string representing the location of the content (eg. 'notification_feed')
