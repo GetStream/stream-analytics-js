@@ -177,6 +177,7 @@ describe('analytics client integration', function () {
     var analytics = new StreamAnalytics({'apiKey': apiKey, 'token': token});
     analytics.setUser('tommaso');
     analytics.trackEngagement({
+        'foreign_id': '1',
         'label': 'click',
         'features': [
             {'group':'topic', 'value':'js'},
