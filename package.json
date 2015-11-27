@@ -1,6 +1,6 @@
 {
   "name": "stream-analytics",
-  "version": "2.0.0-alpha",
+  "version": "2.0.0",
   "description": "Analytics JS client for GetStream.io.",
   "main": "src/stream-analytics.js",
   "scripts": {
@@ -37,7 +37,7 @@
     "crypto": false,
     "fs": false,
     "net": false,
-    "tls": false 
+    "tls": false
   },
   "devDependencies": {
     "async": "^1.4.2",
