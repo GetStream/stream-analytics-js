@@ -1,8 +1,8 @@
 {
-  "name": "stream-analytics-js",
+  "name": "stream-analytics",
   "homepage": "https://github.com/GetStream/stream-analytics-js",
   "description": "GetStream JS analytics client",
-  "main": "dist/js_min/stream-analytics.js",
+  "main": "dist/js/stream-analytics.min.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:GetStream/stream-analytics-js.git"
@@ -10,7 +10,7 @@
   "keywords": [
     "stream",
     "getstream",
-    "getstream-analytics"
+    "stream-analytics"
   ],
   "license": "Apache-2.0",
   "ignore": [

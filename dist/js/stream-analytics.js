@@ -70,31 +70,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	  this.configure(config || {});
 	};
 
-	StreamAnalytics.prototype.configure = function(cfg){
+	StreamAnalytics.prototype.configure = function(cfg) {
 	  this.client = new Client(cfg);
 	  this.userId = null;
 	};
 
-	StreamAnalytics.prototype.setUser = function(userId){
+	StreamAnalytics.prototype.setUser = function(userId) {
 	  this.userId = userId;
 	};
 
-	StreamAnalytics.prototype._sendEventFactory = function(resourceName, dataSpec){
-	  return function(eventData, callback){
-	    var errors = validate(eventData, dataSpec, {flatten: true});
-	    if (typeof(errors) === 'undefined') {
+	StreamAnalytics.prototype._sendEventFactory = function(resourceName, dataSpec) {
+	  return function(eventData, callback) {
+	    var errors = validate(eventData, dataSpec, {format: 'flat'});
+	    if (typeof (errors) === 'undefined') {
 	      this._sendEvent(resourceName, eventData, callback);
-	    } else if (typeof(callback) === 'function') {
+	    } else if (typeof (callback) === 'function') {
 	      callback(errors);
 	    }
 	  };
 	};
 
-	StreamAnalytics.prototype._sendEvent = function(resourceName, eventData, callback){
+	StreamAnalytics.prototype._sendEvent = function(resourceName, eventData, callback) {
 	  if (this._userId === null) {
 	    callback('userId was not set');
 	  }
-	  eventData.user_id = this.userId;
+
+	  eventData['user_id'] = this.userId;
 	  return this.client.send(resourceName, eventData, callback);
 	};
 
@@ -104,7 +105,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	StreamAnalytics.Client = Client;
 	StreamAnalytics.errors = errors;
 
-	if (typeof(window) !== "undefined")
+	if (typeof (window) !== 'undefined')
 	  __webpack_require__(9)(StreamAnalytics);
 
 	module.exports = StreamAnalytics;
@@ -114,18 +115,24 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(module) {//     Validate.js 0.6.1
-	//     (c) 2013-2015 Nicklas Ansman, 2013 Wrapp
-	//     Validate.js may be freely distributed under the MIT license.
-	//     For all details and documentation:
-	//     http://validatejs.org/
+	/* WEBPACK VAR INJECTION */(function(module) {/*!
+	 * validate.js 0.9.0
+	 *
+	 * (c) 2013-2015 Nicklas Ansman, 2013 Wrapp
+	 * Validate.js may be freely distributed under the MIT license.
+	 * For all details and documentation:
+	 * http://validatejs.org/
+	 */
 
 	(function(exports, module, define) {
 	  "use strict";
 
 	  // The main function that calls the validators specified by the constraints.
 	  // The options are the following:
-	  //   - flatten (boolean) - If `true` will return a flat array instead of an object.
+	  //   - format (string) - An option that controls how the returned value is formatted
+	  //     * flat - Returns a flat array of just the error messages
+	  //     * grouped - Returns the messages grouped by attribute (default)
+	  //     * detailed - Returns an array of the raw validation data
 	  //   - fullMessages (boolean) - If `true` (default) the attribute name is prepended to the error.
 	  //
 	  // Please note that the options are also passed to each validator.
@@ -151,7 +158,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // Copies over attributes from one or more sources to a single destination.
 	  // Very much similar to underscore's extend.
 	  // The first argument is the target object and the remaining arguments will be
-	  // used as targets.
+	  // used as sources.
 	  v.extend = function(obj) {
 	    [].slice.call(arguments, 1).forEach(function(source) {
 	      for (var attr in source) {
@@ -162,6 +169,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  v.extend(validate, {
+	    // This is the version of the library as a semver.
+	    // The toString function will allow it to be coerced into a string
+	    version: {
+	      major: 0,
+	      minor: 9,
+	      patch: 0,
+	      metadata: null,
+	      toString: function() {
+	        var version = v.format("%{major}.%{minor}.%{patch}", v.version);
+	        if (!v.isEmpty(v.version.metadata)) {
+	          version += "+" + v.version.metadata;
+	        }
+	        return version;
+	      }
+	    },
+
 	    // Below is the dependencies that are used in validate.js
 
 	    // The constructor of the Promise implementation.
@@ -169,12 +192,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // override this attribute to be the constructor of that promise.
 	    // Since jQuery promises aren't A+ compatible they won't work.
 	    Promise: typeof Promise !== "undefined" ? Promise : /* istanbul ignore next */ null,
-
-	    // If moment is used in node, browserify etc please set this attribute
-	    // like this: `validate.moment = require("moment");
-	    moment: typeof moment !== "undefined" ? moment : /* istanbul ignore next */ null,
-
-	    XDate: typeof XDate !== "undefined" ? XDate : /* istanbul ignore next */ null,
 
 	    EMPTY_STRING_REGEXP: /^\s*$/,
 
@@ -191,7 +208,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        , validatorOptions
 	        , error;
 
-	      if (v.isDomElement(attributes)) {
+	      if (v.isDomElement(attributes) || v.isJqueryElement(attributes)) {
 	        attributes = v.collectFormValues(attributes);
 	      }
 
@@ -225,8 +242,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	          }
 	          results.push({
 	            attribute: attr,
-	            error: validator.call(validator, value, validatorOptions, attr,
-	                                  attributes)
+	            value: value,
+	            validator: validatorName,
+	            globalOptions: options,
+	            attributes: attributes,
+	            options: validatorOptions,
+	            error: validator.call(validator,
+	                value,
+	                validatorOptions,
+	                attr,
+	                attributes,
+	                options)
 	          });
 	        }
 	      }
@@ -236,28 +262,34 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    // Takes the output from runValidations and converts it to the correct
 	    // output format.
-	    processValidationResults: function(results, options) {
-	      var errors = {};
+	    processValidationResults: function(errors, options) {
+	      var attr;
 
-	      // This indexes the errors per attribute
-	      results.forEach(function(result) {
-	        var error = result.error
-	          , attribute = result.attribute;
+	      errors = v.pruneEmptyErrors(errors, options);
+	      errors = v.expandMultipleErrors(errors, options);
+	      errors = v.convertErrorMessages(errors, options);
 
-	        if (v.isString(error)) {
-	          error = [error];
-	        }
+	      switch (options.format || "grouped") {
+	        case "detailed":
+	          // Do nothing more to the errors
+	          break;
 
-	        if (error) {
-	          errors[attribute] = (errors[attribute] || []).concat(error);
-	        }
-	      });
+	        case "flat":
+	          errors = v.flattenErrorsToArray(errors);
+	          break;
 
-	      // Semi ugly way to check if the errors are empty, try iterating over
-	      // them and short circuit when something is found.
-	      for (var _ in errors) {
-	        return v.fullMessages(errors, options);
+	        case "grouped":
+	          errors = v.groupErrorsByAttribute(errors);
+	          for (attr in errors) {
+	            errors[attr] = v.flattenErrorsToArray(errors[attr]);
+	          }
+	          break;
+
+	        default:
+	          throw new Error(v.format("Unknown format %{format}", options));
 	      }
+
+	      return v.isEmpty(errors) ? undefined : errors;
 	    },
 
 	    // Runs the validations with support for promises.
@@ -266,23 +298,35 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // It can be called even if no validations returned a promise.
 	    async: function(attributes, constraints, options) {
 	      options = v.extend({}, v.async.options, options);
+
+	      var WrapErrors = options.wrapErrors || function(errors) {
+	        return errors;
+	      };
+
+	      // Removes unknown attributes
+	      if (options.cleanAttributes !== false) {
+	        attributes = v.cleanAttributes(attributes, constraints);
+	      }
+
 	      var results = v.runValidations(attributes, constraints, options);
 
 	      return new v.Promise(function(resolve, reject) {
 	        v.waitForResults(results).then(function() {
 	          var errors = v.processValidationResults(results, options);
 	          if (errors) {
-	            reject(errors);
+	            reject(new WrapErrors(errors, options, attributes, constraints));
 	          } else {
 	            resolve(attributes);
 	          }
-	        }).then(undefined, v.error);
+	        }, function(err) {
+	          reject(err);
+	        });
 	      });
 	    },
 
 	    single: function(value, constraints, options) {
 	      options = v.extend({}, v.single.options, options, {
-	        flatten: true,
+	        format: "flat",
 	        fullMessages: false
 	      });
 	      return v({single: value}, {single: constraints}, options);
@@ -295,7 +339,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // with the value returned from the promise.
 	    waitForResults: function(results) {
 	      // Create a sequence of all the results starting with a resolved promise.
-	      var promise = results.reduce(function(memo, result) {
+	      return results.reduce(function(memo, result) {
 	        // If this result isn't a promise skip it in the sequence.
 	        if (!v.isPromise(result.error)) {
 	          return memo;
@@ -303,22 +347,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        return memo.then(function() {
 	          return result.error.then(
-	            function() {
-	              result.error = null;
+	            function(error) {
+	              result.error = error || null;
 	            },
 	            function(error) {
-	              // If for some reason the validator promise was rejected but no
-	              // error was specified.
-	              if (!error) {
-	                v.warn("Validator promise was rejected but didn't return an error");
+	              if (error instanceof Error) {
+	                throw error;
 	              }
+	              v.error("Rejecting promises with the result is deprecated. Please use the resolve callback instead.");
 	              result.error = error;
 	            }
-	          ).then(undefined, v.error);
-	        }).then(undefined, v.error);
+	          );
+	        });
 	      }, new v.Promise(function(r) { r(); })); // A resolved promise
-
-	      return promise.then(undefined, v.error);
 	    },
 
 	    // If the given argument is a call: function the and: function return the value
@@ -359,6 +400,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return obj === Object(obj);
 	    },
 
+	    // Simply checks if the object is an instance of a date
+	    isDate: function(obj) {
+	      return obj instanceof Date;
+	    },
+
 	    // Returns false if the object is `null` of `undefined`
 	    isDefined: function(obj) {
 	      return obj !== null && obj !== undefined;
@@ -368,6 +414,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // function is considered a promise.
 	    isPromise: function(p) {
 	      return !!p && v.isFunction(p.then);
+	    },
+
+	    isJqueryElement: function(o) {
+	      return o && v.isString(o.jquery);
 	    },
 
 	    isDomElement: function(o) {
@@ -419,6 +469,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return value.length === 0;
 	      }
 
+	      // Dates have no attributes but aren't empty
+	      if (v.isDate(value)) {
+	        return false;
+	      }
+
 	      // If we find at least one property we consider it non empty
 	      if (v.isObject(value)) {
 	        for (attr in value) {
@@ -438,6 +493,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // prefix it with % like this `Foo: %%{foo}` and it will be returned
 	    // as `"Foo: %{foo}"`
 	    format: v.extend(function(str, vals) {
+	      if (!v.isString(str)) {
+	        return str;
+	      }
 	      return str.replace(v.format.FORMAT_REGEXP, function(m0, m1, m2) {
 	        if (m1 === '%') {
 	          return "%{" + m2 + "}";
@@ -454,6 +512,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // Prettifying means replacing [.\_-] with spaces as well as splitting
 	    // camel case words.
 	    prettify: function(str) {
+	      if (v.isNumber(str)) {
+	        // If there are more than 2 decimals round it to two
+	        if ((str * 100) % 1 === 0) {
+	          return "" + str;
+	        } else {
+	          return parseFloat(Math.round(str * 100) / 100).toFixed(2);
+	        }
+	      }
+
+	      if (v.isArray(str)) {
+	        return str.map(function(s) { return v.prettify(s); }).join(", ");
+	      }
+
+	      if (v.isObject(str)) {
+	        return str.toString();
+	      }
+
+	      // Ensure the string is actually a string
+	      str = "" + str;
+
 	      return str
 	        // Splits keys separated by periods
 	        .replace(/([^\s])\.([^\s])/g, '$1 $2')
@@ -466,6 +544,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	          return "" + m1 + " " + m2.toLowerCase();
 	        })
 	        .toLowerCase();
+	    },
+
+	    stringifyValue: function(value) {
+	      return v.prettify(value);
 	    },
 
 	    isString: function(value) {
@@ -486,8 +568,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return value in obj;
 	    },
 
-	    getDeepObjectValue: function(obj, keypath) {
-	      if (!v.isObject(obj) || !v.isString(keypath)) {
+	    forEachKeyInKeypath: function(object, keypath, callback) {
+	      if (!v.isString(keypath)) {
 	        return undefined;
 	      }
 
@@ -501,11 +583,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (escape) {
 	              escape = false;
 	              key += '.';
-	            } else if (key in obj) {
-	              obj = obj[key];
-	              key = "";
 	            } else {
-	              return undefined;
+	              object = callback(object, key, false);
+	              key = "";
 	            }
 	            break;
 
@@ -525,11 +605,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	      }
 
-	      if (v.isDefined(obj) && key in obj) {
-	        return obj[key];
-	      } else {
+	      return callback(object, key, true);
+	    },
+
+	    getDeepObjectValue: function(obj, keypath) {
+	      if (!v.isObject(obj)) {
 	        return undefined;
 	      }
+
+	      return v.forEachKeyInKeypath(obj, keypath, function(obj, key) {
+	        if (v.isObject(obj)) {
+	          return obj[key];
+	        }
+	      });
 	    },
 
 	    // This returns an object with all the values of the form.
@@ -545,13 +633,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        , inputs
 	        , value;
 
+	      if (v.isJqueryElement(form)) {
+	        form = form[0];
+	      }
+
 	      if (!form) {
 	        return values;
 	      }
 
 	      options = options || {};
 
-	      inputs = form.querySelectorAll("input[name]");
+	      inputs = form.querySelectorAll("input[name], textarea[name]");
 	      for (i = 0; i < inputs.length; ++i) {
 	        input = inputs.item(i);
 
@@ -561,7 +653,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        value = v.sanitizeFormValue(input.value, options);
 	        if (input.type === "number") {
-	          value = +value;
+	          value = value ? +value : null;
 	        } else if (input.type === "checkbox") {
 	          if (input.attributes.value) {
 	            if (!input.checked) {
@@ -606,43 +698,139 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return str[0].toUpperCase() + str.slice(1);
 	    },
 
-	    fullMessages: function(errors, options) {
+	    // Remove all errors who's error attribute is empty (null or undefined)
+	    pruneEmptyErrors: function(errors) {
+	      return errors.filter(function(error) {
+	        return !v.isEmpty(error.error);
+	      });
+	    },
+
+	    // In
+	    // [{error: ["err1", "err2"], ...}]
+	    // Out
+	    // [{error: "err1", ...}, {error: "err2", ...}]
+	    //
+	    // All attributes in an error with multiple messages are duplicated
+	    // when expanding the errors.
+	    expandMultipleErrors: function(errors) {
+	      var ret = [];
+	      errors.forEach(function(error) {
+	        // Removes errors without a message
+	        if (v.isArray(error.error)) {
+	          error.error.forEach(function(msg) {
+	            ret.push(v.extend({}, error, {error: msg}));
+	          });
+	        } else {
+	          ret.push(error);
+	        }
+	      });
+	      return ret;
+	    },
+
+	    // Converts the error mesages by prepending the attribute name unless the
+	    // message is prefixed by ^
+	    convertErrorMessages: function(errors, options) {
 	      options = options || {};
 
-	      var ret = options.flatten ? [] : {}
-	        , attr;
+	      var ret = [];
+	      errors.forEach(function(errorInfo) {
+	        var error = v.result(errorInfo.error,
+	            errorInfo.value,
+	            errorInfo.attribute,
+	            errorInfo.options,
+	            errorInfo.attributes,
+	            errorInfo.globalOptions);
 
-	      if (!errors) {
+	        if (!v.isString(error)) {
+	          ret.push(errorInfo);
+	          return;
+	        }
+
+	        if (error[0] === '^') {
+	          error = error.slice(1);
+	        } else if (options.fullMessages !== false) {
+	          error = v.capitalize(v.prettify(errorInfo.attribute)) + " " + error;
+	        }
+	        error = error.replace(/\\\^/g, "^");
+	        error = v.format(error, {value: v.stringifyValue(errorInfo.value)});
+	        ret.push(v.extend({}, errorInfo, {error: error}));
+	      });
+	      return ret;
+	    },
+
+	    // In:
+	    // [{attribute: "<attributeName>", ...}]
+	    // Out:
+	    // {"<attributeName>": [{attribute: "<attributeName>", ...}]}
+	    groupErrorsByAttribute: function(errors) {
+	      var ret = {};
+	      errors.forEach(function(error) {
+	        var list = ret[error.attribute];
+	        if (list) {
+	          list.push(error);
+	        } else {
+	          ret[error.attribute] = [error];
+	        }
+	      });
+	      return ret;
+	    },
+
+	    // In:
+	    // [{error: "<message 1>", ...}, {error: "<message 2>", ...}]
+	    // Out:
+	    // ["<message 1>", "<message 2>"]
+	    flattenErrorsToArray: function(errors) {
+	      return errors.map(function(error) { return error.error; });
+	    },
+
+	    cleanAttributes: function(attributes, whitelist) {
+	      function whitelistCreator(obj, key, last) {
+	        if (v.isObject(obj[key])) {
+	          return obj[key];
+	        }
+	        return (obj[key] = last ? true : {});
+	      }
+
+	      function buildObjectWhitelist(whitelist) {
+	        var ow = {}
+	          , lastObject
+	          , attr;
+	        for (attr in whitelist) {
+	          if (!whitelist[attr]) {
+	            continue;
+	          }
+	          v.forEachKeyInKeypath(ow, attr, whitelistCreator);
+	        }
+	        return ow;
+	      }
+
+	      function cleanRecursive(attributes, whitelist) {
+	        if (!v.isObject(attributes)) {
+	          return attributes;
+	        }
+
+	        var ret = v.extend({}, attributes)
+	          , w
+	          , attribute;
+
+	        for (attribute in attributes) {
+	          w = whitelist[attribute];
+
+	          if (v.isObject(w)) {
+	            ret[attribute] = cleanRecursive(ret[attribute], w);
+	          } else if (!w) {
+	            delete ret[attribute];
+	          }
+	        }
 	        return ret;
 	      }
 
-	      function processErrors(attr, errors) {
-	        errors.forEach(function(error) {
-	          if (error[0] === '^') {
-	            error = error.slice(1);
-	          } else if (options.fullMessages !== false) {
-	            error = v.format("%{attr} %{message}", {
-	              attr: v.capitalize(v.prettify(attr)),
-	              message: error
-	            });
-	          }
-	          error = error.replace(/\\\^/g, "^");
-	          // If flatten is true a flat array is returned.
-	          if (options.flatten) {
-	            ret.push(error);
-	          }
-	          else {
-	            (ret[attr] || (ret[attr] = [])).push(error);
-	          }
-	        });
+	      if (!v.isObject(whitelist) || !v.isObject(attributes)) {
+	        return {};
 	      }
 
-	      // Converts the errors of object of the format
-	      // {attr: [<error>, <error>, ...]} to contain the attribute name.
-	      for (attr in errors) {
-	        processErrors(attr, errors[attr]);
-	      }
-	      return ret;
+	      whitelist = buildObjectWhitelist(whitelist);
+	      return cleanRecursive(attributes, whitelist);
 	    },
 
 	    exposeModule: function(validate, root, exports, module, define) {
@@ -651,24 +839,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	          exports = module.exports = validate;
 	        }
 	        exports.validate = validate;
-	      }
-	      else {
+	      } else {
 	        root.validate = validate;
 	        if (validate.isFunction(define) && define.amd) {
-	          define("validate", [], function () { return validate; });
+	          define([], function () { return validate; });
 	        }
 	      }
 	    },
 
 	    warn: function(msg) {
 	      if (typeof console !== "undefined" && console.warn) {
-	        console.warn(msg);
+	        console.warn("[validate.js] " + msg);
 	      }
 	    },
 
 	    error: function(msg) {
 	      if (typeof console !== "undefined" && console.error) {
-	        console.error(msg);
+	        console.error("[validate.js] " + msg);
 	      }
 	    }
 	  });
@@ -755,13 +942,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      // If it's not a number we shouldn't continue since it will compare it.
 	      if (!v.isNumber(value)) {
-	        return options.message || this.notValid || "is not a number";
+	        return options.message || options.notValid || this.notValid || "is not a number";
 	      }
 
 	      // Same logic as above, sort of. Don't bother with comparisons if this
 	      // doesn't pass.
 	      if (options.onlyInteger && !v.isInteger(value)) {
-	        return options.message || this.notInteger  || "must be an integer";
+	        return options.message || options.notInteger || this.notInteger  || "must be an integer";
 	      }
 
 	      for (name in checks) {
@@ -770,8 +957,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	          // This picks the default message if specified
 	          // For example the greaterThan check uses the message from
 	          // this.notGreaterThan so we capitalize the name and prepend "not"
-	          var msg = this["not" + v.capitalize(name)] ||
-	            "must be %{type} %{count}";
+	          var key = "not" + v.capitalize(name);
+	          var msg = options[key] || this[key] || "must be %{type} %{count}";
 
 	          errors.push(v.format(msg, {
 	            count: count,
@@ -781,10 +968,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      if (options.odd && value % 2 !== 1) {
-	        errors.push(this.notOdd || "must be odd");
+	        errors.push(options.notOdd || this.notOdd || "must be odd");
 	      }
 	      if (options.even && value % 2 !== 0) {
-	        errors.push(this.notEven || "must be even");
+	        errors.push(options.notEven || this.notEven || "must be even");
 	      }
 
 	      if (errors.length) {
@@ -792,6 +979,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    },
 	    datetime: v.extend(function(value, options) {
+	      if (!v.isFunction(this.parse) || !v.isFunction(this.format)) {
+	        throw new Error("Both the parse and format functions needs to be set to use the datetime/date validator");
+	      }
+
 	      // Empty values are fine
 	      if (v.isEmpty(value)) {
 	        return;
@@ -828,38 +1019,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return options.message || errors;
 	      }
 	    }, {
-	      // This is the function that will be used to convert input to the number
-	      // of millis since the epoch.
-	      // It should return NaN if it's not a valid date.
-	      parse: function(value, options) {
-	        if (v.isFunction(v.XDate)) {
-	          return new v.XDate(value, true).getTime();
-	        }
-
-	        if (v.isDefined(v.moment)) {
-	          return +v.moment.utc(value);
-	        }
-
-	        throw new Error("Neither XDate or moment.js was found");
-	      },
-	      // Formats the given timestamp. Uses ISO8601 to format them.
-	      // If options.dateOnly is true then only the year, month and day will be
-	      // output.
-	      format: function(date, options) {
-	        var format = options.dateFormat;
-
-	        if (v.isFunction(v.XDate)) {
-	          format = format || (options.dateOnly ? "yyyy-MM-dd" : "yyyy-MM-dd HH:mm:ss");
-	          return new XDate(date, true).toString(format);
-	        }
-
-	        if (v.isDefined(v.moment)) {
-	          format = format || (options.dateOnly ? "YYYY-MM-DD" : "YYYY-MM-DD HH:mm:ss");
-	          return v.moment.utc(date).format(format);
-	        }
-
-	        throw new Error("Neither XDate or moment.js was found");
-	      }
+	      parse: null,
+	      format: null
 	    }),
 	    date: function(value, options) {
 	      options = v.extend({}, options, {dateOnly: true});
@@ -965,6 +1126,73 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!comparator(value, otherValue, options, attribute, attributes)) {
 	        return v.format(message, {attribute: v.prettify(options.attribute)});
 	      }
+	    },
+
+	    // A URL validator that is used to validate URLs with the ability to
+	    // restrict schemes and some domains.
+	    url: function(value, options) {
+	      if (v.isEmpty(value)) {
+	        return;
+	      }
+
+	      options = v.extend({}, this.options, options);
+
+	      var message = options.message || this.message || "is not a valid url"
+	        , schemes = options.schemes || this.schemes || ['http', 'https']
+	        , allowLocal = options.allowLocal || this.allowLocal || false;
+
+	      if (!v.isString(value)) {
+	        return message;
+	      }
+
+	      // https://gist.github.com/dperini/729294
+	      var regex =
+	        "^" +
+	          // schemes
+	          "(?:(?:" + schemes.join("|") + "):\\/\\/)" +
+	          // credentials
+	          "(?:\\S+(?::\\S*)?@)?";
+
+	      regex += "(?:";
+
+	      var hostname =
+	          "(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)" +
+	          "(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*" +
+	          "(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))";
+
+	      // This ia a special case for the localhost hostname
+	      if (allowLocal) {
+	        hostname = "(?:localhost|" + hostname + ")";
+	      } else {
+	          // private & local addresses
+	          regex +=
+	              "(?!10(?:\\.\\d{1,3}){3})" +
+	              "(?!127(?:\\.\\d{1,3}){3})" +
+	              "(?!169\\.254(?:\\.\\d{1,3}){2})" +
+	              "(?!192\\.168(?:\\.\\d{1,3}){2})" +
+	              "(?!172" +
+	                "\\.(?:1[6-9]|2\\d|3[0-1])" +
+	                "(?:\\.\\d{1,3})" +
+	              "{2})";
+	      }
+
+	      // reserved addresses
+	      regex +=
+	          "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" +
+	          "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" +
+	          "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" +
+	        "|" +
+	          hostname +
+	          // port number
+	          "(?::\\d{2,5})?" +
+	          // path
+	          "(?:\\/[^\\s]*)?" +
+	        "$";
+
+	      var PATTERN = new RegExp(regex, 'i');
+	      if (!PATTERN.exec(value)) {
+	        return message;
+	      }
 	    }
 	  };
 
@@ -1005,55 +1233,55 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var validate = __webpack_require__(2);
 
-	validate.validators.features = function(value, options, key, attributes) {
-	    if (typeof(value) === "undefined" || value === null)
-	        return value;
-	    if (!validate.isArray(value))
-	        return 'needs to be a list of features';
-	    for (var i = value.length - 1; i >= 0; i--) {
-	        if (validate(value[i], feature))
-	            return 'should have group and value keys';
-	    }
+	validate.validators.features = function(value/*, options, key, attributes */) {
+	  if (typeof (value) === 'undefined' || value === null)
+	      return value;
+	  if (!validate.isArray(value))
+	      return 'needs to be a list of features';
+	  for (var i = value.length - 1; i >= 0; i--) {
+	    if (validate(value[i], feature))
+	        return 'should have group and value keys';
+	  }
 	};
 
-	validate.validators.isArray = function(value, options, key, attributes) {
-	    if (!validate.isArray(value))
-	        return 'needs to be an array';
+	validate.validators.isArray = function(value/*, options, key, attributes */) {
+	  if (!validate.isArray(value))
+	      return 'needs to be an array';
 	};
 
 	var feature = {
-	    group: {presence: true},
-	    value: {presence: true}
+	  group: {presence: true},
+	  value: {presence: true},
 	};
 
 	var engagement = {
-	    label: {presence: true},
-	    boost: {
-	        presence: false,
-	        numericality: true
-	    },
-	    features: {
-	        features: true
-	    }
+	  'label': {presence: true},
+	  'boost': {
+	    presence: false,
+	    numericality: true,
+	  },
+	  'features': {
+	    features: true,
+	  },
 	};
 
 	var impression = {
-	    foreign_ids: {
-	        presence: true,
-	        isArray: true
-	    },
-	    boost: {
-	        presence: false,
-	        numericality: true
-	    },
-	    features: {
-	        features: true
-	    }
+	  'foreign_ids': {
+	    presence: true,
+	    isArray: true,
+	  },
+	  'boost': {
+	    presence: false,
+	    numericality: true,
+	  },
+	  'features': {
+	    features: true,
+	  },
 	};
 
 	module.exports = {
-	    engagementSpec: engagement,
-	    impressionSpec: impression
+	  engagementSpec: engagement,
+	  impressionSpec: impression,
 	};
 
 
@@ -1063,34 +1291,36 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var errors = module.exports;
 
-	var canCapture = ( typeof Error.captureStackTrace === 'function');
+	var canCapture = (typeof Error.captureStackTrace === 'function');
 	var canStack = !!(new Error()).stack;
 
 	function ErrorAbstract(msg, constructor) {
-	    this.message = msg;
+	  this.message = msg;
 
-	    Error.call(this, this.message);
+	  Error.call(this, this.message);
 
-	    if (canCapture) {
-	        Error.captureStackTrace(this, constructor);
-	    } else if (canStack) {
-	        this.stack = (new Error()).stack;
-	    } else {
-	        this.stack = '';
-	    }
+	  if (canCapture) {
+	    Error.captureStackTrace(this, constructor);
+	  } else if (canStack) {
+	    this.stack = (new Error()).stack;
+	  } else {
+	    this.stack = '';
+	  }
 	}
 
 	errors._Abstract = ErrorAbstract;
 	ErrorAbstract.prototype = new Error();
 
 	errors.MissingUserId = function MissingUserId(msg) {
-	    ErrorAbstract.call(this, msg);
+	  ErrorAbstract.call(this, msg);
 	};
+
 	errors.MissingUserId.prototype = new ErrorAbstract();
 
 	errors.MisconfiguredClient = function MisconfiguredClient(msg) {
-	    ErrorAbstract.call(this, msg);
+	  ErrorAbstract.call(this, msg);
 	};
+
 	errors.MisconfiguredClient.prototype = new ErrorAbstract();
 
 
@@ -1102,45 +1332,51 @@ return /******/ (function(modules) { // webpackBootstrap
 	var errors = __webpack_require__(6);
 
 	var Client = function() {
-	    this.initialize.apply(this, arguments);
+	  this.initialize.apply(this, arguments);
 	};
 
 	Client.prototype = {
-	    baseUrl: 'https://analytics.getstream.io/analytics/v1.0/',
-	    // baseUrl: 'http://localhost:8000/analytics/v1.0/',
-	    initialize: function(cfg) {
-	        var configs = cfg || {};
-	        if (!configs.apiKey || !configs.token) {
-	            throw new errors.MisconfiguredClient('the client must be initialized with apiKey and token');
-	        }
-	        this.apiKey = configs.apiKey;
-	        this.token = configs.token;
-	    },
-	    send: function(resourceName, eventData, callback) {
-	        return this.post({'url':this.baseUrl+resourceName+'/','body':eventData}, callback);
-	    },
-	    userAgent: function() {
-	        var description = (this.node) ? 'node' : 'browser';
-	        var version = 'unknown';
-	        return 'stream-javascript-client-' + description + '-' + version;
-	    },
-	    enrichKwargs: function(kwargs) {
-	        if (kwargs.qs === undefined) {
-	            kwargs.qs = {};
-	        }
-	        kwargs.qs.api_key = this.apiKey;
-	        kwargs.json = true;
-	        kwargs.headers = {};
-	        kwargs.headers['stream-auth-type'] = 'jwt';
-	        kwargs.headers.Authorization = this.token;
-	        kwargs.headers['X-Stream-Client'] = this.userAgent();
-	        return kwargs;
-	    },
-	    post: function(kwargs, callback) {
-	        kwargs = this.enrichKwargs(kwargs);
-	        kwargs.method = 'POST';
-	        return request(kwargs, callback);
+	  baseUrl: 'https://analytics.getstream.io/analytics/v1.0/',
+	  // baseUrl: 'http://localhost:8000/analytics/v1.0/',
+	  initialize: function(cfg) {
+	    var configs = cfg || {};
+	    if (!configs.apiKey || !configs.token) {
+	      throw new errors.MisconfiguredClient('the client must be initialized with apiKey and token');
 	    }
+
+	    this.apiKey = configs.apiKey;
+	    this.token = configs.token;
+	  },
+
+	  send: function(resourceName, eventData, callback) {
+	    return this.post({'url':this.baseUrl + resourceName + '/', 'body':eventData}, callback);
+	  },
+
+	  userAgent: function() {
+	    var description = (this.node) ? 'node' : 'browser';
+	    var version = 'unknown';
+	    return 'stream-javascript-client-' + description + '-' + version;
+	  },
+
+	  enrichKwargs: function(kwargs) {
+	    if (kwargs.qs === undefined) {
+	      kwargs.qs = {};
+	    }
+
+	    kwargs.qs['api_key'] = this.apiKey;
+	    kwargs.json = true;
+	    kwargs.headers = {};
+	    kwargs.headers['stream-auth-type'] = 'jwt';
+	    kwargs.headers.Authorization = this.token;
+	    kwargs.headers['X-Stream-Client'] = this.userAgent();
+	    return kwargs;
+	  },
+
+	  post: function(kwargs, callback) {
+	    kwargs = this.enrichKwargs(kwargs);
+	    kwargs.method = 'POST';
+	    return request(kwargs, callback);
+	  },
 	};
 
 	module.exports = Client;
@@ -1350,6 +1586,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  xhr.open(options.method, options.uri, true) // asynchronous
 	  if(is_cors)
 	    xhr.withCredentials = !! options.withCredentials
+
+	  for (var key in options.headers)
+	    xhr.setRequestHeader(key, options.headers[key])
+
 	  xhr.send(options.body)
 	  return xhr
 
@@ -1361,8 +1601,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    if(xhr.readyState === XHR.OPENED) {
 	      request.log.debug('Request started', {'id':xhr.id})
-	      for (var key in options.headers)
-	        xhr.setRequestHeader(key, options.headers[key])
 	    }
 
 	    else if(xhr.readyState === XHR.HEADERS_RECEIVED)
@@ -1632,7 +1870,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var each = __webpack_require__(10);
 
-	module.exports = function(StreamAnalytics){
+	module.exports = function(StreamAnalytics) {
 	  var loaded = window.StreamAnalytics || null,
 	      cached = window._StreamAnalytics || null,
 	      clients;
@@ -1640,9 +1878,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  if (loaded && cached) {
 	    clients = cached.clients || {};
 
-	    each(clients, function(client, id){
+	    each(clients, function(client/*, id */) {
 
-	      each(StreamAnalytics.prototype, function(method, key){
+	      each(StreamAnalytics.prototype, function(method, key) {
 	        loaded.prototype[key] = method;
 	      });
 
@@ -1658,25 +1896,25 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      // Send Queued Events
 	      if (client._trackImpression) {
-	        each(client._trackImpression, function(obj){
+	        each(client._trackImpression, function(obj) {
 	          client.trackImpression.apply(client, obj);
 	        });
 	      }
 
 	      // Send Queued Events
 	      if (client._trackEngagement) {
-	        each(client._trackEngagement, function(obj){
+	        each(client._trackEngagement, function(obj) {
 	          client.trackEngagement.apply(client, obj);
 	        });
 	      }
 
 	      // unset config
-	      each(["_config", "_setUser", "_trackEngagement", "_trackImpression"], function(name){
+	      each(['_config', '_setUser', '_trackEngagement', '_trackImpression'], function(name) {
 	        if (client[name]) {
 	          client[name] = undefined;
-	          try{
+	          try {
 	            delete client[name];
-	          } catch(e){}
+	          } catch (e) {}
 	        }
 	      });
 
@@ -1686,39 +1924,43 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  window._StreamAnalytics = undefined;
 	  try {
-	    delete window[_StreamAnalytics]
-	  } catch(e) {}
+	    delete window['_StreamAnalytics'];
+	  } catch (e) {}
 	};
+
 
 /***/ },
 /* 10 */
 /***/ function(module, exports) {
 
-	module.exports = function(o, cb, s){
+	module.exports = function(o, cb, s) {
 	  var n;
-	  if (!o){
+	  if (!o) {
 	    return 0;
 	  }
+
 	  s = !s ? o : s;
-	  if (o instanceof Array){
+	  if (o instanceof Array) {
 	    // Indexed arrays, needed for Safari
-	    for (n=0; n<o.length; n++) {
-	      if (cb.call(s, o[n], n, o) === false){
+	    for (n = 0; n < o.length; n++) {
+	      if (cb.call(s, o[n], n, o) === false) {
 	        return 0;
 	      }
 	    }
 	  } else {
 	    // Hashtables
-	    for (n in o){
+	    for (n in o) {
 	      if (o.hasOwnProperty(n)) {
-	        if (cb.call(s, o[n], n, o) === false){
+	        if (cb.call(s, o[n], n, o) === false) {
 	          return 0;
 	        }
 	      }
 	    }
 	  }
+
 	  return 1;
 	};
+
 
 /***/ }
 /******/ ])

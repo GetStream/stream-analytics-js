@@ -17,9 +17,19 @@ The best way to add the client to your application is to load it asyncronously. 
 ```
 
 
-### For Angular/Ember/... apps that use webpack or browserify
+### Using CommonJS modules
 
-TODO: explain the steps to do that
+In your project directory run:
+
+```
+npm install stream-analytics --save
+```
+
+To use the client in your project require it by using the package name:
+
+```
+var StreamAnalytics = require('stream-analytics');
+```
 
 ## Configure an instance for your project
 

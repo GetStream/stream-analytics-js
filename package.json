@@ -4,7 +4,11 @@
   "description": "Analytics JS client for GetStream.io.",
   "main": "src/stream-analytics.js",
   "scripts": {
-    "test": "gulp test"
+    "test": "gulp test",
+    "build": "gulp build",
+    "preversion": "npm test",
+    "version": "npm run build && git add -A dist",
+    "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",

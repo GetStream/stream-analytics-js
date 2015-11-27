@@ -95,9 +95,9 @@ gulp.task("build:webpack", function(callback) {
 });
 
 gulp.task("build:optimize", function(callback) {
-  gulp.src('./dist/js/getstream-analytics.js')
+  gulp.src('./dist/js/stream-analytics.js')
   .pipe(uglify())
-  .pipe(rename('getstream-analytics.min.js'))
+  .pipe(rename('stream-analytics.min.js'))
   .pipe(gulp.dest('./dist/js/'));
 });
 
@@ -116,9 +116,9 @@ function awsPublisher() {
   });
 }
 
-gulp.task('deploy', ['build', 'aws']);
+gulp.task('deploy', ['build', 's3publish']);
 
-gulp.task('aws', ['build'], function() {
+gulp.task('s3publish', ['build'], function() {
   var publisher = awsPublisher();
   var cacheLife = (1000 * 60 * 60 * 24 * 365);
   var headers = {
@@ -127,8 +127,8 @@ gulp.task('aws', ['build'], function() {
   };
 
   return gulp.src([
-      './dist/js/getstream-analytics.js',
-      './dist/js/getstream-analytics.min.js'
+      './dist/js/stream-analytics.js',
+      './dist/js/stream-analytics.min.js'
     ])
     .pipe(rename(function(path) {
       path.dirname += '/' + pkg['version'];
