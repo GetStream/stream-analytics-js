@@ -116,8 +116,6 @@ function awsPublisher() {
   });
 }
 
-gulp.task('deploy', ['build', 's3publish']);
-
 gulp.task('s3publish', ['build'], function() {
   var publisher = awsPublisher();
   var cacheLife = (1000 * 60 * 60 * 24 * 365);
@@ -133,7 +131,6 @@ gulp.task('s3publish', ['build'], function() {
     .pipe(rename(function(path) {
       path.dirname += '/' + pkg['version'];
     }))
-    .pipe(aws.gzip())
     .pipe(publisher.publish(headers, { force: true }))
     .pipe(publisher.publish(headers, { force: true }))
     .pipe(publisher.cache())
