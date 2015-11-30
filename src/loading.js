@@ -6,7 +6,7 @@
   // StreamAnalytics stub
   x[t] = function(e) {
     x['_' + t].clients = x['_' + t].clients || {};
-    x['_' + t].clients[e.projectId] = this;
+    x['_' + t].clients[e.apiKey] = this;
     this._config = e;
   };
 
