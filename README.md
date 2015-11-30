@@ -27,7 +27,7 @@ npm install stream-analytics --save
 
 To use the client in your project require it by using the package name:
 
-```
+```js
 var StreamAnalytics = require('stream-analytics');
 ```
 
