@@ -1,7 +1,7 @@
-var validate = require('validate.js');
-var specs = require('./specs.js');
-var errors = require('./errors.js');
-var Client = require('./client.js');
+var validate = require('validate.js'),
+  specs = require('./specs.js'),
+  errors = require('./errors.js'),
+  Client = require('./client.js');
 
 var StreamAnalytics = function(config) {
   this.configure(config || {});
@@ -17,23 +17,24 @@ StreamAnalytics.prototype.setUser = function(userId) {
 };
 
 StreamAnalytics.prototype._sendEventFactory = function(resourceName, dataSpec) {
-  return function(eventData, callback) {
-    var errors = validate(eventData, dataSpec, {format: 'flat'});
-    if (typeof (errors) === 'undefined') {
-      this._sendEvent(resourceName, eventData, callback);
-    } else if (typeof (callback) === 'function') {
-      callback(errors);
+  // snakeCase
+  return function(eventData) {
+    var validationErrors = validate(eventData, dataSpec, {format: 'flat'});
+    if (typeof (validationErrors) !== 'undefined') {
+      throw new errors.InvalidInputData('event data is not valid', validationErrors);
     }
+
+    return this._sendEvent(resourceName, eventData);
   };
 };
 
-StreamAnalytics.prototype._sendEvent = function(resourceName, eventData, callback) {
-  if (this._userId === null) {
-    callback('userId was not set');
+StreamAnalytics.prototype._sendEvent = function(resourceName, eventData) {
+  if (this.userId === null) {
+    throw new errors.MissingUserId('userId was not set');
   }
 
   eventData['user_id'] = this.userId;
-  return this.client.send(resourceName, eventData, callback);
+  return this.client.send(resourceName, eventData);
 };
 
 StreamAnalytics.prototype.trackImpression = StreamAnalytics.prototype._sendEventFactory('impression', specs.impressionSpec);

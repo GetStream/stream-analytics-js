@@ -31,3 +31,15 @@ errors.MisconfiguredClient = function MisconfiguredClient(msg) {
 };
 
 errors.MisconfiguredClient.prototype = new ErrorAbstract();
+
+errors.InvalidInputData = function InvalidInputData(msg, errorInfo) {
+  ErrorAbstract.call(this, msg + ': \n\t' + errorInfo.join('\n\t'));
+};
+
+errors.InvalidInputData.prototype = new ErrorAbstract();
+
+errors.APIError = function APIError(msg) {
+  ErrorAbstract.call(this, msg);
+};
+
+errors.APIError.prototype = new ErrorAbstract();

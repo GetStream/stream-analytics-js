@@ -42,31 +42,33 @@ describe('StreamAnalytics', function () {
     done();
   });
 
-  it('should break on impressions without foreign_ids', function (done) {
+  it('should break on impressions without foreign_ids', function () {
     var analytics = new StreamAnalytics({
         'apiKey': 'key',
         'token': 'token'
     });
     var impression = {};
-    analytics.trackImpression(impression, function(errors) {
-        expect(errors).to.not.be.empty();
-        done();
+    expect(function() {
+        analytics.trackImpression(impression);
+    }).to.throwException(function(exception) {
+        expect(exception).to.be.a(errors.InvalidInputData);
     });
   });
 
-  it('should break on engagements without labels', function (done) {
+  it('should break on engagements without labels', function () {
     var analytics = new StreamAnalytics({
         'apiKey': 'key',
         'token': 'token'
     });
     var engagement = {};
-    analytics.trackEngagement(engagement, function(errors) {
-        expect(errors).to.not.be.empty();
-        done();
+    expect(function() {
+        analytics.trackEngagement(engagement);
+    }).to.throwException(function(exception) {
+        expect(exception).to.be.a(errors.InvalidInputData);
     });
   });
 
-  it('should validate engagements with wrong features', function (done) {
+  it('should validate engagements with wrong features', function () {
     var analytics = new StreamAnalytics({
         'apiKey': 'key',
         'token': 'token'
@@ -75,20 +77,25 @@ describe('StreamAnalytics', function () {
         'label':'messing_around',
         'features': 'asdasd'
     };
-    analytics.trackEngagement(engagement, function(errors) {
-        expect(errors).to.not.be.empty();
+    expect(function() {
+        analytics.trackEngagement(engagement);
+    }).to.throwException(function(exception) {
+        expect(exception).to.be.a(errors.InvalidInputData);
     });
+
     engagement = {
         'label':'messing_around',
         'features': [{'group': 'group', 'value': ''}]
     };
-    analytics.trackEngagement(engagement, function(errors) {
-        expect(errors).to.not.be.empty();
+    expect(function() {
+        analytics.trackEngagement(engagement);
+    }).to.throwException(function(exception) {
+        expect(exception).to.be.a(errors.InvalidInputData);
     });
-    done();
+
   });
 
-  it('should validate impressions with string foreign ids', function (done) {
+  it('should validate impressions with string foreign ids', function () {
     var analytics = new StreamAnalytics({
         'apiKey': 'key',
         'token': 'token'
@@ -96,10 +103,12 @@ describe('StreamAnalytics', function () {
     var impression = {
         'foreign_ids':'messing_around'
     };
-    analytics.trackImpression(impression, function(errors) {
-        expect(errors).to.not.be.empty();
+
+    expect(function() {
+        analytics.trackImpression(impression);
+    }).to.throwException(function(exception) {
+        expect(exception).to.be.a(errors.InvalidInputData);
     });
-    done();
   });
 
   it('should validate impressions with wrong features', function (done) {
@@ -111,15 +120,19 @@ describe('StreamAnalytics', function () {
         'foreign_ids':['messing_around'],
         'features': 'asdasd'
     };
-    analytics.trackImpression(impression, function(errors) {
-        expect(errors).to.not.be.empty();
+    expect(function() {
+        analytics.trackImpression(impression);
+    }).to.throwException(function(exception) {
+        expect(exception).to.be.a(errors.InvalidInputData);
     });
     impression = {
         'label':'messing_around',
         'features': [{'group': 'group', 'value': ''}]
     };
-    analytics.trackImpression(impression, function(errors) {
-        expect(errors).to.not.be.empty();
+    expect(function() {
+        analytics.trackImpression(impression);
+    }).to.throwException(function(exception) {
+        expect(exception).to.be.a(errors.InvalidInputData);
     });
     done();
   });
@@ -158,7 +171,7 @@ describe('analytics client', function () {
 describe('analytics client integration', function () {
   this.timeout(5000);
 
-  it('should store track impressions', function (done) {
+  it('should store track impressions', function () {
     var analytics = new StreamAnalytics({'apiKey': apiKey, 'token': token});
     analytics.setUser('tommaso');
     analytics.trackImpression({
@@ -167,13 +180,10 @@ describe('analytics client integration', function () {
             {'group':'topic', 'value':'js'},
             {'group':'user', 'value':'tommaso'}
         ]
-    }, function(error, response, body) {
-        expect(response.statusCode).to.eql(201);
-        done();
     });
   });
 
-  it('should store track engagements', function (done) {
+  it('should store track engagements', function () {
     var analytics = new StreamAnalytics({'apiKey': apiKey, 'token': token});
     analytics.setUser('tommaso');
     analytics.trackEngagement({
@@ -183,9 +193,6 @@ describe('analytics client integration', function () {
             {'group':'topic', 'value':'js'},
             {'group':'user', 'value':'tommaso'}
         ]
-    }, function(error, response, body) {
-        expect(response.statusCode).to.eql(201);
-        done();
     });
   });
 

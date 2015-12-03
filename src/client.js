@@ -7,7 +7,7 @@ var Client = function() {
 
 Client.prototype = {
   baseUrl: 'https://analytics.getstream.io/analytics/v1.0/',
-  // baseUrl: 'http://localhost:8000/analytics/v1.0/',
+
   initialize: function(cfg) {
     var configs = cfg || {};
     if (!configs.apiKey || !configs.token) {
@@ -18,7 +18,18 @@ Client.prototype = {
     this.token = configs.token;
   },
 
-  send: function(resourceName, eventData, callback) {
+  send: function(resourceName, eventData) {
+    var callback = function(err, response) {
+      if (err) {
+        throw err;
+      }
+
+      if (!/^2\d\d$/.test(response.statusCode)) {
+        throw new errors.APIError(response.responseText);
+      }
+
+    };
+
     return this.post({'url':this.baseUrl + resourceName + '/', 'body':eventData}, callback);
   },
 
