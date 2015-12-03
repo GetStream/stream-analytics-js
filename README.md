@@ -12,7 +12,7 @@ The best way to add the client to your application is to load it asyncronously. 
 
 ```html
 <script type="text/javascript">
-!function(a,b){a("StreamAnalytics","//d2j1fszo1axgmp.cloudfront.net/2.3.0/stream-analytics.min.js",b)}(function(a,b,c){var d,e,f;c["_"+a]={},c[a]=function(b){c["_"+a].clients=c["_"+a].clients||{},c["_"+a].clients[b.projectId]=this,this._config=b},d=["setUser","trackImpression","trackEngagement"];for(var g=0;g<d.length;g++){var h=d[g],i=function(a){return function(){return this["_"+a]=this["_"+a]||[],this["_"+a].push(arguments),this}};c[a].prototype[h]=i(h)}e=document.createElement("script"),e.async=!0,e.src=b,f=document.getElementsByTagName("script")[0],f.parentNode.insertBefore(e,f)},this);
+!function(t,e){t("StreamAnalytics","https://d2j1fszo1axgmp.cloudfront.net/2.4.0/stream-analytics.min.js",e)}(function(t,e,n){var s,i,r;n["_"+t]={},n[t]=function(e){n["_"+t].clients=n["_"+t].clients||{},n["_"+t].clients[e.apiKey]=this,this._config=e};var c=function(t){return function(){return this["_"+t]=this["_"+t]||[],this["_"+t].push(arguments),this}};s=["setUser","trackImpression","trackEngagement"];for(var a=0;a<s.length;a++){var o=s[a];n[t].prototype[o]=c(o)}i=document.createElement("script"),i.async=!0,i.src=e,r=document.getElementsByTagName("script")[0],r.parentNode.insertBefore(i,r)},this);
 </script>
 ```
 
@@ -63,8 +63,8 @@ Here's an example of how you would track the display of the "user:ChartMill" fee
 
 ```js
 var impression = {
-    foreign_ids: ['message:34349698', 'comment:414416008'],
-    feed_id: 'user:ChartMill'
+    'foreign_ids': ['message:34349698', 'comment:414416008'],
+    'feed_id': 'user:ChartMill'
 };
 
 // track impression for two messages presented to the user
@@ -85,17 +85,17 @@ An engagement event is composed by the following fields:
 ```js
 // Click on a message
 var engagement = {
-    label: 'click',
-    foreign_id: 'message:34349698',
-    feed_id: 'user:ChartMill'
+    'label': 'click',
+    'foreign_id': 'message:34349698',
+    'feed_id': 'user:ChartMill'
 };
 client.trackEngagement(engagement, function(){console.log(arguments);});
 
 // Share message
 var engagement = {
-    label: 'share',
-    foreign_id: 'message:34349698',
-    feed_id: 'user:ChartMill'
+    'label': 'share',
+    'foreign_id': 'message:34349698',
+    'feed_id': 'user:ChartMill'
 };
 client.trackEngagement(engagement);
 ```
