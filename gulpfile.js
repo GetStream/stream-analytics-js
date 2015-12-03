@@ -5,6 +5,7 @@ var gulp = require('gulp'),
     jscs = require('gulp-jscs'),
     stylish = require('gulp-jscs-stylish'),
     mocha = require('gulp-mocha'),
+    mochaPhantomJS = require('gulp-mocha-phantomjs'),
     async = require('async');
 
 var aws = require('gulp-awspublish'),
@@ -50,8 +51,14 @@ gulp.task('mocha', function () {
         .pipe(mocha());
 });
 
+gulp.task('phantom', function () {
+  return gulp
+    .src('./tests/async.html')
+    .pipe(mochaPhantomJS());
+});
+
 gulp.task('test', function () {
-  runSynchronized(['lint', 'mocha']);
+  runSynchronized(['lint', 'mocha', 'phantom']);
 });
 
 gulp.task('connect', function() {
