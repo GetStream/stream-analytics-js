@@ -21,7 +21,9 @@ module.exports = function(StreamAnalytics) {
 
       // Run setUser
       if (client._setUser) {
-        client.setUser.call(client, client._setUser);
+        each(client._setUser, function(args) {
+          client.setUser.apply(client, args);
+        });
       }
 
       // Send Queued Events

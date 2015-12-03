@@ -1,4 +1,6 @@
-(function(i, o) {i('StreamAnalytics', '../dist/js/getstream-analytics.js', o);}(function(t, h, x) {
+(function(i, o) {
+  i('StreamAnalytics', '../dist/js/stream-analytics.min.js', o);
+})(function(t, h, x) {
 
   var methods, script, tag;
   // _StreamAnalytics cache
@@ -29,4 +31,4 @@
   script.src = h;
   tag = document.getElementsByTagName('script')[0];
   tag.parentNode.insertBefore(script, tag);
-}, this));
+}, this);
