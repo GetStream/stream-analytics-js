@@ -61,10 +61,10 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var validate = __webpack_require__(2);
-	var specs = __webpack_require__(5);
-	var errors = __webpack_require__(6);
-	var Client = __webpack_require__(7);
+	var validate = __webpack_require__(2),
+	  specs = __webpack_require__(5),
+	  errors = __webpack_require__(6),
+	  Client = __webpack_require__(7);
 
 	var StreamAnalytics = function(config) {
 	  this.configure(config || {});
@@ -80,23 +80,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	StreamAnalytics.prototype._sendEventFactory = function(resourceName, dataSpec) {
-	  return function(eventData, callback) {
-	    var errors = validate(eventData, dataSpec, {format: 'flat'});
-	    if (typeof (errors) === 'undefined') {
-	      this._sendEvent(resourceName, eventData, callback);
-	    } else if (typeof (callback) === 'function') {
-	      callback(errors);
+	  // snakeCase
+	  return function(eventData) {
+	    var validationErrors = validate(eventData, dataSpec, {format: 'flat'});
+	    if (typeof (validationErrors) !== 'undefined') {
+	      throw new errors.InvalidInputData('event data is not valid', validationErrors);
 	    }
+
+	    return this._sendEvent(resourceName, eventData);
 	  };
 	};
 
-	StreamAnalytics.prototype._sendEvent = function(resourceName, eventData, callback) {
-	  if (this._userId === null) {
-	    callback('userId was not set');
+	StreamAnalytics.prototype._sendEvent = function(resourceName, eventData) {
+	  if (this.userId === null) {
+	    throw new errors.MissingUserId('userId was not set');
 	  }
 
 	  eventData['user_id'] = this.userId;
-	  return this.client.send(resourceName, eventData, callback);
+	  return this.client.send(resourceName, eventData);
 	};
 
 	StreamAnalytics.prototype.trackImpression = StreamAnalytics.prototype._sendEventFactory('impression', specs.impressionSpec);
@@ -1323,6 +1324,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	errors.MisconfiguredClient.prototype = new ErrorAbstract();
 
+	errors.InvalidInputData = function InvalidInputData(msg, errorInfo) {
+	  ErrorAbstract.call(this, msg + ': \n\t' + errorInfo.join('\n\t'));
+	};
+
+	errors.InvalidInputData.prototype = new ErrorAbstract();
+
+	errors.APIError = function APIError(msg) {
+	  ErrorAbstract.call(this, msg);
+	};
+
+	errors.APIError.prototype = new ErrorAbstract();
+
 
 /***/ },
 /* 7 */
@@ -1337,7 +1350,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	Client.prototype = {
 	  baseUrl: 'https://analytics.getstream.io/analytics/v1.0/',
-	  // baseUrl: 'http://localhost:8000/analytics/v1.0/',
+
 	  initialize: function(cfg) {
 	    var configs = cfg || {};
 	    if (!configs.apiKey || !configs.token) {
@@ -1348,7 +1361,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.token = configs.token;
 	  },
 
-	  send: function(resourceName, eventData, callback) {
+	  send: function(resourceName, eventData) {
+	    var callback = function(err, response) {
+	      if (err) {
+	        throw err;
+	      }
+
+	      if (!/^2\d\d$/.test(response.statusCode)) {
+	        throw new errors.APIError(response.responseText);
+	      }
+
+	    };
+
 	    return this.post({'url':this.baseUrl + resourceName + '/', 'body':eventData}, callback);
 	  },
 

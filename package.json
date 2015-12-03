@@ -1,6 +1,6 @@
 {
   "name": "stream-analytics",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Analytics JS client for GetStream.io.",
   "main": "src/stream-analytics.js",
   "scripts": {
