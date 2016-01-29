@@ -16,6 +16,11 @@ validate.validators.isArray = function(value/*, options, key, attributes */) {
       return 'needs to be an array';
 };
 
+validate.validators.isObject = function(value/*, options, key, attributes */) {
+  if (!validate.isArray(value))
+      return 'needs to be an array';
+};
+
 var feature = {
   group: {presence: true},
   value: {presence: true},
@@ -41,9 +46,9 @@ var impression = {
     presence: false,
     numericality: true,
   },
-  'features': {
-    features: true,
-  },
+  // 'features': {
+  //   isObject: true,
+  // },
 };
 
 module.exports = {
