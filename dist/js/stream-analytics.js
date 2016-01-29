@@ -1250,6 +1250,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return 'needs to be an array';
 	};
 
+	validate.validators.isObject = function(value/*, options, key, attributes */) {
+	  if (!validate.isArray(value))
+	      return 'needs to be an array';
+	};
+
 	var feature = {
 	  group: {presence: true},
 	  value: {presence: true},
@@ -1275,9 +1280,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    presence: false,
 	    numericality: true,
 	  },
-	  'features': {
-	    features: true,
-	  },
+	  // 'features': {
+	  //   isObject: true,
+	  // },
 	};
 
 	module.exports = {
