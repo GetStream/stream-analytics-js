@@ -28,6 +28,7 @@ var feature = {
 
 var engagement = {
   'label': {presence: true},
+  'content': {presence: true},
   'boost': {
     presence: false,
     numericality: true,
@@ -38,7 +39,7 @@ var engagement = {
 };
 
 var impression = {
-  'foreign_ids': {
+  'content_list': {
     presence: true,
     isArray: true,
   },
@@ -46,9 +47,9 @@ var impression = {
     presence: false,
     numericality: true,
   },
-  // 'features': {
-  //   isObject: true,
-  // },
+  'features': {
+    features: true,
+  },
 };
 
 module.exports = {
