@@ -72,11 +72,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	StreamAnalytics.prototype.configure = function(cfg) {
 	  this.client = new Client(cfg);
-	  this.userId = null;
+	  this.userData = null;
 	};
 
-	StreamAnalytics.prototype.setUser = function(userId) {
-	  this.userId = userId;
+	StreamAnalytics.prototype.setUser = function(userData) {
+	  this.userData = userData;
 	};
 
 	StreamAnalytics.prototype._sendEventFactory = function(resourceName, dataSpec) {
@@ -92,11 +92,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	StreamAnalytics.prototype._sendEvent = function(resourceName, eventData) {
-	  if (this.userId === null) {
-	    throw new errors.MissingUserId('userId was not set');
+	  if (this.userData === null) {
+	    throw new errors.MissingUserId('userData was not set');
 	  }
 
-	  eventData['user_id'] = this.userId;
+	  eventData['user_data'] = this.userData;
 	  return this.client.send(resourceName, eventData);
 	};
 
@@ -1262,6 +1262,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var engagement = {
 	  'label': {presence: true},
+	  'content': {presence: true},
 	  'boost': {
 	    presence: false,
 	    numericality: true,
@@ -1272,7 +1273,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	var impression = {
-	  'foreign_ids': {
+	  'content_list': {
 	    presence: true,
 	    isArray: true,
 	  },
@@ -1280,9 +1281,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    presence: false,
 	    numericality: true,
 	  },
-	  // 'features': {
-	  //   isObject: true,
-	  // },
+	  'features': {
+	    features: true,
+	  },
 	};
 
 	module.exports = {
