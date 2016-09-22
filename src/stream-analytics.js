@@ -33,6 +33,10 @@ StreamAnalytics.prototype._sendEvent = function(resourceName, eventData) {
     throw new errors.MissingUserId('userData was not set');
   }
 
+  if (! this.userData.id) {
+    throw new errors.MissingUserId('userData.id was not set');
+  }
+
   eventData['user_data'] = this.userData;
   return this.client.send(resourceName, eventData);
 };
