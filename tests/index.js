@@ -37,10 +37,30 @@ describe('StreamAnalytics', function () {
         'token': 'token'
     });
     expect(analytics.userData).to.eql(null);
-    analytics.setUser('user_data');
-    expect(analytics.userData).to.eql('user_data');
+    analytics.setUser({ id: 1, alias: 'user' });
+    expect(analytics.userData).to.eql({ id: 1, alias: 'user' });
     done();
   });
+
+  it('should break on userData without id', function() {
+        var analytics = new StreamAnalytics({
+            'apiKey': 'key',
+            'token': 'token'
+        });
+
+        function shouldThrow() {
+            analytics.setUser({ id: null });
+        }
+
+        function shouldThrow2() {
+            analytics.setUser();
+        }
+
+        expect(shouldThrow).to.throwError();
+        expect(shouldThrow2).to.throwException(function(e) {
+            expect(e).to.be.a(TypeError);
+        });
+    });
 
   it('should break on impressions without content_list', function () {
     var analytics = new StreamAnalytics({
@@ -303,7 +323,7 @@ describe('analytics client integration', function () {
 
   it('should store track impressions', function () {
     var analytics = new StreamAnalytics({'apiKey': apiKey, 'token': token});
-    analytics.setUser('tommaso');
+    analytics.setUser({ id: 1, alias: 'tommaso' });
     analytics.trackImpression({
         'content_list': ['1', 2, '3'],
         'features': [
@@ -315,7 +335,7 @@ describe('analytics client integration', function () {
 
   it('should store track engagements', function () {
     var analytics = new StreamAnalytics({'apiKey': apiKey, 'token': token});
-    analytics.setUser('tommaso');
+    analytics.setUser({ id: 1, alias: 'tommaso' });
     analytics.trackEngagement({
         'content': '1',
         'label': 'click',

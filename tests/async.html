@@ -15,7 +15,7 @@ mocha.setup('bdd');
 
 var consFunStr = window.StreamAnalytics.toString();
 var streamAnalytics = new StreamAnalytics({ apiKey: 'key', token: 'token' });
-streamAnalytics.setUser('thierry');
+streamAnalytics.setUser({ id: 1, alias: 'thierry' });
 
 describe('Getstream load async', function() {
     var tag = document.getElementsByTagName('script')[0];
@@ -47,7 +47,7 @@ describe('Getstream load async', function() {
     it('replaces the stub onload', function(done) {
         function testIt() {
             expect(window.StreamAnalytics.toString()).to.not.be(consFunStr);
-            expect(streamAnalytics.userId).to.be('thierry');
+            expect(streamAnalytics.userData.alias).to.be('thierry');
 
             expect(streamAnalytics.client.apiKey).to.be('key');
             expect(streamAnalytics.client.token).to.be('token');

@@ -13,6 +13,14 @@ StreamAnalytics.prototype.configure = function(cfg) {
 };
 
 StreamAnalytics.prototype.setUser = function(userData) {
+  if (!userData) {
+    throw new TypeError('Empty userData, supply userData object as a first argument');
+  }
+
+  if (!userData.id) {
+    throw new errors.MissingUserId('userData.id was not set');
+  }
+
   this.userData = userData;
 };
 
@@ -31,10 +39,6 @@ StreamAnalytics.prototype._sendEventFactory = function(resourceName, dataSpec) {
 StreamAnalytics.prototype._sendEvent = function(resourceName, eventData) {
   if (this.userData === null) {
     throw new errors.MissingUserId('userData was not set');
-  }
-
-  if (! this.userData.id) {
-    throw new errors.MissingUserId('userData.id was not set');
   }
 
   eventData['user_data'] = this.userData;
