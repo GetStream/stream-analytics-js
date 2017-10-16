@@ -1,19 +1,19 @@
-(function(i, o) {
+(function (i, o) {
   i('StreamAnalytics', '../dist/js/stream-analytics.min.js', o);
-})(function(t, h, x) {
+})(function (t, h, x) {
 
   var methods, script, tag;
   // _StreamAnalytics cache
   x['_' + t] = {};
   // StreamAnalytics stub
-  x[t] = function(e) {
+  x[t] = function (e) {
     x['_' + t].clients = x['_' + t].clients || {};
     x['_' + t].clients[e.apiKey] = this;
     this._config = e;
   };
 
-  var action = function(method) {
-    return function() {
+  var action = function (method) {
+    return function () {
       this['_' + method] = this['_' + method] || [];
       this['_' + method].push(arguments);
       return this;

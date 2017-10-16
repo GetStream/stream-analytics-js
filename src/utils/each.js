@@ -1,4 +1,4 @@
-module.exports = function(o, cb, s) {
+module.exports = function (o, cb, s) {
   var n;
   if (!o) {
     return 0;
