@@ -6,7 +6,7 @@ var Client = function() {
 };
 
 Client.prototype = {
-  baseUrl: 'https://analytics.getstream.io/analytics/v1.0/',
+  baseUrl: 'https://analytics.stream-io-api.com/analytics/v1.0/',
 
   initialize: function(cfg) {
     var configs = cfg || {};
