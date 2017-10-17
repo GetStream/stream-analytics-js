@@ -2,14 +2,14 @@
 <html>
 <head>
     <title>Async Loading Test</title>
-    <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+    <link rel="stylesheet" href="browser/mocha.css" />
     <script src="../src/loading.js"></script>
 </head>
 <body>
     <div id="mocha"></div>
     <script src="browser/expect.js"></script>
     <script src="browser/mocha.js"></script>
-    
+
 <script>
 mocha.setup('bdd');
 
@@ -47,7 +47,7 @@ describe('Getstream load async', function() {
     it('replaces the stub onload', function(done) {
         function testIt() {
             expect(window.StreamAnalytics.toString()).to.not.be(consFunStr);
-            expect(streamAnalytics.userId).to.be('thierry');
+            expect(streamAnalytics.userData).to.be('thierry');
 
             expect(streamAnalytics.client.apiKey).to.be('key');
             expect(streamAnalytics.client.token).to.be('token');
