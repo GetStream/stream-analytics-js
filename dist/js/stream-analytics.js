@@ -52,37 +52,37 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__(1);
 
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	var validate = __webpack_require__(2),
 	  specs = __webpack_require__(5),
 	  errors = __webpack_require__(6),
 	  Client = __webpack_require__(7);
 
-	var StreamAnalytics = function(config) {
+	var StreamAnalytics = function (config) {
 	  this.configure(config || {});
 	};
 
-	StreamAnalytics.prototype.configure = function(cfg) {
+	StreamAnalytics.prototype.configure = function (cfg) {
 	  this.client = new Client(cfg);
 	  this.userData = null;
 	};
 
-	StreamAnalytics.prototype.setUser = function(userData) {
+	StreamAnalytics.prototype.setUser = function (userData) {
 	  this.userData = userData;
 	};
 
-	StreamAnalytics.prototype._sendEventFactory = function(resourceName, dataSpec) {
+	StreamAnalytics.prototype._sendEventFactory = function (resourceName, dataSpec) {
 	  // snakeCase
-	  return function(eventData) {
-	    var validationErrors = validate(eventData, dataSpec, {format: 'flat'});
+	  return function (eventData) {
+	    var validationErrors = validate(eventData, dataSpec, { format: 'flat' });
 	    if (typeof (validationErrors) !== 'undefined') {
 	      throw new errors.InvalidInputData('event data is not valid', validationErrors);
 	    }
@@ -91,7 +91,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	};
 
-	StreamAnalytics.prototype._sendEvent = function(resourceName, eventData) {
+	StreamAnalytics.prototype._sendEvent = function (resourceName, eventData) {
 	  if (this.userData === null) {
 	    throw new errors.MissingUserId('userData was not set');
 	  }
@@ -100,8 +100,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return this.client.send(resourceName, eventData);
 	};
 
-	StreamAnalytics.prototype.trackImpression = StreamAnalytics.prototype._sendEventFactory('impression', specs.impressionSpec);
-	StreamAnalytics.prototype.trackEngagement = StreamAnalytics.prototype._sendEventFactory('engagement', specs.engagementSpec);
+	StreamAnalytics.prototype.trackImpression =
+	  StreamAnalytics.prototype._sendEventFactory(
+	    'impression',
+	    specs.impressionSpec
+	  );
+	StreamAnalytics.prototype.trackEngagement =
+	  StreamAnalytics.prototype._sendEventFactory(
+	    'engagement',
+	    specs.engagementSpec
+	  );
 
 	StreamAnalytics.Client = Client;
 	StreamAnalytics.errors = errors;
@@ -112,9 +120,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = StreamAnalytics;
 
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module) {/*!
 	 * validate.js 0.9.0
@@ -1205,9 +1213,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)(module)))
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = function(module) {
 		if(!module.webpackPolyfill) {
@@ -1221,20 +1229,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 
-/***/ },
+/***/ }),
 /* 4 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = function() { throw new Error("define cannot be used indirect"); };
 
 
-/***/ },
+/***/ }),
 /* 5 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	var validate = __webpack_require__(2);
 
-	validate.validators.features = function(value/*, options, key, attributes */) {
+	validate.validators.features = function (value/*, options, key, attributes */) {
 	  if (typeof (value) === 'undefined' || value === null)
 	      return value;
 	  if (!validate.isArray(value))
@@ -1245,24 +1253,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	validate.validators.isArray = function(value/*, options, key, attributes */) {
+	validate.validators.isArray = function (value/*, options, key, attributes */) {
 	  if (!validate.isArray(value))
 	      return 'needs to be an array';
 	};
 
-	validate.validators.isObject = function(value/*, options, key, attributes */) {
+	validate.validators.isObject = function (value/*, options, key, attributes */) {
 	  if (!validate.isArray(value))
 	      return 'needs to be an array';
 	};
 
 	var feature = {
-	  group: {presence: true},
-	  value: {presence: true},
+	  group: { presence: true },
+	  value: { presence: true },
 	};
 
 	var engagement = {
-	  'label': {presence: true},
-	  'content': {presence: true},
+	  'label': { presence: true },
+	  'content': { presence: true },
 	  'boost': {
 	    presence: false,
 	    numericality: true,
@@ -1292,9 +1300,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 
-/***/ },
+/***/ }),
 /* 6 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	var errors = module.exports;
 
@@ -1343,21 +1351,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	errors.APIError.prototype = new ErrorAbstract();
 
 
-/***/ },
+/***/ }),
 /* 7 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	var request = __webpack_require__(8);
 	var errors = __webpack_require__(6);
 
-	var Client = function() {
+	var Client = function () {
 	  this.initialize.apply(this, arguments);
 	};
 
 	Client.prototype = {
-	  baseUrl: 'https://analytics.getstream.io/analytics/v1.0/',
+	  baseUrl: 'https://analytics.stream-io-api.com/analytics/v1.0/',
 
-	  initialize: function(cfg) {
+	  initialize: function (cfg) {
 	    var configs = cfg || {};
 	    if (!configs.apiKey || !configs.token) {
 	      throw new errors.MisconfiguredClient('the client must be initialized with apiKey and token');
@@ -1367,8 +1375,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.token = configs.token;
 	  },
 
-	  send: function(resourceName, eventData) {
-	    var callback = function(err, response) {
+	  send: function (resourceName, eventData) {
+	    var callback = function (err, response) {
 	      if (err) {
 	        throw err;
 	      }
@@ -1379,16 +1387,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    };
 
-	    return this.post({'url':this.baseUrl + resourceName + '/', 'body':eventData}, callback);
+	    return this.post(
+	      {
+	        'url': this.baseUrl + resourceName + '/',
+	        'body': eventData,
+	      }, callback);
 	  },
 
-	  userAgent: function() {
+	  userAgent: function () {
 	    var description = (this.node) ? 'node' : 'browser';
 	    var version = 'unknown';
 	    return 'stream-javascript-client-' + description + '-' + version;
 	  },
 
-	  enrichKwargs: function(kwargs) {
+	  enrichKwargs: function (kwargs) {
 	    if (kwargs.qs === undefined) {
 	      kwargs.qs = {};
 	    }
@@ -1402,7 +1414,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return kwargs;
 	  },
 
-	  post: function(kwargs, callback) {
+	  post: function (kwargs, callback) {
 	    kwargs = this.enrichKwargs(kwargs);
 	    kwargs.method = 'POST';
 	    return request(kwargs, callback);
@@ -1412,9 +1424,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = Client;
 
 
-/***/ },
+/***/ }),
 /* 8 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	// Browser Request
 	//
@@ -1493,7 +1505,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    if(typeof options.json !== 'boolean')
 	      options.body = JSON.stringify(options.json)
-	    else if(typeof options.body !== 'string')
+	    else if(typeof options.body !== 'string' && options.body !== null)
 	      options.body = JSON.stringify(options.body)
 	  }
 	  
@@ -1629,19 +1641,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    request.log.debug('State change', {'state':xhr.readyState, 'id':xhr.id, 'timed_out':timed_out})
 
-	    if(xhr.readyState === XHR.OPENED) {
+	    if(xhr.readyState === 1) {
 	      request.log.debug('Request started', {'id':xhr.id})
 	    }
 
-	    else if(xhr.readyState === XHR.HEADERS_RECEIVED)
+	    else if(xhr.readyState === 2)
 	      on_response()
 
-	    else if(xhr.readyState === XHR.LOADING) {
+	    else if(xhr.readyState === 3) {
 	      on_response()
 	      on_loading()
 	    }
 
-	    else if(xhr.readyState === XHR.DONE) {
+	    else if(xhr.readyState === 4) {
 	      on_response()
 	      on_loading()
 	      on_end()
@@ -1821,6 +1833,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	// Return whether a URL is a cross-domain request.
 	function is_crossDomain(url) {
+	  // Fix for React Native. CORS does noet exist in that environment
+	  if (! window.location) {
+	    return false;
+	  }
+
 	  var rurl = /^([\w\+\.\-]+:)(?:\/\/([^\/?#:]*)(?::(\d+))?)?/
 
 	  // jQuery #8138, IE may throw an exception when accessing
@@ -1894,13 +1911,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = request;
 
 
-/***/ },
+/***/ }),
 /* 9 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	var each = __webpack_require__(10);
 
-	module.exports = function(StreamAnalytics) {
+	module.exports = function (StreamAnalytics) {
 	  var loaded = window.StreamAnalytics || null,
 	      cached = window._StreamAnalytics || null,
 	      clients;
@@ -1908,9 +1925,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  if (loaded && cached) {
 	    clients = cached.clients || {};
 
-	    each(clients, function(client/*, id */) {
+	    each(clients, function (client/*, id */) {
 
-	      each(StreamAnalytics.prototype, function(method, key) {
+	      each(StreamAnalytics.prototype, function (method, key) {
 	        loaded.prototype[key] = method;
 	      });
 
@@ -1921,27 +1938,27 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      // Run setUser
 	      if (client._setUser) {
-	        each(client._setUser, function(args) {
+	        each(client._setUser, function (args) {
 	          client.setUser.apply(client, args);
 	        });
 	      }
 
 	      // Send Queued Events
 	      if (client._trackImpression) {
-	        each(client._trackImpression, function(obj) {
+	        each(client._trackImpression, function (obj) {
 	          client.trackImpression.apply(client, obj);
 	        });
 	      }
 
 	      // Send Queued Events
 	      if (client._trackEngagement) {
-	        each(client._trackEngagement, function(obj) {
+	        each(client._trackEngagement, function (obj) {
 	          client.trackEngagement.apply(client, obj);
 	        });
 	      }
 
 	      // unset config
-	      each(['_config', '_setUser', '_trackEngagement', '_trackImpression'], function(name) {
+	      each(['_config', '_setUser', '_trackEngagement', '_trackImpression'], function (name) {
 	        if (client[name]) {
 	          client[name] = undefined;
 	          try {
@@ -1961,11 +1978,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 
-/***/ },
+/***/ }),
 /* 10 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
-	module.exports = function(o, cb, s) {
+	module.exports = function (o, cb, s) {
 	  var n;
 	  if (!o) {
 	    return 0;
@@ -1994,7 +2011,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 
-/***/ }
+/***/ })
 /******/ ])
 });
 ;
