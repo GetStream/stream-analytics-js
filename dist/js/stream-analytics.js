@@ -1411,6 +1411,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    kwargs.headers['stream-auth-type'] = 'jwt';
 	    kwargs.headers.Authorization = this.token;
 	    kwargs.headers['X-Stream-Client'] = this.userAgent();
+	    kwargs.timeout = 10 * 1000; // 10 seconds
 	    return kwargs;
 	  },
 
