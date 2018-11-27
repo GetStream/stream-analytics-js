@@ -29,6 +29,7 @@
   "dependencies": {
     "@stream-io/browser-request": "^0.3.2",
     "json-loader": "^0.5.7",
+    "natives": "^1.1.6",
     "request": "2.88.0",
     "validate.js": "^0.12.0"
   },
