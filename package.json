@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/GetStream/stream-analytics.git"
+    "url": "git://github.com/GetStream/stream-analytics-js.git"
   },
   "keywords": [
     "npm",
@@ -23,9 +23,9 @@
   "author": "Tommaso Barbugli <tommaso@getstream.io>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/GetStream/stream-analytics/issues"
+    "url": "https://github.com/GetStream/stream-analytics-js/issues"
   },
-  "homepage": "https://github.com/GetStream/stream-analytics",
+  "homepage": "https://github.com/GetStream/stream-analytics-js",
   "dependencies": {
     "@stream-io/browser-request": "^0.3.2",
     "json-loader": "^0.5.7",
