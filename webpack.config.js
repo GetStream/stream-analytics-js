@@ -24,7 +24,7 @@ module.exports = {
     },
     resolve: {
       alias: {
-        'request': 'browser-request'
+        'request': '@stream-io/browser-request'
       }
     },
     module: {

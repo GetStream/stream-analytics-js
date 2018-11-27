@@ -27,19 +27,20 @@
   },
   "homepage": "https://github.com/GetStream/stream-analytics",
   "dependencies": {
-    "browser-request": "git://github.com/matthisk/browser-request",
-    "json-loader": "^0.5.3",
-    "request": "2.81.0",
-    "validate.js": "^0.9.0"
+    "@stream-io/browser-request": "^0.3.2",
+    "json-loader": "^0.5.7",
+    "request": "2.88.0",
+    "validate.js": "^0.12.0"
   },
   "browser": {
-    "request": "browser-request",
+    "request": "@stream-io/browser-request",
     "crypto": false,
     "fs": false,
     "net": false,
     "tls": false
   },
   "devDependencies": {
+    "@stream-io/mocha-sauce": "^0.0.5",
     "async": "^1.4.2",
     "bower": "^1.5.3",
     "expect.js": "^0.3.1",
@@ -58,7 +59,6 @@
     "gulp-util": "^3.0.6",
     "jshint-stylish": "^2.0.1",
     "mocha": "^4.0.1",
-    "mocha-sauce": "git://github.com/pbakaus/mocha-sauce.git",
     "vinyl-transform": "^1.0.0",
     "webpack": "^1.12.2"
   }
