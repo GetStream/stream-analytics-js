@@ -46,7 +46,9 @@ module.exports = function (StreamAnalytics) {
           client[name] = undefined;
           try {
             delete client[name];
-          } catch (e) {}
+          } catch (e) {
+              // do nothing
+          }
         }
       });
 
@@ -57,5 +59,7 @@ module.exports = function (StreamAnalytics) {
   window._StreamAnalytics = undefined;
   try {
     delete window['_StreamAnalytics'];
-  } catch (e) {}
+  } catch (e) {
+    // do nothing
+  }
 };
