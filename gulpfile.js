@@ -1,21 +1,15 @@
-var gulp = require('gulp'),
+const gulp = require('gulp'),
     gutil = require('gulp-util'),
     pkg = require('./package.json'),
     mocha = require('gulp-mocha'),
-    eslint = require('gulp-eslint');
+    eslint = require('gulp-eslint'),
     mochaPhantomJS = require('gulp-mocha-phantomjs'),
-    async = require('async');
-
-var aws = require('gulp-awspublish'),
+    aws = require('gulp-awspublish'),
     uglify = require('gulp-uglify'),
     rename = require('gulp-rename'),
     connect = require('gulp-connect'),
-    squash = require('gulp-remove-empty-lines'),
-    strip = require('gulp-strip-comments'),
-    transform = require('vinyl-transform');
-
-var webpack = require("webpack");
-var webpackConfig = require('./webpack.config.js');
+    webpack = require("webpack"),
+    webpackConfig = require('./webpack.config.js');
 
 
 // -------------------------
