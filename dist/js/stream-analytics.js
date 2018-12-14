@@ -2064,7 +2064,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	          client[name] = undefined;
 	          try {
 	            delete client[name];
-	          } catch (e) {}
+	          } catch (e) {
+	              // do nothing
+	          }
 	        }
 	      });
 
@@ -2075,7 +2077,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  window._StreamAnalytics = undefined;
 	  try {
 	    delete window['_StreamAnalytics'];
-	  } catch (e) {}
+	  } catch (e) {
+	    // do nothing
+	  }
 	};
 
 

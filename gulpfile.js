@@ -1,35 +1,16 @@
-var gulp = require('gulp'),
+const gulp = require('gulp'),
     gutil = require('gulp-util'),
     pkg = require('./package.json'),
-    jshint = require('gulp-jshint'),
-    jscs = require('gulp-jscs'),
-    stylish = require('gulp-jscs-stylish'),
     mocha = require('gulp-mocha'),
+    eslint = require('gulp-eslint'),
     mochaPhantomJS = require('gulp-mocha-phantomjs'),
-    async = require('async');
-
-var aws = require('gulp-awspublish'),
+    aws = require('gulp-awspublish'),
     uglify = require('gulp-uglify'),
     rename = require('gulp-rename'),
     connect = require('gulp-connect'),
-    squash = require('gulp-remove-empty-lines'),
-    strip = require('gulp-strip-comments'),
-    transform = require('vinyl-transform');
+    webpack = require("webpack"),
+    webpackConfig = require('./webpack.config.js');
 
-var webpack = require("webpack");
-var webpackConfig = require('./webpack.config.js');
-
-
-function runSynchronized(tasks, callback){
-    var sync = tasks.map(function(task){
-        return function(callback){
-            gulp.run(task, function(err){
-                callback(err);
-            });
-        };
-    });
-    async.series(sync, callback);
-}
 
 // -------------------------
 // Development tasks
@@ -38,11 +19,9 @@ function runSynchronized(tasks, callback){
 // check for jshint errors
 gulp.task('lint', function() {
   return gulp.src('./src/**/*.js')
-    .pipe(jshint({ lookup: true }))
-    .pipe(jscs())
-    .pipe(stylish.combineWithHintResults())
-    .pipe(jshint.reporter('jshint-stylish'))
-    .pipe(jshint.reporter('fail'));
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError());
 });
 
 // run the mocha tests
@@ -57,9 +36,7 @@ gulp.task('phantom', function () {
     .pipe(mochaPhantomJS());
 });
 
-gulp.task('test', function () {
-  runSynchronized(['lint', 'mocha', 'phantom']);
-});
+gulp.task('test', gulp.series('lint', 'mocha', 'phantom'));
 
 gulp.task('connect', function() {
   connect.server({
@@ -75,20 +52,9 @@ gulp.task('html', function () {
     .pipe(connect.reload());
 });
 
-gulp.task('watch', ["build"], function() {
-  gulp.watch('examples/*.html', ['build']);
-  gulp.watch('lib/*.js', ['build']);
-  gulp.watch('gulpfile.js', ['build']);
-});
-
 // -------------------------  
 // Build tasks
 // -------------------------
-
-gulp.task("build", function() {
-  runSynchronized(['build:webpack', 'build:optimize']);
-});
-
 
 gulp.task("build:webpack", function(callback) {
     var myConfig = Object.create(webpackConfig);
@@ -101,12 +67,21 @@ gulp.task("build:webpack", function(callback) {
   });
 });
 
-gulp.task("build:optimize", function(callback) {
-  gulp.src('./dist/js/stream-analytics.js')
+gulp.task("build:optimize", function() {
+  return gulp.src('./dist/js/stream-analytics.js')
   .pipe(uglify())
   .pipe(rename('stream-analytics.min.js'))
   .pipe(gulp.dest('./dist/js/'));
 });
+
+gulp.task("build", gulp.series('build:webpack', 'build:optimize'));
+
+
+gulp.task('watch', gulp.series("build", function() {
+  gulp.watch('examples/*.html', ['build']);
+  gulp.watch('lib/*.js', ['build']);
+  gulp.watch('gulpfile.js', ['build']);
+}));
 
 // -------------------------
 // Deployment task
@@ -123,7 +98,7 @@ function awsPublisher() {
   });
 }
 
-gulp.task('s3publish', ['build'], function() {
+gulp.task('s3publish', gulp.series('build', function() {
   var publisher = awsPublisher();
   var cacheLife = (1000 * 60 * 60 * 24 * 365);
   var headers = {
@@ -142,4 +117,4 @@ gulp.task('s3publish', ['build'], function() {
     .pipe(publisher.publish(headers, { force: true }))
     .pipe(publisher.cache())
     .pipe(aws.reporter());
-});
+}));

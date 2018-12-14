@@ -1,0 +1,37 @@
+{
+    "plugins": [
+    ],
+    "extends": [
+        "eslint:recommended"
+    ],
+    "rules": {
+        "no-console": 0,
+        "no-mixed-spaces-and-tabs": 1,
+        "comma-dangle": 0,
+        "no-unused-vars": 1,
+        "linebreak-style": [
+            2,
+            "unix"
+        ],
+        "semi": [
+            1,
+            "always"
+        ]
+    },
+    "env": {
+        "es6": true,
+        "browser": true,
+        "commonjs": true,
+        "mocha": true
+    },
+    "globals": {
+        "process": true
+    },
+    "parserOptions": {
+        "ecmaVersion": 2018,
+        "sourceType": "module",
+        "ecmaFeatures" : {
+            "modules": true
+        }
+    }
+}
