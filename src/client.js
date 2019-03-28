@@ -16,7 +16,7 @@ Client.prototype = {
 
     this.apiKey = configs.apiKey;
     this.token = configs.token;
-    this.errorHandler = configs.errorHandler;
+    this.xhrCallback = configs.xhrCallback;
   },
 
   send: function (resourceName, eventData) {
@@ -35,7 +35,7 @@ Client.prototype = {
       {
         'url': this.baseUrl + resourceName + '/',
         'body': eventData,
-      }, (this.errorHandler) ? this.errorHandler : callback);
+      }, (this.xhrCallback) ? this.xhrCallback : callback);
   },
 
   userAgent: function () {
