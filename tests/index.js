@@ -17,7 +17,7 @@ var misconfiguredClientError = function (e) {
 
 var apiKey = 'szhmf34fz9bu';
 var token =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJncm9wIjoid3JpdGUiLCJ1c2VyX2lkIjoiKiIsInJlc291cmNlIjoiYW5hbHl0aWNzIn0.p-wwTwA5XBhR57nW8U1OHup_4-EB1493AImc3kw6090';
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXNvdXJjZSI6ImFuYWx5dGljcyIsImFjdGlvbiI6IioiLCJ1c2VyX2lkIjoiKiJ9.yl6rNj_FckORWvGZBmLVLyrlJMFn6pl26AF0n5N1qrQ';
 
 describe('StreamAnalytics', function () {
     it('should initialize a client', function (done) {
