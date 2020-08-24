@@ -31,8 +31,8 @@
         "@stream-io/browser-request": "^0.3.2",
         "json-loader": "^0.5.7",
         "natives": "^1.1.6",
-        "request": "2.88.0",
-        "validate.js": "^0.12.0"
+        "request": "2.88.2",
+        "validate.js": "^0.13.1"
     },
     "browser": {
         "request": "@stream-io/browser-request",
@@ -44,21 +44,18 @@
     "devDependencies": {
         "@stream-io/mocha-sauce": "^0.0.5",
         "async": "^1.4.2",
-        "bower": "^1.5.3",
         "expect.js": "^0.3.1",
-        "gulp": "^4.0.0",
-        "gulp-cli": "^2.0.1",
+        "gulp": "^4.0.2",
+        "gulp-cli": "^2.3.0",
         "gulp-connect": "^5.7.0",
-        "gulp-eslint": "^5.0.0",
-        "gulp-mocha": "^6.0.0",
-        "gulp-mocha-phantomjs": "^0.12.1",
-        "gulp-remove-empty-lines": "0.0.2",
+        "gulp-eslint": "^6.0.0",
+        "gulp-mocha": "^7.0.0",
+        "gulp-mocha-phantomjs": "^0.12.2",
         "gulp-rename": "^1.2.0",
-        "gulp-strip-comments": "^1.0.1",
         "gulp-uglify": "^1.4.1",
-        "gulp-util": "^3.0.6",
+        "gulp-util": "^3.0.8",
         "mocha": "^4.0.1",
         "prettier": "^2.1.0",
-        "webpack": "^1.12.2"
+        "webpack": "^4.44.1"
     }
 }
