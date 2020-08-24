@@ -28,21 +28,10 @@
     },
     "homepage": "https://github.com/GetStream/stream-analytics-js",
     "dependencies": {
-        "@stream-io/browser-request": "^0.3.2",
-        "json-loader": "^0.5.7",
-        "natives": "^1.1.6",
-        "request": "2.88.2",
+        "axios": "^0.20.0",
         "validate.js": "^0.13.1"
     },
-    "browser": {
-        "request": "@stream-io/browser-request",
-        "crypto": false,
-        "fs": false,
-        "net": false,
-        "tls": false
-    },
     "devDependencies": {
-        "@stream-io/mocha-sauce": "^0.0.5",
         "async": "^1.4.2",
         "expect.js": "^0.3.1",
         "gulp": "^4.0.2",

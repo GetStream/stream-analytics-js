@@ -1,4 +1,4 @@
-var request = require('request');
+var axios = require('axios');
 var errors = require('./errors.js');
 
 var Client = function () {
@@ -18,51 +18,29 @@ Client.prototype = {
         this.token = configs.token;
     },
 
-    send: function (resourceName, eventData) {
-        var callback = function (err, response) {
-            if (err) {
-                throw err;
-            }
-
-            if (!/^2\d\d$/.test(response.statusCode)) {
-                throw new errors.APIError(response.responseText);
-            }
-        };
-
-        return this.post(
-            {
-                url: this.baseUrl + resourceName + '/',
-                body: eventData,
-            },
-            callback
-        );
-    },
-
     userAgent: function () {
         var description = this.node ? 'node' : 'browser';
         var version = 'unknown';
         return 'stream-javascript-client-' + description + '-' + version;
     },
 
-    enrichKwargs: function (kwargs) {
-        if (kwargs.qs === undefined) {
-            kwargs.qs = {};
-        }
-
-        kwargs.qs['api_key'] = this.apiKey;
-        kwargs.json = true;
-        kwargs.headers = {};
-        kwargs.headers['stream-auth-type'] = 'jwt';
-        kwargs.headers.Authorization = this.token;
-        kwargs.headers['X-Stream-Client'] = this.userAgent();
-        kwargs.timeout = 10 * 1000; // 10 seconds
-        return kwargs;
-    },
-
-    post: function (kwargs, callback) {
-        kwargs = this.enrichKwargs(kwargs);
-        kwargs.method = 'POST';
-        return request(kwargs, callback);
+    send: function (resourceName, eventData) {
+        return axios({
+            method: 'POST',
+            url: this.baseUrl + resourceName + '/',
+            data: eventData,
+            timeout: 10 * 1000, // 10 seconds
+            withCredentials: false, // making sure cookies are not sent
+            headers: {
+                'X-Stream-Client': this.userAgent(),
+                'stream-auth-type': 'jwt',
+                Authorization: this.token,
+            },
+            params: { api_key: this.apiKey },
+        }).then(function (response) {
+            if (!/^2\d\d$/.test(response.status + '')) throw new errors.APIError(response.body);
+            return response.body;
+        });
     },
 };
 

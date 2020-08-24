@@ -13,10 +13,4 @@ module.exports = {
         library: 'StreamAnalytics',
         libraryTarget: 'umd',
     },
-
-    resolve: {
-        alias: {
-            request: '@stream-io/browser-request',
-        },
-    },
 };
