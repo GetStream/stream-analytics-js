@@ -6,6 +6,7 @@
   "scripts": {
     "test": "gulp test",
     "build": "gulp build",
+    "prettier": "prettier --config ./.prettierrc --write \"**/*.{js,ts,md,html,json}\"",
     "preversion": "npm test",
     "version": "npm run build && git add -A dist",
     "postversion": "git push && git push --tags"
@@ -57,6 +58,7 @@
     "gulp-uglify": "^1.4.1",
     "gulp-util": "^3.0.6",
     "mocha": "^4.0.1",
+    "prettier": "^2.1.0",
     "webpack": "^1.12.2"
   }
 }
