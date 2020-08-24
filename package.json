@@ -1,64 +1,64 @@
 {
-  "name": "stream-analytics",
-  "version": "2.8.0",
-  "description": "Analytics JS client for GetStream.io.",
-  "main": "src/stream-analytics.js",
-  "scripts": {
-    "test": "gulp test",
-    "build": "gulp build",
-    "prettier": "prettier --config ./.prettierrc --write \"**/*.{js,ts,md,html,json}\"",
-    "preversion": "npm test",
-    "version": "npm run build && git add -A dist",
-    "postversion": "git push && git push --tags"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/GetStream/stream-analytics-js.git"
-  },
-  "keywords": [
-    "npm",
-    "stream-analytics",
-    "getstream.io",
-    "stream.io"
-  ],
-  "author": "Tommaso Barbugli <tommaso@getstream.io>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/GetStream/stream-analytics-js/issues"
-  },
-  "homepage": "https://github.com/GetStream/stream-analytics-js",
-  "dependencies": {
-    "@stream-io/browser-request": "^0.3.2",
-    "json-loader": "^0.5.7",
-    "natives": "^1.1.6",
-    "request": "2.88.0",
-    "validate.js": "^0.12.0"
-  },
-  "browser": {
-    "request": "@stream-io/browser-request",
-    "crypto": false,
-    "fs": false,
-    "net": false,
-    "tls": false
-  },
-  "devDependencies": {
-    "@stream-io/mocha-sauce": "^0.0.5",
-    "async": "^1.4.2",
-    "bower": "^1.5.3",
-    "expect.js": "^0.3.1",
-    "gulp": "^4.0.0",
-    "gulp-cli": "^2.0.1",
-    "gulp-connect": "^5.7.0",
-    "gulp-eslint": "^5.0.0",
-    "gulp-mocha": "^6.0.0",
-    "gulp-mocha-phantomjs": "^0.12.1",
-    "gulp-remove-empty-lines": "0.0.2",
-    "gulp-rename": "^1.2.0",
-    "gulp-strip-comments": "^1.0.1",
-    "gulp-uglify": "^1.4.1",
-    "gulp-util": "^3.0.6",
-    "mocha": "^4.0.1",
-    "prettier": "^2.1.0",
-    "webpack": "^1.12.2"
-  }
+    "name": "stream-analytics",
+    "version": "2.8.0",
+    "description": "Analytics JS client for GetStream.io.",
+    "main": "src/stream-analytics.js",
+    "scripts": {
+        "test": "gulp test",
+        "build": "gulp build",
+        "prettier": "prettier --config ./.prettierrc --write \"**/*.{js,ts,md,html,json}\"",
+        "preversion": "npm test",
+        "version": "npm run build && git add -A dist",
+        "postversion": "git push && git push --tags"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/GetStream/stream-analytics-js.git"
+    },
+    "keywords": [
+        "npm",
+        "stream-analytics",
+        "getstream.io",
+        "stream.io"
+    ],
+    "author": "Tommaso Barbugli <tommaso@getstream.io>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/GetStream/stream-analytics-js/issues"
+    },
+    "homepage": "https://github.com/GetStream/stream-analytics-js",
+    "dependencies": {
+        "@stream-io/browser-request": "^0.3.2",
+        "json-loader": "^0.5.7",
+        "natives": "^1.1.6",
+        "request": "2.88.0",
+        "validate.js": "^0.12.0"
+    },
+    "browser": {
+        "request": "@stream-io/browser-request",
+        "crypto": false,
+        "fs": false,
+        "net": false,
+        "tls": false
+    },
+    "devDependencies": {
+        "@stream-io/mocha-sauce": "^0.0.5",
+        "async": "^1.4.2",
+        "bower": "^1.5.3",
+        "expect.js": "^0.3.1",
+        "gulp": "^4.0.0",
+        "gulp-cli": "^2.0.1",
+        "gulp-connect": "^5.7.0",
+        "gulp-eslint": "^5.0.0",
+        "gulp-mocha": "^6.0.0",
+        "gulp-mocha-phantomjs": "^0.12.1",
+        "gulp-remove-empty-lines": "0.0.2",
+        "gulp-rename": "^1.2.0",
+        "gulp-strip-comments": "^1.0.1",
+        "gulp-uglify": "^1.4.1",
+        "gulp-util": "^3.0.6",
+        "mocha": "^4.0.1",
+        "prettier": "^2.1.0",
+        "webpack": "^1.12.2"
+    }
 }
