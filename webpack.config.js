@@ -1,11 +1,10 @@
-var path = require('path');
-var webpack = require('webpack');
+const path = require('path');
 
 module.exports = {
-    context: __dirname + '/src',
-    entry: {
-        'stream-analytics': ['./stream-analytics.js'],
-    },
+    entry: ['./src/stream-analytics.js'],
+
+    mode: 'production',
+
     output: {
         path: path.join(__dirname, 'dist', 'js'),
         publicPath: 'dist/',
@@ -14,20 +13,10 @@ module.exports = {
         library: 'StreamAnalytics',
         libraryTarget: 'umd',
     },
-    node: {
-        console: false,
-        Buffer: true,
-        crypto: 'empty',
-        fs: 'empty',
-        net: 'empty',
-        tls: 'empty',
-    },
+
     resolve: {
         alias: {
             request: '@stream-io/browser-request',
         },
-    },
-    module: {
-        loaders: [{ test: /\.json$/, loader: 'json-loader' }],
     },
 };
