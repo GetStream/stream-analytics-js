@@ -39,11 +39,11 @@ StreamAnalytics.prototype._sendEvent = function (resourceName, eventData) {
 
 StreamAnalytics.prototype.trackImpression = StreamAnalytics.prototype._sendEventFactory(
     'impression',
-    specs.impressionSpec,
+    specs.impressionSpec
 );
 StreamAnalytics.prototype.trackEngagement = StreamAnalytics.prototype._sendEventFactory(
     'engagement',
-    specs.engagementSpec,
+    specs.engagementSpec
 );
 
 StreamAnalytics.Client = Client;

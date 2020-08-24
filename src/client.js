@@ -34,7 +34,7 @@ Client.prototype = {
                 url: this.baseUrl + resourceName + '/',
                 body: eventData,
             },
-            callback,
+            callback
         );
     },
 

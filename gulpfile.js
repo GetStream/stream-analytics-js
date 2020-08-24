@@ -57,7 +57,7 @@ gulp.task('build:webpack', function (callback) {
             '[webpack:build]',
             stats.toString({
                 colors: true,
-            }),
+            })
         );
         callback();
     });
@@ -79,5 +79,5 @@ gulp.task(
         gulp.watch('examples/*.html', ['build']);
         gulp.watch('lib/*.js', ['build']);
         gulp.watch('gulpfile.js', ['build']);
-    }),
+    })
 );

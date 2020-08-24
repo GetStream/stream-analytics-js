@@ -15,6 +15,7 @@ module.exports = function (o, cb, s) {
     } else {
         // Hashtables
         for (n in o) {
+            // eslint-disable-next-line no-prototype-builtins
             if (o.hasOwnProperty(n)) {
                 if (cb.call(s, o[n], n, o) === false) {
                     return 0;
