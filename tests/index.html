@@ -6,18 +6,15 @@
     </head>
     <body>
         <div id="mocha"></div>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-        <script src="../node_modules/mocha-sauce/client.js"></script>
-        <script src="browser/expect.js"></script>
-        <script src="browser/mocha.js"></script>
+        <script src="../node_modules/expect.js/index.js"></script>
+        <script src="../node_modules/mocha/mocha.js"></script>
+        <script src="../dist/js/stream-analytics.js"></script>
+
         <script>
             mocha.setup('bdd');
         </script>
-        <script src="../dist/js/stream-analytics.js"></script>
         <script src="index.js"></script>
-
         <script>
-            mocha.globals(['jQuery']);
             mocha.run();
         </script>
     </body>

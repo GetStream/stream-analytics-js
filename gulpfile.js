@@ -1,10 +1,8 @@
 const gulp = require('gulp'),
     gutil = require('gulp-util'),
-    pkg = require('./package.json'),
     mocha = require('gulp-mocha'),
     eslint = require('gulp-eslint'),
     mochaPhantomJS = require('gulp-mocha-phantomjs'),
-    aws = require('gulp-awspublish'),
     uglify = require('gulp-uglify'),
     rename = require('gulp-rename'),
     connect = require('gulp-connect'),
@@ -29,7 +27,11 @@ gulp.task('phantom', function () {
     return gulp.src('./tests/async.html').pipe(mochaPhantomJS());
 });
 
-gulp.task('test', gulp.series('lint', 'mocha', 'phantom'));
+gulp.task('mochabrowser', function () {
+    return gulp.src('./tests/index.html').pipe(mochaPhantomJS({ reporter: 'spec' }));
+});
+
+gulp.task('test', gulp.series('lint', 'mocha', 'mochabrowser', 'phantom'));
 
 gulp.task('connect', function () {
     connect.server({
