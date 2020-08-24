@@ -82,39 +82,3 @@ gulp.task('watch', gulp.series("build", function() {
   gulp.watch('lib/*.js', ['build']);
   gulp.watch('gulpfile.js', ['build']);
 }));
-
-// -------------------------
-// Deployment task
-// -------------------------
-
-function awsPublisher() {
-  if (!process.env.AWS_KEY || !process.env.AWS_SECRET) {
-    throw 'AWS credentials are required!';
-  }
-  return aws.create({
-      key: process.env.AWS_KEY,
-      secret: process.env.AWS_SECRET,
-      bucket: pkg.name
-  });
-}
-
-gulp.task('s3publish', gulp.series('build', function() {
-  var publisher = awsPublisher();
-  var cacheLife = (1000 * 60 * 60 * 24 * 365);
-  var headers = {
-    'Cache-Control': 'max-age=' + cacheLife + ', public',
-    'Expires': new Date(Date.now() + cacheLife)
-  };
-
-  return gulp.src([
-      './dist/js/stream-analytics.js',
-      './dist/js/stream-analytics.min.js'
-    ])
-    .pipe(rename(function(path) {
-      path.dirname += '/' + pkg['version'];
-    }))
-    .pipe(publisher.publish(headers, { force: true }))
-    .pipe(publisher.publish(headers, { force: true }))
-    .pipe(publisher.cache())
-    .pipe(aws.reporter());
-}));
