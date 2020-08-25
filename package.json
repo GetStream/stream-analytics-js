@@ -27,6 +27,9 @@
         "url": "https://github.com/GetStream/stream-analytics-js/issues"
     },
     "homepage": "https://github.com/GetStream/stream-analytics-js",
+    "engines": {
+        "node": "10 || 12 || >=14"
+    },
     "dependencies": {
         "axios": "^0.20.0",
         "validate.js": "^0.13.1"
