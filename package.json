@@ -4,7 +4,7 @@
     "description": "Analytics JS client for GetStream.io.",
     "main": "./lib/stream-analytics.js",
     "module": "./lib/stream-analytics.js",
-    "types": "./lib/stream-analytic.d.ts",
+    "types": "./lib/stream-analytics.d.ts",
     "scripts": {
         "test": "yarn test-node && yarn test-browser",
         "test-node": "mocha tests --exit",
