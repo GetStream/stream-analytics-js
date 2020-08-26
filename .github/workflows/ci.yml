@@ -17,6 +17,9 @@ jobs:
             - name: Install deps
               run: yarn install
 
+            - name: Lint ${{ matrix.node }}
+              run: yarn run lint
+
             - name: Build with ${{ matrix.node }}
               run: yarn run build
 
