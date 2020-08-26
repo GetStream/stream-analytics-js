@@ -2,13 +2,11 @@ var expect = expect || require('expect.js');
 
 var node = typeof process != 'undefined';
 
-var Client, errors;
+var errors;
 if (node) {
-    Client = require('../lib/client').Client;
     errors = require('../lib/errors');
     var StreamAnalytics = require('../lib/stream-analytics');
 } else {
-    Client = StreamAnalytics.Client;
     errors = StreamAnalytics.errors;
 }
 
@@ -21,13 +19,13 @@ var token =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXNvdXJjZSI6ImFuYWx5dGljcyIsImFjdGlvbiI6IioiLCJ1c2VyX2lkIjoiKiJ9.yl6rNj_FckORWvGZBmLVLyrlJMFn6pl26AF0n5N1qrQ';
 
 describe('StreamAnalytics', function () {
-    it('should initialize a client', function (done) {
+    it('should initialize a StreamAnalytics', function (done) {
         var analytics = new StreamAnalytics({
             apiKey: 'key',
             token: 'token',
         });
-        expect(analytics.client.apiKey).to.eql('key');
-        expect(analytics.client.token).to.eql('token');
+        expect(analytics.apiKey).to.eql('key');
+        expect(analytics.token).to.eql('token');
         expect(analytics.userData).to.eql(null);
         done();
     });
@@ -140,7 +138,7 @@ describe('StreamAnalytics', function () {
 
 describe('analytics client', function () {
     it('should store apiKey and token', function (done) {
-        var client = new Client({ apiKey: 'key', token: 'token' });
+        var client = new StreamAnalytics({ apiKey: 'key', token: 'token' });
         expect(client.apiKey).to.eql('key');
         expect(client.token).to.eql('token');
         done();
@@ -148,16 +146,16 @@ describe('analytics client', function () {
 
     it('should validate apiKey and token', function (done) {
         expect(function () {
-            new Client({ apiKey: 'key' });
+            new StreamAnalytics({ apiKey: 'key' });
         }).to.throwException(misconfiguredClientError);
         expect(function () {
-            new Client({ token: 'token' });
+            new StreamAnalytics({ token: 'token' });
         }).to.throwException(misconfiguredClientError);
         expect(function () {
-            new Client({});
+            new StreamAnalytics({});
         }).to.throwException(misconfiguredClientError);
         expect(function () {
-            new Client();
+            new StreamAnalytics();
         }).to.throwException(misconfiguredClientError);
         done();
     });

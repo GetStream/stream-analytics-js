@@ -91,11 +91,119 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(1);
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+var cross_fetch_1 = __importDefault(__webpack_require__(2));
+var errors = __importStar(__webpack_require__(3));
+var specs_1 = __webpack_require__(4);
+// use native fetch in browser mode to reduce bundle size
+// webpack skip bundling the cross-fetch
+var request = typeof cross_fetch_1.default === 'function' ? cross_fetch_1.default : window.fetch;
+var StreamAnalytics = /** @class */ (function () {
+    function StreamAnalytics(config) {
+        if (!config || !config.apiKey || !config.token) {
+            throw new errors.MisconfiguredClient('the client must be initialized with apiKey and token');
+        }
+        this.userData = null;
+        this.apiKey = config.apiKey;
+        this.token = config.token;
+        this.baseUrl = 'https://analytics.stream-io-api.com/analytics/v1.0/';
+        this.node = typeof window === 'undefined';
+    }
+    StreamAnalytics.prototype.setUser = function (data) {
+        this.userData = data;
+    };
+    StreamAnalytics.prototype._sendEvent = function (resource, eventData) {
+        if (this.userData === null)
+            throw new errors.MissingUserId('userData was not set');
+        return request(this.baseUrl + resource + "/?api_key=" + this.apiKey, {
+            method: 'POST',
+            body: JSON.stringify(__assign(__assign({}, eventData), { user_data: this.userData })),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Stream-Client': "stream-javascript-client-" + (this.node ? 'node' : 'browser'),
+                'stream-auth-type': 'jwt',
+                Authorization: this.token,
+            },
+        }).then(function (response) {
+            if (response.ok)
+                return response.json();
+            throw new errors.APIError(response.statusText);
+        });
+    };
+    StreamAnalytics.prototype.trackImpression = function (eventData) {
+        var err = specs_1.validateImpression(eventData);
+        if (err)
+            throw new errors.InvalidInputData('event data is not valid', err);
+        return this._sendEvent('impression', eventData);
+    };
+    StreamAnalytics.prototype.trackEngagement = function (eventData) {
+        var err = specs_1.validateEngagement(eventData);
+        if (err)
+            throw new errors.InvalidInputData('event data is not valid', err);
+        return this._sendEvent('engagement', eventData);
+    };
+    return StreamAnalytics;
+}());
+StreamAnalytics.errors = errors;
+module.exports = StreamAnalytics;
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+/* (ignored) */
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -165,138 +273,7 @@ exports.InvalidInputData = InvalidInputData;
 
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(2);
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var errors = __importStar(__webpack_require__(0));
-var client_1 = __webpack_require__(3);
-var specs_1 = __webpack_require__(5);
-var StreamAnalytics = /** @class */ (function () {
-    function StreamAnalytics(config) {
-        this.client = new client_1.Client(config);
-        this.userData = null;
-    }
-    StreamAnalytics.prototype.setUser = function (data) {
-        this.userData = data;
-    };
-    StreamAnalytics.prototype._sendEvent = function (resource, eventData) {
-        if (this.userData === null)
-            throw new errors.MissingUserId('userData was not set');
-        return this.client.send(resource, __assign(__assign({}, eventData), { user_data: this.userData }));
-    };
-    StreamAnalytics.prototype.trackImpression = function (eventData) {
-        var err = specs_1.validateImpression(eventData);
-        if (err)
-            throw new errors.InvalidInputData('event data is not valid', err);
-        return this._sendEvent('impression', eventData);
-    };
-    StreamAnalytics.prototype.trackEngagement = function (eventData) {
-        var err = specs_1.validateEngagement(eventData);
-        if (err)
-            throw new errors.InvalidInputData('event data is not valid', err);
-        return this._sendEvent('engagement', eventData);
-    };
-    return StreamAnalytics;
-}());
-StreamAnalytics.Client = client_1.Client;
-StreamAnalytics.errors = errors;
-module.exports = StreamAnalytics;
-
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Client = void 0;
-var cross_fetch_1 = __importDefault(__webpack_require__(4));
-var errors_1 = __webpack_require__(0);
-// use native fetch in browser mode to reduce bundle size
-// webpack skip bundling the cross-fetch
-var request = typeof cross_fetch_1.default === 'function' ? cross_fetch_1.default : window.fetch;
-var Client = /** @class */ (function () {
-    function Client(config) {
-        if (!config || !config.apiKey || !config.token) {
-            throw new errors_1.MisconfiguredClient('the client must be initialized with apiKey and token');
-        }
-        this.apiKey = config.apiKey;
-        this.token = config.token;
-        this.baseUrl = 'https://analytics.stream-io-api.com/analytics/v1.0/';
-        this.node = typeof window === 'undefined';
-    }
-    Client.prototype.send = function (resource, eventData) {
-        return request(this.baseUrl + resource + "/?api_key=" + this.apiKey, {
-            method: 'POST',
-            body: JSON.stringify(eventData),
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Stream-Client': "stream-javascript-client-" + (this.node ? 'node' : 'browser'),
-                'stream-auth-type': 'jwt',
-                Authorization: this.token,
-            },
-        }).then(function (response) {
-            if (response.ok)
-                return response.json();
-            throw new errors_1.APIError(response.statusText);
-        });
-    };
-    return Client;
-}());
-exports.Client = Client;
-
-
-/***/ }),
 /* 4 */
-/***/ (function(module, exports) {
-
-/* (ignored) */
-
-/***/ }),
-/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
