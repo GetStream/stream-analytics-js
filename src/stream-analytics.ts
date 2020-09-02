@@ -7,6 +7,8 @@ import { validateEngagement, validateImpression, Impression, Engagement } from '
 // webpack skip bundling the cross-fetch
 const request = typeof crossFetch === 'function' ? crossFetch : window.fetch;
 
+const pkg = require('../package.json'); // eslint-disable-line @typescript-eslint/no-var-requires
+
 class StreamAnalytics<UserType = unknown> {
     static errors: typeof errors;
 
@@ -34,6 +36,10 @@ class StreamAnalytics<UserType = unknown> {
         this.userData = data;
     }
 
+    userAgent() {
+        return `stream-javascript-analytics-client-${this.node ? 'node' : 'browser'}-${pkg.version || 'unknown'}`;
+    }
+
     _sendEvent(resource: string, eventData: Impression | Engagement) {
         if (this.userData === null) throw new errors.MissingUserId('userData was not set');
 
@@ -42,7 +48,7 @@ class StreamAnalytics<UserType = unknown> {
             body: JSON.stringify({ ...eventData, user_data: this.userData }),
             headers: {
                 'Content-Type': 'application/json',
-                'X-Stream-Client': `stream-javascript-client-${this.node ? 'node' : 'browser'}`,
+                'X-Stream-Client': this.userAgent(),
                 'stream-auth-type': 'jwt',
                 Authorization: this.token,
             },

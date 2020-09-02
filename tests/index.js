@@ -4,6 +4,7 @@ var node = typeof process != 'undefined';
 
 var errors;
 if (node) {
+    pkg = require('../package.json');
     errors = require('../lib/errors');
     var StreamAnalytics = require('../lib/stream-analytics');
 } else {
@@ -27,6 +28,14 @@ describe('StreamAnalytics', function () {
         expect(analytics.apiKey).to.eql('key');
         expect(analytics.token).to.eql('token');
         expect(analytics.userData).to.eql(null);
+        done();
+    });
+
+    it('should have proper userAgent', function (done) {
+        var analytics = new StreamAnalytics({ apiKey: 'key', token: 'token' });
+        expect(analytics.userAgent()).to.eql(
+            'stream-javascript-analytics-client-' + (node ? 'node' : 'browser') + '-' + pkg.version
+        );
         done();
     });
 

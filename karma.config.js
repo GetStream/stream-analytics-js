@@ -16,16 +16,21 @@ module.exports = function (config) {
         frameworks: ['mocha'],
 
         // list of files / patterns to load in the browser
-        files: ['node_modules/expect.js/index.js', 'dist/js/stream-analytics.js', 'tests/*.js'],
+        files: [
+            'node_modules/expect.js/index.js',
+            'dist/js/stream-analytics.js',
+            'browser-test-helper.js',
+            'tests/*.js',
+        ],
 
         // list of files to exclude
         exclude: [],
 
         // // preprocess matching files before serving them to the browser
         // // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-        // preprocessors: {
-        //     'tests/*.js': ['webpack', 'sourcemap'],
-        // },
+        preprocessors: {
+            'browser-test-helper.js': ['webpack'],
+        },
 
         // Webpack configuration for webpack preprocessor
         webpack: webpackConfig,
