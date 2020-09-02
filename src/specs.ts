@@ -66,7 +66,6 @@ export const validateImpression = (impression: Impression) => {
     if (!Array.isArray(impression.content_list) || !impression.content_list.length)
         errors.push('content should be array of strings or objects');
 
-    if (impression.boost !== undefined && typeof impression.boost !== 'number') errors.push('boost should be number');
     if (impression.feed_id !== undefined && typeof impression.feed_id !== 'string')
         errors.push('feed_id should be string');
     if (impression.location !== undefined && typeof impression.location !== 'string')
