@@ -16,10 +16,11 @@ export type Engagement = {
 
 export type Impression = {
     content_list: Array<string | Record<string, unknown>>;
-    boost?: number;
     features?: Feature[];
     feed_id?: string;
     location?: string;
+    position?: number;
+    tracked_at?: string;
 };
 
 const validateFeatures = (features?: Feature[]) => {
