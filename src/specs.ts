@@ -3,8 +3,10 @@ export type Feature = {
     value: string;
 };
 
+type ForeginIdType = { foreign_id: string } & Record<string, unknown>;
+
 export type Engagement = {
-    content: string | Record<string, unknown>;
+    content: string | ForeginIdType;
     label: string;
     boost?: number;
     features?: Feature[];
@@ -12,16 +14,21 @@ export type Engagement = {
     location?: string;
     position?: number;
     score?: number;
+    tracked_at?: string;
 };
 
 export type Impression = {
-    content_list: Array<string | Record<string, unknown>>;
+    content_list: Array<string | ForeginIdType>;
     features?: Feature[];
     feed_id?: string;
     location?: string;
     position?: number;
     tracked_at?: string;
 };
+
+function isForeginIdType(content: string | ForeginIdType): content is ForeginIdType {
+    return typeof content === 'object';
+}
 
 const validateFeatures = (features?: Feature[]) => {
     if (!features) return '';
@@ -42,6 +49,9 @@ export const validateEngagement = (engagement: Engagement) => {
     if (!engagement.label && typeof engagement.label !== 'string') errors.push('label should be string');
     if (!engagement.content || (typeof engagement.content !== 'string' && typeof engagement.content !== 'object'))
         errors.push('content should be string or object');
+
+    if (isForeginIdType(engagement.content) && !engagement.content.foreign_id)
+        errors.push('content.foreign_id should be string');
 
     if (engagement.position !== undefined && typeof engagement.position !== 'number')
         errors.push('position should be number');
@@ -65,6 +75,12 @@ export const validateImpression = (impression: Impression) => {
 
     if (!Array.isArray(impression.content_list) || !impression.content_list.length)
         errors.push('content should be array of strings or objects');
+
+    if (Array.isArray(impression.content_list))
+        impression.content_list.forEach((content, i) => {
+            if (isForeginIdType(content) && !content.foreign_id)
+                errors.push(`content_list[${i}].foreign_id should be string`);
+        });
 
     if (impression.feed_id !== undefined && typeof impression.feed_id !== 'string')
         errors.push('feed_id should be string');
