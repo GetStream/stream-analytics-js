@@ -1,63 +1,76 @@
 {
-  "name": "stream-analytics",
-  "version": "2.8.0",
-  "description": "Analytics JS client for GetStream.io.",
-  "main": "src/stream-analytics.js",
-  "scripts": {
-    "test": "gulp test",
-    "build": "gulp build",
-    "preversion": "npm test",
-    "version": "npm run build && git add -A dist",
-    "postversion": "git push && git push --tags"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/GetStream/stream-analytics-js.git"
-  },
-  "keywords": [
-    "npm",
-    "stream-analytics",
-    "getstream.io",
-    "stream.io"
-  ],
-  "author": "Tommaso Barbugli <tommaso@getstream.io>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/GetStream/stream-analytics-js/issues"
-  },
-  "homepage": "https://github.com/GetStream/stream-analytics-js",
-  "dependencies": {
-    "@stream-io/browser-request": "^0.3.2",
-    "json-loader": "^0.5.7",
-    "natives": "^1.1.6",
-    "request": "2.88.0",
-    "validate.js": "^0.12.0"
-  },
-  "browser": {
-    "request": "@stream-io/browser-request",
-    "crypto": false,
-    "fs": false,
-    "net": false,
-    "tls": false
-  },
-  "devDependencies": {
-    "@stream-io/mocha-sauce": "^0.0.5",
-    "async": "^1.4.2",
-    "bower": "^1.5.3",
-    "expect.js": "^0.3.1",
-    "gulp": "^4.0.0",
-    "gulp-awspublish": "^1.0.6",
-    "gulp-cli": "^2.0.1",
-    "gulp-connect": "^5.7.0",
-    "gulp-eslint": "^5.0.0",
-    "gulp-mocha": "^6.0.0",
-    "gulp-mocha-phantomjs": "^0.12.1",
-    "gulp-remove-empty-lines": "0.0.2",
-    "gulp-rename": "^1.2.0",
-    "gulp-strip-comments": "^1.0.1",
-    "gulp-uglify": "^1.4.1",
-    "gulp-util": "^3.0.6",
-    "mocha": "^4.0.1",
-    "webpack": "^1.12.2"
-  }
+    "name": "stream-analytics",
+    "version": "2.8.0",
+    "description": "Analytics JS client for GetStream.io.",
+    "main": "./lib/stream-analytics.js",
+    "module": "./lib/stream-analytics.js",
+    "types": "./lib/stream-analytics.d.ts",
+    "scripts": {
+        "test": "yarn test-node && yarn test-browser",
+        "test-node": "mocha tests --exit",
+        "test-browser": "karma start karma.config.js",
+        "lint": "yarn run prettier && yarn run eslint",
+        "eslint": "eslint '**/*.{js,ts}' --max-warnings 0",
+        "prettier": "prettier --config ./.prettierrc --list-different \"**/*.{js,ts,md,html,json}\"",
+        "prettier-fix": "prettier --config ./.prettierrc --write \"**/*.{js,ts,md,html,json}\"",
+        "build": "tsc && webpack && webpack --minify",
+        "preversion": "npm test",
+        "version": "npm run build && git add -A dist",
+        "postversion": "git push && git push --tags"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/GetStream/stream-analytics-js.git"
+    },
+    "keywords": [
+        "npm",
+        "stream-analytics",
+        "getstream.io",
+        "stream.io"
+    ],
+    "author": "Tommaso Barbugli <tommaso@getstream.io>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/GetStream/stream-analytics-js/issues"
+    },
+    "homepage": "https://github.com/GetStream/stream-analytics-js",
+    "engines": {
+        "node": "10 || 12 || >=14"
+    },
+    "browser": {
+        "cross-fetch": false
+    },
+    "dependencies": {
+        "cross-fetch": "^3.0.5"
+    },
+    "devDependencies": {
+        "@types/node": "^14.6.0",
+        "@typescript-eslint/eslint-plugin": "^3.10.1",
+        "@typescript-eslint/parser": "^3.10.1",
+        "eslint": "^7.7.0",
+        "eslint-config-airbnb-base": "^14.2.0",
+        "eslint-config-prettier": "^6.11.0",
+        "eslint-plugin-import": "^2.22.0",
+        "eslint-plugin-prettier": "^3.1.4",
+        "eslint-plugin-typescript-sort-keys": "^1.3.0",
+        "expect.js": "^0.3.1",
+        "karma": "^5.1.1",
+        "karma-chrome-launcher": "^3.1.0",
+        "karma-mocha": "^2.0.1",
+        "karma-mocha-reporter": "~2.2.5",
+        "karma-sauce-launcher": "^4.1.5",
+        "karma-sourcemap-loader": "~0.3.8",
+        "karma-webpack": "^4.0.2",
+        "mocha": "^8.1.2",
+        "prettier": "^2.1.1",
+        "ts-loader": "^8.0.3",
+        "typescript": "^4.0.2",
+        "webpack": "^4.44.1",
+        "webpack-cli": "^3.3.12"
+    },
+    "files": [
+        "src",
+        "dist",
+        "lib"
+    ]
 }

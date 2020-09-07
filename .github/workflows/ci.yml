@@ -1,0 +1,27 @@
+name: build
+
+on: [push]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node: [10, 12, 14]
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v2-beta
+              with:
+                  node-version: ${{ matrix.node }}
+
+            - name: Install deps
+              run: yarn install
+
+            - name: Lint ${{ matrix.node }}
+              run: yarn run lint
+
+            - name: Build with ${{ matrix.node }}
+              run: yarn run build
+
+            - name: Lint and Test with ${{ matrix.node }}
+              run: yarn run test
