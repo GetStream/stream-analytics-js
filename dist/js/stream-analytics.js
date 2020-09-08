@@ -284,6 +284,9 @@ exports.InvalidInputData = InvalidInputData;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateImpression = exports.validateEngagement = void 0;
+function isForeginIdType(content) {
+    return typeof content === 'object';
+}
 var validateFeatures = function (features) {
     if (!features)
         return '';
@@ -305,6 +308,8 @@ exports.validateEngagement = function (engagement) {
         errors.push('label should be string');
     if (!engagement.content || (typeof engagement.content !== 'string' && typeof engagement.content !== 'object'))
         errors.push('content should be string or object');
+    if (isForeginIdType(engagement.content) && !engagement.content.foreign_id)
+        errors.push('content.foreign_id should be string');
     if (engagement.position !== undefined && typeof engagement.position !== 'number')
         errors.push('position should be number');
     if (engagement.score !== undefined && typeof engagement.score !== 'number')
@@ -326,6 +331,11 @@ exports.validateImpression = function (impression) {
     var errors = [];
     if (!Array.isArray(impression.content_list) || !impression.content_list.length)
         errors.push('content should be array of strings or objects');
+    if (Array.isArray(impression.content_list))
+        impression.content_list.forEach(function (content, i) {
+            if (isForeginIdType(content) && !content.foreign_id)
+                errors.push("content_list[" + i + "].foreign_id should be string");
+        });
     if (impression.feed_id !== undefined && typeof impression.feed_id !== 'string')
         errors.push('feed_id should be string');
     if (impression.location !== undefined && typeof impression.location !== 'string')
@@ -341,7 +351,7 @@ exports.validateImpression = function (impression) {
 /* 5 */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"name\":\"stream-analytics\",\"version\":\"2.8.0\",\"description\":\"Analytics JS client for GetStream.io.\",\"main\":\"./lib/stream-analytics.js\",\"module\":\"./lib/stream-analytics.js\",\"types\":\"./lib/stream-analytics.d.ts\",\"scripts\":{\"test\":\"yarn test-node && yarn test-browser\",\"test-node\":\"mocha tests --exit\",\"test-browser\":\"karma start karma.config.js\",\"lint\":\"yarn run prettier && yarn run eslint\",\"eslint\":\"eslint '**/*.{js,ts}' --max-warnings 0\",\"prettier\":\"prettier --config ./.prettierrc --list-different \\\"**/*.{js,ts,md,html,json}\\\"\",\"prettier-fix\":\"prettier --config ./.prettierrc --write \\\"**/*.{js,ts,md,html,json}\\\"\",\"build\":\"tsc && webpack && webpack --minify\",\"preversion\":\"npm test\",\"version\":\"npm run build && git add -A dist\",\"postversion\":\"git push && git push --tags\"},\"repository\":{\"type\":\"git\",\"url\":\"git://github.com/GetStream/stream-analytics-js.git\"},\"keywords\":[\"npm\",\"stream-analytics\",\"getstream.io\",\"stream.io\"],\"author\":\"Tommaso Barbugli <tommaso@getstream.io>\",\"license\":\"MIT\",\"bugs\":{\"url\":\"https://github.com/GetStream/stream-analytics-js/issues\"},\"homepage\":\"https://github.com/GetStream/stream-analytics-js\",\"engines\":{\"node\":\"10 || 12 || >=14\"},\"browser\":{\"cross-fetch\":false},\"dependencies\":{\"cross-fetch\":\"^3.0.5\"},\"devDependencies\":{\"@types/node\":\"^14.6.0\",\"@typescript-eslint/eslint-plugin\":\"^3.10.1\",\"@typescript-eslint/parser\":\"^3.10.1\",\"eslint\":\"^7.7.0\",\"eslint-config-airbnb-base\":\"^14.2.0\",\"eslint-config-prettier\":\"^6.11.0\",\"eslint-plugin-import\":\"^2.22.0\",\"eslint-plugin-prettier\":\"^3.1.4\",\"eslint-plugin-typescript-sort-keys\":\"^1.3.0\",\"expect.js\":\"^0.3.1\",\"karma\":\"^5.1.1\",\"karma-chrome-launcher\":\"^3.1.0\",\"karma-mocha\":\"^2.0.1\",\"karma-mocha-reporter\":\"~2.2.5\",\"karma-sauce-launcher\":\"^4.1.5\",\"karma-sourcemap-loader\":\"~0.3.8\",\"karma-webpack\":\"^4.0.2\",\"mocha\":\"^8.1.2\",\"prettier\":\"^2.1.1\",\"ts-loader\":\"^8.0.3\",\"typescript\":\"^4.0.2\",\"webpack\":\"^4.44.1\",\"webpack-cli\":\"^3.3.12\"},\"files\":[\"src\",\"dist\",\"lib\"]}");
+module.exports = JSON.parse("{\"name\":\"stream-analytics\",\"version\":\"2.8.0\",\"description\":\"Analytics JS client for GetStream.io.\",\"main\":\"./lib/stream-analytics.js\",\"module\":\"./lib/stream-analytics.js\",\"types\":\"./lib/stream-analytics.d.ts\",\"scripts\":{\"test\":\"yarn test-node && yarn test-browser\",\"test-node\":\"mocha tests --exit\",\"test-browser\":\"karma start karma.config.js\",\"lint\":\"yarn run prettier && yarn run eslint\",\"eslint\":\"eslint '**/*.{js,ts}' --max-warnings 0\",\"prettier\":\"prettier --config ./.prettierrc --list-different \\\"**/*.{js,ts,md,html,json}\\\"\",\"prettier-fix\":\"prettier --config ./.prettierrc --write \\\"**/*.{js,ts,md,html,json}\\\"\",\"build\":\"tsc && webpack && webpack --minify\",\"preversion\":\"yarn test\",\"version\":\"yarn run build && git add -A dist\",\"postversion\":\"git push && git push --tags\"},\"repository\":{\"type\":\"git\",\"url\":\"git://github.com/GetStream/stream-analytics-js.git\"},\"keywords\":[\"npm\",\"stream-analytics\",\"getstream.io\",\"stream.io\"],\"author\":\"Tommaso Barbugli <tommaso@getstream.io>\",\"license\":\"MIT\",\"bugs\":{\"url\":\"https://github.com/GetStream/stream-analytics-js/issues\"},\"homepage\":\"https://github.com/GetStream/stream-analytics-js\",\"engines\":{\"node\":\"10 || 12 || >=14\"},\"browser\":{\"cross-fetch\":false},\"dependencies\":{\"cross-fetch\":\"^3.0.5\"},\"devDependencies\":{\"@types/node\":\"^14.6.0\",\"@typescript-eslint/eslint-plugin\":\"^3.10.1\",\"@typescript-eslint/parser\":\"^3.10.1\",\"eslint\":\"^7.7.0\",\"eslint-config-airbnb-base\":\"^14.2.0\",\"eslint-config-prettier\":\"^6.11.0\",\"eslint-plugin-import\":\"^2.22.0\",\"eslint-plugin-prettier\":\"^3.1.4\",\"eslint-plugin-typescript-sort-keys\":\"^1.3.0\",\"expect.js\":\"^0.3.1\",\"karma\":\"^5.1.1\",\"karma-chrome-launcher\":\"^3.1.0\",\"karma-mocha\":\"^2.0.1\",\"karma-mocha-reporter\":\"~2.2.5\",\"karma-sauce-launcher\":\"^4.1.5\",\"karma-sourcemap-loader\":\"~0.3.8\",\"karma-webpack\":\"^4.0.2\",\"mocha\":\"^8.1.2\",\"prettier\":\"^2.1.1\",\"ts-loader\":\"^8.0.3\",\"typescript\":\"^4.0.2\",\"webpack\":\"^4.44.1\",\"webpack-cli\":\"^3.3.12\"},\"files\":[\"src\",\"dist\",\"lib\"]}");
 
 /***/ })
 /******/ ]);
