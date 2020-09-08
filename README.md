@@ -1,6 +1,8 @@
-# GetStream JS Analytics Client
+# Stream JS Analytics Client
 
-[![Build Status](https://travis-ci.org/GetStream/stream-analytics-js.svg?branch=master)](https://travis-ci.org/GetStream/stream-analytics-js)
-[![npm version](https://badge.fury.io/js/stream-analytics.svg)](http://badge.fury.io/js/stream-analytics)
+
+[![NPM](https://img.shields.io/npm/v/stream-analytics.svg)](https://www.npmjs.com/package/stream-analytics)
+[![Build Status](https://github.com/GetStream/stream-analytics-js/workflows/build/badge.svg)](https://github.com/GetStream/stream-analytics-js/actions)
+
 
 [Documentation](https://getstream.io/docs/#analytics_setup)
