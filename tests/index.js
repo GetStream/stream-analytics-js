@@ -3,21 +3,25 @@ var expect = expect || require('expect.js');
 var node = typeof process != 'undefined';
 
 var errors;
+var apiKey;
+var token;
 if (node) {
+    apiKey = process.env.STREAM_API_KEY;
+    token = process.env.STREAM_ANALYTICS_TOKEN;
+
     pkg = require('../package.json');
     errors = require('../lib/errors');
     var StreamAnalytics = require('../lib/stream-analytics');
 } else {
+    apiKey = window.STREAM_API_KEY;
+    token = window.STREAM_ANALYTICS_TOKEN;
+
     errors = StreamAnalytics.errors;
 }
 
 var misconfiguredClientError = function (e) {
     expect(e).to.be.a(errors.MisconfiguredClient);
 };
-
-var apiKey = 'szhmf34fz9bu';
-var token =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZXNvdXJjZSI6ImFuYWx5dGljcyIsImFjdGlvbiI6IioiLCJ1c2VyX2lkIjoiKiJ9.yl6rNj_FckORWvGZBmLVLyrlJMFn6pl26AF0n5N1qrQ';
 
 describe('StreamAnalytics', function () {
     it('should initialize a StreamAnalytics', function (done) {
