@@ -3,25 +3,28 @@ name: build
 on: [push]
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                node: [10, 12, 14]
-        steps:
-            - uses: actions/checkout@v2
-            - uses: actions/setup-node@v2-beta
-              with:
-                  node-version: ${{ matrix.node }}
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [10, 12, 14]
+    env:
+      STREAM_API_KEY: ${{ secrets.STREAM_API_KEY }}
+      STREAM_ANALYTICS_TOKEN: ${{ secrets.STREAM_ANALYTICS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: ${{ matrix.node }}
 
-            - name: Install deps
-              run: yarn install
+      - name: Install deps
+        run: yarn install
 
-            - name: Lint ${{ matrix.node }}
-              run: yarn run lint
+      - name: Lint ${{ matrix.node }}
+        run: yarn run lint
 
-            - name: Build with ${{ matrix.node }}
-              run: yarn run build
+      - name: Build with ${{ matrix.node }}
+        run: yarn run build
 
-            - name: Lint and Test with ${{ matrix.node }}
-              run: yarn run test
+      - name: Lint and Test with ${{ matrix.node }}
+        run: yarn run test

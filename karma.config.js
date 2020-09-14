@@ -1,9 +1,11 @@
+const webpack = require('webpack'); // eslint-disable-line import/no-extraneous-dependencies
 const webpackConfig = require('./webpack.config.js')();
 
 // Webpack config tweaks for test-time
 delete webpackConfig.entry;
 delete webpackConfig.output;
 webpackConfig.devtool = 'inline-source-map';
+webpackConfig.plugins = [new webpack.EnvironmentPlugin(['STREAM_API_KEY', 'STREAM_ANALYTICS_TOKEN'])];
 
 // Karma config
 module.exports = function (config) {
