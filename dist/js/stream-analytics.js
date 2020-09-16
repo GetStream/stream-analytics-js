@@ -174,7 +174,7 @@ var StreamAnalytics = /** @class */ (function () {
         }
         else {
             body = {
-                content_list: eventData.content_list.map(function (e) { return (__assign(__assign({}, e), { user_data: _this.userData })); }),
+                content_list: eventData.map(function (e) { return (__assign(__assign({}, e), { user_data: _this.userData })); }),
             };
         }
         return request(this.baseUrl + resource + "/?api_key=" + this.apiKey, {
@@ -198,25 +198,17 @@ var StreamAnalytics = /** @class */ (function () {
             throw new errors.InvalidInputData('event data is not valid', err);
         return this._sendEvent('impression', eventData);
     };
-    StreamAnalytics.prototype.trackEngagement = function (eventData) {
-        var err = specs_1.validateEngagement(eventData);
-        if (err)
-            throw new errors.InvalidInputData('event data is not valid', err);
-        return this._sendEvent('engagement', { content_list: [eventData] });
-    };
-    StreamAnalytics.prototype.trackEngagements = function (eventData) {
-        if (!eventData || !eventData.content_list) {
-            throw new errors.InvalidInputData('event data is not valid', [
-                'engagements should be an object with non-empty content_list',
-            ]);
+    StreamAnalytics.prototype.trackEngagement = function () {
+        var eventData = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            eventData[_i] = arguments[_i];
         }
-        var events = eventData.content_list;
         var _loop_1 = function (i) {
-            var err = specs_1.validateEngagement(events[i]);
+            var err = specs_1.validateEngagement(eventData[i]);
             if (err)
                 throw new errors.InvalidInputData('event data is not valid', err.map(function (e) { return i + ": " + e; }));
         };
-        for (var i = 0; i < events.length; i++) {
+        for (var i = 0; i < eventData.length; i++) {
             _loop_1(i);
         }
         return this._sendEvent('engagement', eventData);

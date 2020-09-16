@@ -347,25 +347,23 @@ describe('analytics client integration', function () {
     it('should store track multiple engagements', function () {
         var analytics = new StreamAnalytics({ apiKey, token, baseUrl });
         analytics.setUser('tommaso');
-        return analytics.trackEngagements({
-            content_list: [
-                {
-                    content: '1',
-                    label: 'click',
-                    features: [
-                        { group: 'topic', value: 'js' },
-                        { group: 'user', value: 'tommaso' },
-                    ],
-                },
-                {
-                    content: '2',
-                    label: 'click',
-                    features: [
-                        { group: 'topic', value: 'go' },
-                        { group: 'user', value: 'tommaso' },
-                    ],
-                },
-            ],
-        });
+        return analytics.trackEngagement(
+            {
+                content: '1',
+                label: 'click',
+                features: [
+                    { group: 'topic', value: 'js' },
+                    { group: 'user', value: 'tommaso' },
+                ],
+            },
+            {
+                content: '2',
+                label: 'click',
+                features: [
+                    { group: 'topic', value: 'go' },
+                    { group: 'user', value: 'tommaso' },
+                ],
+            }
+        );
     });
 });

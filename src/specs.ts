@@ -17,10 +17,6 @@ export type Engagement = {
     tracked_at?: string;
 };
 
-export type Engagements = {
-    content_list: Engagement[];
-};
-
 export type Impression = {
     content_list: Array<string | ForeginIdType>;
     features?: Feature[];
