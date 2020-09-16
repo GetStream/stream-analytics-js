@@ -2,12 +2,11 @@ var expect = expect || require('expect.js');
 
 var node = typeof process != 'undefined';
 
-var errors;
-var apiKey;
-var token;
+var errors, apiKey, token, baseUrl;
 if (node) {
     apiKey = process.env.STREAM_API_KEY;
     token = process.env.STREAM_ANALYTICS_TOKEN;
+    baseUrl = process.env.STREAM_BASE_URL;
 
     pkg = require('../package.json');
     errors = require('../lib/errors');
@@ -15,6 +14,7 @@ if (node) {
 } else {
     apiKey = window.STREAM_API_KEY;
     token = window.STREAM_ANALYTICS_TOKEN;
+    baseUrl = window.STREAM_BASE_URL;
 
     errors = StreamAnalytics.errors;
 }
@@ -28,6 +28,7 @@ describe('StreamAnalytics', function () {
         var analytics = new StreamAnalytics({
             apiKey: 'key',
             token: 'token',
+            baseUrl,
         });
         expect(analytics.apiKey).to.eql('key');
         expect(analytics.token).to.eql('token');
@@ -36,7 +37,7 @@ describe('StreamAnalytics', function () {
     });
 
     it('should have proper userAgent', function (done) {
-        var analytics = new StreamAnalytics({ apiKey: 'key', token: 'token' });
+        var analytics = new StreamAnalytics({ apiKey: 'key', token: 'token', baseUrl });
         expect(analytics.userAgent()).to.eql(
             'stream-javascript-analytics-client-' + (node ? 'node' : 'browser') + '-' + pkg.version
         );
@@ -47,6 +48,7 @@ describe('StreamAnalytics', function () {
         var analytics = new StreamAnalytics({
             apiKey: 'key',
             token: 'token',
+            baseUrl,
         });
         expect(analytics.userData).to.eql(null);
         analytics.setUser('user_data');
@@ -58,6 +60,7 @@ describe('StreamAnalytics', function () {
         var analytics = new StreamAnalytics({
             apiKey: 'key',
             token: 'token',
+            baseUrl,
         });
         var impression = {};
         expect(function () {
@@ -71,6 +74,7 @@ describe('StreamAnalytics', function () {
         var analytics = new StreamAnalytics({
             apiKey: 'key',
             token: 'token',
+            baseUrl,
         });
         var engagement = {};
         expect(function () {
@@ -84,6 +88,7 @@ describe('StreamAnalytics', function () {
         var analytics = new StreamAnalytics({
             apiKey: 'key',
             token: 'token',
+            baseUrl,
         });
         var engagement = {
             label: 'messing_around',
@@ -110,6 +115,7 @@ describe('StreamAnalytics', function () {
         var analytics = new StreamAnalytics({
             apiKey: 'key',
             token: 'token',
+            baseUrl,
         });
         var impression = {
             foreign_ids: 'messing_around',
@@ -126,6 +132,7 @@ describe('StreamAnalytics', function () {
         var analytics = new StreamAnalytics({
             apiKey: 'key',
             token: 'token',
+            baseUrl,
         });
         var impression = {
             content_list: ['messing_around'],
@@ -151,7 +158,7 @@ describe('StreamAnalytics', function () {
 
 describe('analytics client', function () {
     it('should store apiKey and token', function (done) {
-        var client = new StreamAnalytics({ apiKey: 'key', token: 'token' });
+        var client = new StreamAnalytics({ apiKey: 'key', token: 'token', baseUrl });
         expect(client.apiKey).to.eql('key');
         expect(client.token).to.eql('token');
         done();
@@ -159,13 +166,13 @@ describe('analytics client', function () {
 
     it('should validate apiKey and token', function (done) {
         expect(function () {
-            new StreamAnalytics({ apiKey: 'key' });
+            new StreamAnalytics({ apiKey: 'key', baseUrl });
         }).to.throwException(misconfiguredClientError);
         expect(function () {
-            new StreamAnalytics({ token: 'token' });
+            new StreamAnalytics({ token: 'token', baseUrl });
         }).to.throwException(misconfiguredClientError);
         expect(function () {
-            new StreamAnalytics({});
+            new StreamAnalytics({ baseUrl });
         }).to.throwException(misconfiguredClientError);
         expect(function () {
             new StreamAnalytics();
@@ -178,7 +185,7 @@ describe('analytics client integration', function () {
     this.timeout(5000);
 
     it('should store code example #1', function () {
-        var client = new StreamAnalytics({ apiKey: apiKey, token: token });
+        var client = new StreamAnalytics({ apiKey, token, baseUrl });
         client.setUser({ id: 486892, alias: 'Julian' });
         var impression = {
             // the list of content IDs displayed to the user
@@ -194,7 +201,7 @@ describe('analytics client integration', function () {
     });
 
     it('should store code example #2', function () {
-        var client = new StreamAnalytics({ apiKey: apiKey, token: token });
+        var client = new StreamAnalytics({ apiKey, token, baseUrl });
         client.setUser({ id: 486892, alias: 'Julian' });
         var engagement = {
             // the label for the engagement, ie click, retweet etc.
@@ -217,7 +224,7 @@ describe('analytics client integration', function () {
     });
 
     it('should store code example #3', function () {
-        var client = new StreamAnalytics({ apiKey: apiKey, token: token });
+        var client = new StreamAnalytics({ apiKey, token, baseUrl });
         client.setUser({ id: 486892, alias: 'Julian' });
         var features = [
             {
@@ -237,7 +244,7 @@ describe('analytics client integration', function () {
     });
 
     it('should store code example #4', function () {
-        var client = new StreamAnalytics({ apiKey: apiKey, token: token });
+        var client = new StreamAnalytics({ apiKey, token, baseUrl });
         client.setUser({ id: 486892, alias: 'Julian' });
         var features = [
             {
@@ -256,7 +263,7 @@ describe('analytics client integration', function () {
     });
 
     it('should store code example #5', function () {
-        var client = new StreamAnalytics({ apiKey: apiKey, token: token });
+        var client = new StreamAnalytics({ apiKey, token, baseUrl });
         client.setUser({ id: 486892, alias: 'Julian' });
         var engagement = {
             label: 'click',
@@ -272,7 +279,7 @@ describe('analytics client integration', function () {
     });
 
     it('should store code example #6', function () {
-        var client = new StreamAnalytics({ apiKey: apiKey, token: token });
+        var client = new StreamAnalytics({ apiKey, token, baseUrl });
         client.setUser({ id: 486892, alias: 'Julian' });
         var impression = {
             content_list: [
@@ -290,7 +297,7 @@ describe('analytics client integration', function () {
     });
 
     it('should store code example #7', function () {
-        var client = new StreamAnalytics({ apiKey: apiKey, token: token });
+        var client = new StreamAnalytics({ apiKey, token, baseUrl });
         client.setUser({ id: 486892, alias: 'Julian' });
         var engagement = {
             label: 'click',
@@ -313,7 +320,7 @@ describe('analytics client integration', function () {
     });
 
     it('should store track impressions', function () {
-        var analytics = new StreamAnalytics({ apiKey: apiKey, token: token });
+        var analytics = new StreamAnalytics({ apiKey, token, baseUrl });
         analytics.setUser('tommaso');
         return analytics.trackImpression({
             content_list: ['1', '2', '3'],
@@ -325,7 +332,7 @@ describe('analytics client integration', function () {
     });
 
     it('should store track engagements', function () {
-        var analytics = new StreamAnalytics({ apiKey: apiKey, token: token });
+        var analytics = new StreamAnalytics({ apiKey, token, baseUrl });
         analytics.setUser('tommaso');
         return analytics.trackEngagement({
             content: '1',

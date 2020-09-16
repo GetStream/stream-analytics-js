@@ -18,7 +18,7 @@ class StreamAnalytics<UserType = unknown> {
     node: boolean;
     userData: UserType | null;
 
-    constructor(config: { apiKey: string; token: string }) {
+    constructor(config: { apiKey: string; token: string; baseUrl?: string }) {
         if (!config || !config.apiKey || !config.token) {
             throw new errors.MisconfiguredClient('the client must be initialized with apiKey and token');
         }
@@ -28,7 +28,7 @@ class StreamAnalytics<UserType = unknown> {
         this.apiKey = config.apiKey;
         this.token = config.token;
 
-        this.baseUrl = 'https://analytics.stream-io-api.com/analytics/v1.0/';
+        this.baseUrl = config.baseUrl || 'https://analytics.stream-io-api.com/analytics/v1.0/';
         this.node = typeof window === 'undefined';
     }
 
