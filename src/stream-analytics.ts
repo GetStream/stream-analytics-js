@@ -28,11 +28,7 @@ class StreamAnalytics<UserType = unknown> {
         this.apiKey = config.apiKey;
         this.token = config.token;
 
-        if (config.baseUrl) {
-            this.baseUrl = config.baseUrl;
-        } else {
-            this.baseUrl = 'https://analytics.stream-io-api.com/analytics/v1.0/';
-        }
+        this.baseUrl = config.baseUrl || 'https://analytics.stream-io-api.com/analytics/v1.0/';
         this.node = typeof window === 'undefined';
     }
 
