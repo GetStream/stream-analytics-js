@@ -18,7 +18,7 @@ class StreamAnalytics<UserType = unknown> {
     node: boolean;
     userData: UserType | null;
 
-    constructor(config: { apiKey: string; baseUrl: string; token: string }) {
+    constructor(config: { apiKey: string; token: string; baseUrl?: string }) {
         if (!config || !config.apiKey || !config.token) {
             throw new errors.MisconfiguredClient('the client must be initialized with apiKey and token');
         }
