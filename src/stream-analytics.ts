@@ -1,7 +1,7 @@
 import crossFetch from 'cross-fetch';
 
 import * as errors from './errors';
-import { validateEngagement, validateImpression, Impression, Engagement } from './specs';
+import { validateEngagement, validateImpression, Impression, Engagement, Engagements } from './specs';
 
 // use native fetch in browser mode to reduce bundle size
 // webpack skip bundling the cross-fetch
@@ -40,12 +40,24 @@ class StreamAnalytics<UserType = unknown> {
         return `stream-javascript-analytics-client-${this.node ? 'node' : 'browser'}-${pkg.version || 'unknown'}`;
     }
 
-    _sendEvent(resource: string, eventData: Impression | Engagement) {
+    _sendEvent(resource: string, eventData: Impression | Engagements) {
         if (this.userData === null) throw new errors.MissingUserId('userData was not set');
+
+        let body;
+        if (resource === 'impression') {
+            body = { ...eventData, user_data: this.userData };
+        } else {
+            body = {
+                content_list: (eventData as Engagements).content_list.map((e: Engagement) => ({
+                    ...e,
+                    user_data: this.userData,
+                })),
+            };
+        }
 
         return request(`${this.baseUrl + resource}/?api_key=${this.apiKey}`, {
             method: 'POST',
-            body: JSON.stringify({ ...eventData, user_data: this.userData }),
+            body: JSON.stringify(body),
             headers: {
                 'Content-Type': 'application/json',
                 'X-Stream-Client': this.userAgent(),
@@ -68,6 +80,26 @@ class StreamAnalytics<UserType = unknown> {
     trackEngagement(eventData: Engagement) {
         const err = validateEngagement(eventData);
         if (err) throw new errors.InvalidInputData('event data is not valid', err);
+
+        return this._sendEvent('engagement', { content_list: [eventData] });
+    }
+
+    trackEngagements(eventData: Engagements) {
+        if (!eventData || !eventData.content_list) {
+            throw new errors.InvalidInputData('event data is not valid', [
+                'engagements should be an object with non-empty content_list',
+            ]);
+        }
+
+        const events = eventData.content_list;
+        for (let i = 0; i < events.length; i++) {
+            const err = validateEngagement(events[i]);
+            if (err)
+                throw new errors.InvalidInputData(
+                    'event data is not valid',
+                    err.map((e) => `${i}: ${e}`)
+                );
+        }
 
         return this._sendEvent('engagement', eventData);
     }
