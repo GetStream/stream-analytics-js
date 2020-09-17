@@ -347,7 +347,7 @@ describe('analytics client integration', function () {
     it('should store track multiple engagements', function () {
         var analytics = new StreamAnalytics({ apiKey, token, baseUrl });
         analytics.setUser('tommaso');
-        return analytics.trackEngagement(
+        return analytics.trackEngagements([
             {
                 content: '1',
                 label: 'click',
@@ -363,7 +363,7 @@ describe('analytics client integration', function () {
                     { group: 'topic', value: 'go' },
                     { group: 'user', value: 'tommaso' },
                 ],
-            }
-        );
+            },
+        ]);
     });
 });
