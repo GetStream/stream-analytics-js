@@ -2,21 +2,16 @@ var expect = expect || require('expect.js');
 
 var node = typeof process != 'undefined';
 
-var errors, apiKey, token, baseUrl;
 if (node) {
     require('dotenv').config();
     apiKey = process.env.API_KEY;
     token = process.env.ANALYTICS_TOKEN;
     baseUrl = process.env.BASE_URL;
 
-    pkg = require('../package.json');
+    version = require('../package.json').version;
     errors = require('../lib/errors');
-    var StreamAnalytics = require('../lib/stream-analytics');
+    StreamAnalytics = require('../lib/stream-analytics');
 } else {
-    apiKey = window.__env__.API_KEY;
-    token = window.__env__.ANALYTICS_TOKEN;
-    baseUrl = window.__env__.BASE_URL;
-
     errors = StreamAnalytics.errors;
 }
 
@@ -40,7 +35,7 @@ describe('StreamAnalytics', function () {
     it('should have proper userAgent', function (done) {
         var analytics = new StreamAnalytics({ apiKey: 'key', token: 'token', baseUrl });
         expect(analytics.userAgent()).to.eql(
-            'stream-javascript-analytics-client-' + (node ? 'node' : 'browser') + '-' + pkg.version
+            'stream-javascript-analytics-client-' + (node ? 'node' : 'browser') + '-' + version
         );
         done();
     });
