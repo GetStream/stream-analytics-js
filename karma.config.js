@@ -5,13 +5,20 @@ const webpackConfig = require('./webpack.config.js')();
 delete webpackConfig.entry;
 delete webpackConfig.output;
 webpackConfig.devtool = 'inline-source-map';
-webpackConfig.plugins = [new webpack.EnvironmentPlugin(['STREAM_API_KEY', 'STREAM_ANALYTICS_TOKEN'])];
+webpackConfig.plugins = [
+    new webpack.EnvironmentPlugin(['STREAM_API_KEY', 'STREAM_ANALYTICS_TOKEN', 'STREAM_BASE_URL']),
+];
 
 // Karma config
 module.exports = function (config) {
     config.set({
         // base path that will be used to resolve all patterns (eg. files, exclude)
         basePath: '',
+
+        // logging and stopping on failure
+        client: {
+            captureConsole: true,
+        },
 
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter

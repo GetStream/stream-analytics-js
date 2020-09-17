@@ -40,12 +40,24 @@ class StreamAnalytics<UserType = unknown> {
         return `stream-javascript-analytics-client-${this.node ? 'node' : 'browser'}-${pkg.version || 'unknown'}`;
     }
 
-    _sendEvent(resource: string, eventData: Impression | Engagement) {
+    _sendEvent(resource: string, eventData: Impression | Engagement[]) {
         if (this.userData === null) throw new errors.MissingUserId('userData was not set');
+
+        let body;
+        if (resource === 'impression') {
+            body = { ...eventData, user_data: this.userData };
+        } else {
+            body = {
+                content_list: (eventData as Engagement[]).map((e) => ({
+                    ...e,
+                    user_data: this.userData,
+                })),
+            };
+        }
 
         return request(`${this.baseUrl + resource}/?api_key=${this.apiKey}`, {
             method: 'POST',
-            body: JSON.stringify({ ...eventData, user_data: this.userData }),
+            body: JSON.stringify(body),
             headers: {
                 'Content-Type': 'application/json',
                 'X-Stream-Client': this.userAgent(),
@@ -66,10 +78,20 @@ class StreamAnalytics<UserType = unknown> {
     }
 
     trackEngagement(eventData: Engagement) {
-        const err = validateEngagement(eventData);
-        if (err) throw new errors.InvalidInputData('event data is not valid', err);
+        return this.trackEngagements([eventData]);
+    }
 
-        return this._sendEvent('engagement', eventData);
+    trackEngagements(eventDataList: Engagement[]) {
+        for (let i = 0; i < eventDataList.length; i++) {
+            const err = validateEngagement(eventDataList[i]);
+            if (err) {
+                throw new errors.InvalidInputData(
+                    'event data is not valid',
+                    err.map((e) => `${i}: ${e}`)
+                );
+            }
+        }
+        return this._sendEvent('engagement', eventDataList);
     }
 }
 

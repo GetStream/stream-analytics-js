@@ -155,7 +155,7 @@ var StreamAnalytics = /** @class */ (function () {
         this.userData = null;
         this.apiKey = config.apiKey;
         this.token = config.token;
-        this.baseUrl = 'https://analytics.stream-io-api.com/analytics/v1.0/';
+        this.baseUrl = config.baseUrl || 'https://analytics.stream-io-api.com/analytics/v1.0/';
         this.node = typeof window === 'undefined';
     }
     StreamAnalytics.prototype.setUser = function (data) {
@@ -165,11 +165,21 @@ var StreamAnalytics = /** @class */ (function () {
         return "stream-javascript-analytics-client-" + (this.node ? 'node' : 'browser') + "-" + (pkg.version || 'unknown');
     };
     StreamAnalytics.prototype._sendEvent = function (resource, eventData) {
+        var _this = this;
         if (this.userData === null)
             throw new errors.MissingUserId('userData was not set');
+        var body;
+        if (resource === 'impression') {
+            body = __assign(__assign({}, eventData), { user_data: this.userData });
+        }
+        else {
+            body = {
+                content_list: eventData.map(function (e) { return (__assign(__assign({}, e), { user_data: _this.userData })); }),
+            };
+        }
         return request(this.baseUrl + resource + "/?api_key=" + this.apiKey, {
             method: 'POST',
-            body: JSON.stringify(__assign(__assign({}, eventData), { user_data: this.userData })),
+            body: JSON.stringify(body),
             headers: {
                 'Content-Type': 'application/json',
                 'X-Stream-Client': this.userAgent(),
@@ -189,10 +199,19 @@ var StreamAnalytics = /** @class */ (function () {
         return this._sendEvent('impression', eventData);
     };
     StreamAnalytics.prototype.trackEngagement = function (eventData) {
-        var err = specs_1.validateEngagement(eventData);
-        if (err)
-            throw new errors.InvalidInputData('event data is not valid', err);
-        return this._sendEvent('engagement', eventData);
+        return this.trackEngagements([eventData]);
+    };
+    StreamAnalytics.prototype.trackEngagements = function (eventDataList) {
+        var _loop_1 = function (i) {
+            var err = specs_1.validateEngagement(eventDataList[i]);
+            if (err) {
+                throw new errors.InvalidInputData('event data is not valid', err.map(function (e) { return i + ": " + e; }));
+            }
+        };
+        for (var i = 0; i < eventDataList.length; i++) {
+            _loop_1(i);
+        }
+        return this._sendEvent('engagement', eventDataList);
     };
     return StreamAnalytics;
 }());
