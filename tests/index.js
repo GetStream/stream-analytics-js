@@ -4,9 +4,9 @@ var node = typeof process != 'undefined';
 
 if (node) {
     require('dotenv').config();
-    apiKey = process.env.API_KEY;
-    token = process.env.ANALYTICS_TOKEN;
-    baseUrl = process.env.BASE_URL;
+    apiKey = process.env.STREAM_API_KEY;
+    token = process.env.STREAM_ANALYTICS_TOKEN;
+    baseUrl = process.env.STREAM_BASE_URL;
 
     version = require('../package.json').version;
     errors = require('../lib/errors');
