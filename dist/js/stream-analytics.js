@@ -198,20 +198,20 @@ var StreamAnalytics = /** @class */ (function () {
             throw new errors.InvalidInputData('event data is not valid', err);
         return this._sendEvent('impression', eventData);
     };
-    StreamAnalytics.prototype.trackEngagement = function () {
-        var eventData = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            eventData[_i] = arguments[_i];
-        }
+    StreamAnalytics.prototype.trackEngagement = function (eventData) {
+        return this.trackEngagements([eventData]);
+    };
+    StreamAnalytics.prototype.trackEngagements = function (eventDataList) {
         var _loop_1 = function (i) {
-            var err = specs_1.validateEngagement(eventData[i]);
-            if (err)
+            var err = specs_1.validateEngagement(eventDataList[i]);
+            if (err) {
                 throw new errors.InvalidInputData('event data is not valid', err.map(function (e) { return i + ": " + e; }));
+            }
         };
-        for (var i = 0; i < eventData.length; i++) {
+        for (var i = 0; i < eventDataList.length; i++) {
             _loop_1(i);
         }
-        return this._sendEvent('engagement', eventData);
+        return this._sendEvent('engagement', eventDataList);
     };
     return StreamAnalytics;
 }());

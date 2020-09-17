@@ -77,17 +77,21 @@ class StreamAnalytics<UserType = unknown> {
         return this._sendEvent('impression', eventData);
     }
 
-    trackEngagement(...eventData: Engagement[]) {
-        for (let i = 0; i < eventData.length; i++) {
-            const err = validateEngagement(eventData[i]);
-            if (err)
+    trackEngagement(eventData: Engagement) {
+        return this.trackEngagements([eventData]);
+    }
+
+    trackEngagements(eventDataList: Engagement[]) {
+        for (let i = 0; i < eventDataList.length; i++) {
+            const err = validateEngagement(eventDataList[i]);
+            if (err) {
                 throw new errors.InvalidInputData(
                     'event data is not valid',
                     err.map((e) => `${i}: ${e}`)
                 );
+            }
         }
-
-        return this._sendEvent('engagement', eventData);
+        return this._sendEvent('engagement', eventDataList);
     }
 }
 
