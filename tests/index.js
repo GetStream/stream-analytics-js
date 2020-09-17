@@ -5,17 +5,17 @@ var node = typeof process != 'undefined';
 var errors, apiKey, token, baseUrl;
 if (node) {
     require('dotenv').config();
-    apiKey = process.env.STREAM_API_KEY;
-    token = process.env.STREAM_ANALYTICS_TOKEN;
-    baseUrl = process.env.STREAM_BASE_URL;
+    apiKey = process.env.API_KEY;
+    token = process.env.ANALYTICS_TOKEN;
+    baseUrl = process.env.BASE_URL;
 
     pkg = require('../package.json');
     errors = require('../lib/errors');
     var StreamAnalytics = require('../lib/stream-analytics');
 } else {
-    apiKey = window.env.STREAM_API_KEY;
-    token = window.env.STREAM_ANALYTICS_TOKEN;
-    baseUrl = window.env.STREAM_BASE_URL;
+    apiKey = window.__env__.API_KEY;
+    token = window.__env__.ANALYTICS_TOKEN;
+    baseUrl = window.__env__.BASE_URL;
 
     errors = StreamAnalytics.errors;
 }
