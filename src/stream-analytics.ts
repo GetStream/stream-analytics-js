@@ -41,8 +41,6 @@ class StreamAnalytics<UserType = unknown> {
     }
 
     _sendEvent(resource: string, eventData: Impression | Engagement[]) {
-        if (this.userData === null) throw new errors.MissingUserId('userData was not set');
-
         let body;
         if (resource === 'impression') {
             body = { ...eventData, user_data: this.userData };
@@ -50,7 +48,7 @@ class StreamAnalytics<UserType = unknown> {
             body = {
                 content_list: (eventData as Engagement[]).map((e) => ({
                     ...e,
-                    user_data: this.userData,
+                    user_data: e.user_data || this.userData,
                 })),
             };
         }
@@ -73,21 +71,28 @@ class StreamAnalytics<UserType = unknown> {
     trackImpression(eventData: Impression) {
         const err = validateImpression(eventData);
         if (err) throw new errors.InvalidInputData('event data is not valid', err);
+        if (!this.userData) throw new errors.MissingUserId('userData was not set');
 
         return this._sendEvent('impression', eventData);
     }
 
-    trackEngagement(eventData: Engagement) {
+    trackEngagement(eventData: Engagement<UserType>) {
         return this.trackEngagements([eventData]);
     }
 
-    trackEngagements(eventDataList: Engagement[]) {
+    trackEngagements(eventDataList: Engagement<UserType>[]) {
         for (let i = 0; i < eventDataList.length; i++) {
-            const err = validateEngagement(eventDataList[i]);
+            const event = eventDataList[i];
+            const err = validateEngagement(event);
             if (err) {
                 throw new errors.InvalidInputData(
                     'event data is not valid',
                     err.map((e) => `${i}: ${e}`)
+                );
+            }
+            if (!this.userData && !event.user_data) {
+                throw new errors.MissingUserId(
+                    'user_data should be in each event or set the default with StreamAnalytics.setUser()'
                 );
             }
         }

@@ -5,7 +5,7 @@ export type Feature = {
 
 type ForeginIdType = { foreign_id: string } & Record<string, unknown>;
 
-export type Engagement = {
+export type Engagement<UserType = unknown> = {
     content: string | ForeginIdType;
     label: string;
     boost?: number;
@@ -15,6 +15,7 @@ export type Engagement = {
     position?: number;
     score?: number;
     tracked_at?: string;
+    user_data?: UserType;
 };
 
 export type Impression = {
