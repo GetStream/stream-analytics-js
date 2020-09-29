@@ -5,7 +5,7 @@ export type Feature = {
 
 type ForeginIdType = { foreign_id: string } & Record<string, unknown>;
 
-export type Engagement = {
+export type Engagement<UserType = unknown> = {
     content: string | ForeginIdType;
     label: string;
     boost?: number;
@@ -15,15 +15,17 @@ export type Engagement = {
     position?: number;
     score?: number;
     tracked_at?: string;
+    user_data?: UserType;
 };
 
-export type Impression = {
+export type Impression<UserType = unknown> = {
     content_list: Array<string | ForeginIdType>;
     features?: Feature[];
     feed_id?: string;
     location?: string;
     position?: number;
     tracked_at?: string;
+    user_data?: UserType;
 };
 
 function isForeginIdType(content: string | ForeginIdType): content is ForeginIdType {
