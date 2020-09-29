@@ -40,16 +40,20 @@ class StreamAnalytics<UserType = unknown> {
         return `stream-javascript-analytics-client-${this.node ? 'node' : 'browser'}-${pkg.version || 'unknown'}`;
     }
 
-    _sendEvent(resource: string, eventData: Impression | Engagement[]) {
+    _throwMissingUserData(event: Impression | Engagement) {
+        if (this.userData || event.user_data) return;
+        throw new errors.MissingUserId(
+            'user_data should be in each event or set the default with StreamAnalytics.setUser()'
+        );
+    }
+
+    _sendEvent(resource: string, event: Impression | Engagement[]) {
         let body;
         if (resource === 'impression') {
-            body = { ...eventData, user_data: this.userData };
+            body = { ...event, user_data: (event as Impression).user_data || this.userData };
         } else {
             body = {
-                content_list: (eventData as Engagement[]).map((e) => ({
-                    ...e,
-                    user_data: e.user_data || this.userData,
-                })),
+                content_list: (event as Engagement[]).map((e) => ({ ...e, user_data: e.user_data || this.userData })),
             };
         }
 
@@ -68,11 +72,11 @@ class StreamAnalytics<UserType = unknown> {
         });
     }
 
-    trackImpression(eventData: Impression) {
+    trackImpression(eventData: Impression<UserType>) {
         const err = validateImpression(eventData);
         if (err) throw new errors.InvalidInputData('event data is not valid', err);
-        if (!this.userData) throw new errors.MissingUserId('userData was not set');
 
+        this._throwMissingUserData(eventData);
         return this._sendEvent('impression', eventData);
     }
 
@@ -90,11 +94,7 @@ class StreamAnalytics<UserType = unknown> {
                     err.map((e) => `${i}: ${e}`)
                 );
             }
-            if (!this.userData && !event.user_data) {
-                throw new errors.MissingUserId(
-                    'user_data should be in each event or set the default with StreamAnalytics.setUser()'
-                );
-            }
+            this._throwMissingUserData(event);
         }
         return this._sendEvent('engagement', eventDataList);
     }

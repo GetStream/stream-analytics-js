@@ -80,6 +80,16 @@ describe('StreamAnalytics', function () {
         });
     });
 
+    it('should break on impression without user_data & default userData', function () {
+        var analytics = new StreamAnalytics({ apiKey: 'key', token: 'token', baseUrl });
+        var impression = { content_list: ['song:34349698'], feed_id: 'flat:tommaso', location: 'android-app' };
+        expect(function () {
+            analytics.trackImpression(impression);
+        }).to.throwException(function (exception) {
+            expect(exception).to.be.a(errors.MissingUserId);
+        });
+    });
+
     it('should break on engagement without user_data & default userData', function () {
         var analytics = new StreamAnalytics({ apiKey: 'key', token: 'token', baseUrl });
         var engagement = { content: '2', label: 'click', features: [{ group: 'topic', value: 'go' }] };
@@ -424,5 +434,17 @@ describe('analytics client integration', function () {
                 user_data: { id: 'tommaso', alias: 'tommaso' },
             },
         ]);
+    });
+
+    it('should track impression with user_data', function () {
+        var analytics = new StreamAnalytics({ apiKey, token, baseUrl });
+        return analytics.trackImpression({
+            content_list: ['1', '2', '3'],
+            features: [
+                { group: 'topic', value: 'js' },
+                { group: 'user', value: 'tommaso' },
+            ],
+            user_data: { id: 486892, alias: 'Julian' },
+        });
     });
 });
