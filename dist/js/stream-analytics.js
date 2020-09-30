@@ -169,20 +169,23 @@ var StreamAnalytics = /** @class */ (function () {
             return;
         throw new errors.MissingUserId('user_data should be in each event or set the default with StreamAnalytics.setUser()');
     };
-    StreamAnalytics.prototype._sendEvent = function (resource, event) {
+    StreamAnalytics.prototype._validateAndNormalizeUserData = function (resource, eventList) {
         var _this = this;
-        var body;
-        if (resource === 'impression') {
-            body = event.map(function (e) { return (__assign(__assign({}, e), { user_data: e.user_data || _this.userData })); });
-        }
-        else {
-            body = {
-                content_list: event.map(function (e) { return (__assign(__assign({}, e), { user_data: e.user_data || _this.userData })); }),
-            };
-        }
+        return eventList.map(function (event, i) {
+            var err = resource === 'impression'
+                ? specs_1.validateImpression(event)
+                : specs_1.validateEngagement(event);
+            if (err)
+                throw new errors.InvalidInputData('invalid event data', i ? err.map(function (e) { return i + ": " + e; }) : err);
+            _this._throwMissingUserData(event);
+            return __assign(__assign({}, event), { user_data: event.user_data || _this.userData });
+        });
+    };
+    StreamAnalytics.prototype._sendEvent = function (resource, eventList) {
+        var events = this._validateAndNormalizeUserData(resource, eventList);
         return request(this.baseUrl + resource + "/?api_key=" + this.apiKey, {
             method: 'POST',
-            body: JSON.stringify(body),
+            body: JSON.stringify(resource === 'impression' ? events : { content_list: events }),
             headers: {
                 'Content-Type': 'application/json',
                 'X-Stream-Client': this.userAgent(),
@@ -199,36 +202,12 @@ var StreamAnalytics = /** @class */ (function () {
         return this.trackImpressions([eventData]);
     };
     StreamAnalytics.prototype.trackImpressions = function (eventDataList) {
-        var _loop_1 = function (i) {
-            var event_1 = eventDataList[i];
-            var err = specs_1.validateImpression(event_1);
-            if (err) {
-                throw new errors.InvalidInputData('event data is not valid', err.map(function (e) { return i + ": " + e; }));
-            }
-            this_1._throwMissingUserData(event_1);
-        };
-        var this_1 = this;
-        for (var i = 0; i < eventDataList.length; i++) {
-            _loop_1(i);
-        }
         return this._sendEvent('impression', eventDataList);
     };
     StreamAnalytics.prototype.trackEngagement = function (eventData) {
         return this.trackEngagements([eventData]);
     };
     StreamAnalytics.prototype.trackEngagements = function (eventDataList) {
-        var _loop_2 = function (i) {
-            var event_2 = eventDataList[i];
-            var err = specs_1.validateEngagement(event_2);
-            if (err) {
-                throw new errors.InvalidInputData('event data is not valid', err.map(function (e) { return i + ": " + e; }));
-            }
-            this_2._throwMissingUserData(event_2);
-        };
-        var this_2 = this;
-        for (var i = 0; i < eventDataList.length; i++) {
-            _loop_2(i);
-        }
         return this._sendEvent('engagement', eventDataList);
     };
     return StreamAnalytics;
