@@ -173,7 +173,7 @@ var StreamAnalytics = /** @class */ (function () {
         var _this = this;
         var body;
         if (resource === 'impression') {
-            body = __assign(__assign({}, event), { user_data: event.user_data || this.userData });
+            body = event.map(function (e) { return (__assign(__assign({}, e), { user_data: e.user_data || _this.userData })); });
         }
         else {
             body = {
@@ -196,19 +196,12 @@ var StreamAnalytics = /** @class */ (function () {
         });
     };
     StreamAnalytics.prototype.trackImpression = function (eventData) {
-        var err = specs_1.validateImpression(eventData);
-        if (err)
-            throw new errors.InvalidInputData('event data is not valid', err);
-        this._throwMissingUserData(eventData);
-        return this._sendEvent('impression', eventData);
+        return this.trackImpressions([eventData]);
     };
-    StreamAnalytics.prototype.trackEngagement = function (eventData) {
-        return this.trackEngagements([eventData]);
-    };
-    StreamAnalytics.prototype.trackEngagements = function (eventDataList) {
+    StreamAnalytics.prototype.trackImpressions = function (eventDataList) {
         var _loop_1 = function (i) {
             var event_1 = eventDataList[i];
-            var err = specs_1.validateEngagement(event_1);
+            var err = specs_1.validateImpression(event_1);
             if (err) {
                 throw new errors.InvalidInputData('event data is not valid', err.map(function (e) { return i + ": " + e; }));
             }
@@ -217,6 +210,24 @@ var StreamAnalytics = /** @class */ (function () {
         var this_1 = this;
         for (var i = 0; i < eventDataList.length; i++) {
             _loop_1(i);
+        }
+        return this._sendEvent('impression', eventDataList);
+    };
+    StreamAnalytics.prototype.trackEngagement = function (eventData) {
+        return this.trackEngagements([eventData]);
+    };
+    StreamAnalytics.prototype.trackEngagements = function (eventDataList) {
+        var _loop_2 = function (i) {
+            var event_2 = eventDataList[i];
+            var err = specs_1.validateEngagement(event_2);
+            if (err) {
+                throw new errors.InvalidInputData('event data is not valid', err.map(function (e) { return i + ": " + e; }));
+            }
+            this_2._throwMissingUserData(event_2);
+        };
+        var this_2 = this;
+        for (var i = 0; i < eventDataList.length; i++) {
+            _loop_2(i);
         }
         return this._sendEvent('engagement', eventDataList);
     };
@@ -377,7 +388,7 @@ exports.validateImpression = function (impression) {
 /* 5 */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"name\":\"stream-analytics\",\"version\":\"3.1.0\",\"description\":\"Analytics JS client for GetStream.io.\",\"main\":\"./lib/stream-analytics.js\",\"module\":\"./lib/stream-analytics.js\",\"types\":\"./lib/stream-analytics.d.ts\",\"scripts\":{\"test\":\"yarn test-node && yarn test-browser\",\"test-node\":\"mocha tests --exit\",\"test-browser\":\"karma start karma.config.js\",\"lint\":\"yarn run prettier && yarn run eslint\",\"eslint\":\"eslint '**/*.{js,ts}' --max-warnings 0\",\"prettier\":\"prettier --config ./.prettierrc --list-different \\\"**/*.{js,ts,md,html,json}\\\"\",\"prettier-fix\":\"prettier --config ./.prettierrc --write \\\"**/*.{js,ts,md,html,json}\\\"\",\"build\":\"tsc && webpack && webpack --minify\",\"preversion\":\"yarn run build && yarn test\",\"version\":\"git add -A dist\",\"postversion\":\"git push && git push --tags\"},\"repository\":{\"type\":\"git\",\"url\":\"git://github.com/GetStream/stream-analytics-js.git\"},\"keywords\":[\"npm\",\"stream-analytics\",\"getstream.io\",\"stream.io\"],\"author\":\"Tommaso Barbugli <tommaso@getstream.io>\",\"license\":\"MIT\",\"bugs\":{\"url\":\"https://github.com/GetStream/stream-analytics-js/issues\"},\"homepage\":\"https://github.com/GetStream/stream-analytics-js\",\"engines\":{\"node\":\"10 || 12 || >=14\"},\"browser\":{\"cross-fetch\":false},\"dependencies\":{\"cross-fetch\":\"^3.0.6\"},\"devDependencies\":{\"@types/node\":\"^14.11.2\",\"@typescript-eslint/eslint-plugin\":\"^4.3.0\",\"@typescript-eslint/parser\":\"^4.3.0\",\"dotenv\":\"^8.2.0\",\"eslint\":\"^7.10.0\",\"eslint-config-airbnb-base\":\"^14.2.0\",\"eslint-config-prettier\":\"^6.12.0\",\"eslint-plugin-import\":\"^2.22.1\",\"eslint-plugin-prettier\":\"^3.1.4\",\"eslint-plugin-typescript-sort-keys\":\"^1.5.0\",\"expect.js\":\"^0.3.1\",\"karma\":\"^5.2.3\",\"karma-chrome-launcher\":\"^3.1.0\",\"karma-mocha\":\"^2.0.1\",\"karma-mocha-reporter\":\"~2.2.5\",\"karma-sauce-launcher\":\"^4.1.5\",\"karma-sourcemap-loader\":\"~0.3.8\",\"karma-webpack\":\"^4.0.2\",\"mocha\":\"^8.1.3\",\"prettier\":\"^2.1.2\",\"ts-loader\":\"^8.0.4\",\"typescript\":\"^4.0.3\",\"webpack\":\"^4.44.2\",\"webpack-cli\":\"^3.3.12\"},\"files\":[\"src\",\"dist\",\"lib\"]}");
+module.exports = JSON.parse("{\"name\":\"stream-analytics\",\"version\":\"3.2.0\",\"description\":\"Analytics JS client for GetStream.io.\",\"main\":\"./lib/stream-analytics.js\",\"module\":\"./lib/stream-analytics.js\",\"types\":\"./lib/stream-analytics.d.ts\",\"scripts\":{\"test\":\"yarn test-node && yarn test-browser\",\"test-node\":\"mocha tests --exit\",\"test-browser\":\"karma start karma.config.js\",\"lint\":\"yarn run prettier && yarn run eslint\",\"eslint\":\"eslint '**/*.{js,ts}' --max-warnings 0\",\"prettier\":\"prettier --config ./.prettierrc --list-different \\\"**/*.{js,ts,md,html,json}\\\"\",\"prettier-fix\":\"prettier --config ./.prettierrc --write \\\"**/*.{js,ts,md,html,json}\\\"\",\"build\":\"tsc && webpack && webpack --minify\",\"preversion\":\"yarn run build && yarn test\",\"version\":\"git add -A dist\",\"postversion\":\"git push && git push --tags\"},\"repository\":{\"type\":\"git\",\"url\":\"git://github.com/GetStream/stream-analytics-js.git\"},\"keywords\":[\"npm\",\"stream-analytics\",\"getstream.io\",\"stream.io\"],\"author\":\"Tommaso Barbugli <tommaso@getstream.io>\",\"license\":\"MIT\",\"bugs\":{\"url\":\"https://github.com/GetStream/stream-analytics-js/issues\"},\"homepage\":\"https://github.com/GetStream/stream-analytics-js\",\"engines\":{\"node\":\"10 || 12 || >=14\"},\"browser\":{\"cross-fetch\":false},\"dependencies\":{\"cross-fetch\":\"^3.0.6\"},\"devDependencies\":{\"@types/node\":\"^14.11.2\",\"@typescript-eslint/eslint-plugin\":\"^4.3.0\",\"@typescript-eslint/parser\":\"^4.3.0\",\"dotenv\":\"^8.2.0\",\"eslint\":\"^7.10.0\",\"eslint-config-airbnb-base\":\"^14.2.0\",\"eslint-config-prettier\":\"^6.12.0\",\"eslint-plugin-import\":\"^2.22.1\",\"eslint-plugin-prettier\":\"^3.1.4\",\"eslint-plugin-typescript-sort-keys\":\"^1.5.0\",\"expect.js\":\"^0.3.1\",\"karma\":\"^5.2.3\",\"karma-chrome-launcher\":\"^3.1.0\",\"karma-mocha\":\"^2.0.1\",\"karma-mocha-reporter\":\"~2.2.5\",\"karma-sauce-launcher\":\"^4.1.5\",\"karma-sourcemap-loader\":\"~0.3.8\",\"karma-webpack\":\"^4.0.2\",\"mocha\":\"^8.1.3\",\"prettier\":\"^2.1.2\",\"ts-loader\":\"^8.0.4\",\"typescript\":\"^4.0.3\",\"webpack\":\"^4.44.2\",\"webpack-cli\":\"^3.3.12\"},\"files\":[\"src\",\"dist\",\"lib\"]}");
 
 /***/ })
 /******/ ]);

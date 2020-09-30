@@ -357,6 +357,26 @@ describe('analytics client integration', function () {
         });
     });
 
+    it('should track multiple impressions', function () {
+        var analytics = new StreamAnalytics({ apiKey, token, baseUrl });
+        analytics.setUser('tommaso');
+        return analytics.trackImpressions([
+            {
+                content_list: ['1', '2', '3'],
+                features: [
+                    { group: 'topic', value: 'js' },
+                    { group: 'user', value: 'tommaso' },
+                ],
+                user_data: { id: 'tommaso', alias: 'tommaso' },
+            },
+            {
+                content_list: ['2', '3', '5'],
+                features: [{ group: 'topic', value: 'js' }],
+                user_data: { id: 486892, alias: 'Julian' },
+            },
+        ]);
+    });
+
     it('should store track engagements', function () {
         var analytics = new StreamAnalytics({ apiKey, token, baseUrl });
         analytics.setUser('tommaso');
@@ -446,5 +466,24 @@ describe('analytics client integration', function () {
             ],
             user_data: { id: 486892, alias: 'Julian' },
         });
+    });
+
+    it('should track multiple impressions with different user_data', function () {
+        var analytics = new StreamAnalytics({ apiKey, token, baseUrl });
+        return analytics.trackImpressions([
+            {
+                content_list: ['1', '2', '3'],
+                features: [
+                    { group: 'topic', value: 'js' },
+                    { group: 'user', value: 'tommaso' },
+                ],
+                user_data: { id: 'tommaso', alias: 'tommaso' },
+            },
+            {
+                content_list: ['2', '3', '5'],
+                features: [{ group: 'topic', value: 'js' }],
+                user_data: { id: 486892, alias: 'Julian' },
+            },
+        ]);
     });
 });

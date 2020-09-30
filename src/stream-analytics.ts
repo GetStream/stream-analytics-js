@@ -47,10 +47,10 @@ class StreamAnalytics<UserType = unknown> {
         );
     }
 
-    _sendEvent(resource: string, event: Impression | Engagement[]) {
+    _sendEvent(resource: string, event: Impression[] | Engagement[]) {
         let body;
         if (resource === 'impression') {
-            body = { ...event, user_data: (event as Impression).user_data || this.userData };
+            body = (event as Impression[]).map((e) => ({ ...e, user_data: e.user_data || this.userData }));
         } else {
             body = {
                 content_list: (event as Engagement[]).map((e) => ({ ...e, user_data: e.user_data || this.userData })),
@@ -73,11 +73,22 @@ class StreamAnalytics<UserType = unknown> {
     }
 
     trackImpression(eventData: Impression<UserType>) {
-        const err = validateImpression(eventData);
-        if (err) throw new errors.InvalidInputData('event data is not valid', err);
+        return this.trackImpressions([eventData]);
+    }
 
-        this._throwMissingUserData(eventData);
-        return this._sendEvent('impression', eventData);
+    trackImpressions(eventDataList: Impression<UserType>[]) {
+        for (let i = 0; i < eventDataList.length; i++) {
+            const event = eventDataList[i];
+            const err = validateImpression(event);
+            if (err) {
+                throw new errors.InvalidInputData(
+                    'event data is not valid',
+                    err.map((e) => `${i}: ${e}`)
+                );
+            }
+            this._throwMissingUserData(event);
+        }
+        return this._sendEvent('impression', eventDataList);
     }
 
     trackEngagement(eventData: Engagement<UserType>) {
