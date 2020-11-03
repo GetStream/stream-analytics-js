@@ -212,7 +212,7 @@ describe('analytics client integration', function () {
 
     it('should store code example #1', function () {
         var client = new StreamAnalytics({ apiKey, token, baseUrl });
-        client.setUser({ id: 486892, alias: 'Julian' });
+        client.setUser({ id: '486892', alias: 'Julian' });
         var impression = {
             // the list of content IDs displayed to the user
             content_list: ['song:34349698', 'song:34349699', 'song:34349697'],
@@ -228,7 +228,7 @@ describe('analytics client integration', function () {
 
     it('should store code example #2', function () {
         var client = new StreamAnalytics({ apiKey, token, baseUrl });
-        client.setUser({ id: 486892, alias: 'Julian' });
+        client.setUser({ id: '486892', alias: 'Julian' });
         var engagement = {
             // the label for the engagement, ie click, retweet etc.
             label: 'click',
@@ -251,7 +251,7 @@ describe('analytics client integration', function () {
 
     it('should store code example #3', function () {
         var client = new StreamAnalytics({ apiKey, token, baseUrl });
-        client.setUser({ id: 486892, alias: 'Julian' });
+        client.setUser({ id: '486892', alias: 'Julian' });
         var features = [
             {
                 group: 'gener',
@@ -271,7 +271,7 @@ describe('analytics client integration', function () {
 
     it('should store code example #4', function () {
         var client = new StreamAnalytics({ apiKey, token, baseUrl });
-        client.setUser({ id: 486892, alias: 'Julian' });
+        client.setUser({ id: '486892', alias: 'Julian' });
         var features = [
             {
                 group: 'genre',
@@ -290,7 +290,7 @@ describe('analytics client integration', function () {
 
     it('should store code example #5', function () {
         var client = new StreamAnalytics({ apiKey, token, baseUrl });
-        client.setUser({ id: 486892, alias: 'Julian' });
+        client.setUser({ id: '486892', alias: 'Julian' });
         var engagement = {
             label: 'click',
             content: {
@@ -306,7 +306,7 @@ describe('analytics client integration', function () {
 
     it('should store code example #6', function () {
         var client = new StreamAnalytics({ apiKey, token, baseUrl });
-        client.setUser({ id: 486892, alias: 'Julian' });
+        client.setUser({ id: '486892', alias: 'Julian' });
         var impression = {
             content_list: [
                 {
@@ -324,7 +324,7 @@ describe('analytics client integration', function () {
 
     it('should store code example #7', function () {
         var client = new StreamAnalytics({ apiKey, token, baseUrl });
-        client.setUser({ id: 486892, alias: 'Julian' });
+        client.setUser({ id: '486892', alias: 'Julian' });
         var engagement = {
             label: 'click',
             content: {
@@ -372,7 +372,7 @@ describe('analytics client integration', function () {
             {
                 content_list: ['2', '3', '5'],
                 features: [{ group: 'topic', value: 'js' }],
-                user_data: { id: 486892, alias: 'Julian' },
+                user_data: { id: '486892', alias: 'Julian' },
             },
         ]);
     });
@@ -445,7 +445,7 @@ describe('analytics client integration', function () {
                     { group: 'topic', value: 'go' },
                     { group: 'user', value: 'tommaso' },
                 ],
-                user_data: { id: 486892, alias: 'Julian' },
+                user_data: { id: '486892', alias: 'Julian' },
             },
             {
                 content: '3',
@@ -464,7 +464,7 @@ describe('analytics client integration', function () {
                 { group: 'topic', value: 'js' },
                 { group: 'user', value: 'tommaso' },
             ],
-            user_data: { id: 486892, alias: 'Julian' },
+            user_data: { id: '486892', alias: 'Julian' },
         });
     });
 
@@ -482,7 +482,7 @@ describe('analytics client integration', function () {
             {
                 content_list: ['2', '3', '5'],
                 features: [{ group: 'topic', value: 'js' }],
-                user_data: { id: 486892, alias: 'Julian' },
+                user_data: { id: '486892', alias: 'Julian' },
             },
         ]);
     });
