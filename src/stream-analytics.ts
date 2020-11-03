@@ -1,7 +1,7 @@
 import crossFetch from 'cross-fetch';
 
 import * as errors from './errors';
-import { validateEngagement, validateImpression, Impression, Engagement } from './specs';
+import { validateEngagement, validateImpression, Impression, Engagement, User } from './specs';
 
 // use native fetch in browser mode to reduce bundle size
 // webpack skip bundling the cross-fetch
@@ -9,14 +9,14 @@ const request = typeof crossFetch === 'function' ? crossFetch : window.fetch;
 
 const pkg = require('../package.json'); // eslint-disable-line @typescript-eslint/no-var-requires
 
-class StreamAnalytics<UserType = unknown> {
+class StreamAnalytics<UserType extends User = User> {
     static errors: typeof errors;
 
     baseUrl: string;
     apiKey: string;
     token: string;
     node: boolean;
-    userData: UserType | null;
+    userData: null | string | UserType;
 
     constructor(config: { apiKey: string; token: string; baseUrl?: string }) {
         if (!config || !config.apiKey || !config.token) {
@@ -32,7 +32,7 @@ class StreamAnalytics<UserType = unknown> {
         this.node = typeof window === 'undefined';
     }
 
-    setUser(data: UserType) {
+    setUser(data: string | UserType) {
         this.userData = data;
     }
 
