@@ -73,9 +73,11 @@ class StreamAnalytics<UserType extends User = User> {
                 'stream-auth-type': 'jwt',
                 Authorization: this.token,
             },
-        }).then((response) => {
+        }).then(async (response) => {
             if (response.ok) return response.json();
-            throw new errors.APIError(response.statusText);
+            const data = await response.json();
+            if (data.detail) throw new errors.APIError(`${response.statusText}: ${data.detail}`);
+            else throw new errors.APIError(response.statusText);
         });
     }
 
