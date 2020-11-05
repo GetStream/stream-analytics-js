@@ -1,6 +1,7 @@
-var expect = expect || require('expect.js');
+var chai = chai || require('chai');
+const expect = chai.expect;
 
-var node = typeof process != 'undefined';
+const node = typeof process != 'undefined';
 
 if (node) {
     require('dotenv').config();
@@ -15,13 +16,9 @@ if (node) {
     errors = StreamAnalytics.errors;
 }
 
-var misconfiguredClientError = function (e) {
-    expect(e).to.be.a(errors.MisconfiguredClient);
-};
-
 describe('StreamAnalytics', function () {
-    it('should initialize a StreamAnalytics', function (done) {
-        var analytics = new StreamAnalytics({
+    it('should initialize a StreamAnalytics', async function () {
+        const analytics = new StreamAnalytics({
             apiKey: 'key',
             token: 'token',
             baseUrl,
@@ -29,19 +26,17 @@ describe('StreamAnalytics', function () {
         expect(analytics.apiKey).to.eql('key');
         expect(analytics.token).to.eql('token');
         expect(analytics.userData).to.eql(null);
-        done();
     });
 
-    it('should have proper userAgent', function (done) {
-        var analytics = new StreamAnalytics({ apiKey: 'key', token: 'token', baseUrl });
+    it('should have proper userAgent', async function () {
+        const analytics = new StreamAnalytics({ apiKey: 'key', token: 'token', baseUrl });
         expect(analytics.userAgent()).to.eql(
             'stream-javascript-analytics-client-' + (node ? 'node' : 'browser') + '-' + version
         );
-        done();
     });
 
-    it('should set user_data', function (done) {
-        var analytics = new StreamAnalytics({
+    it('should set user_data', async function () {
+        const analytics = new StreamAnalytics({
             apiKey: 'key',
             token: 'token',
             baseUrl,
@@ -49,161 +44,109 @@ describe('StreamAnalytics', function () {
         expect(analytics.userData).to.eql(null);
         analytics.setUser('user_data');
         expect(analytics.userData).to.eql('user_data');
-        done();
     });
 
     it('should break on impressions without content_list', function () {
-        var analytics = new StreamAnalytics({
+        const analytics = new StreamAnalytics({
             apiKey: 'key',
             token: 'token',
             baseUrl,
         });
-        var impression = {};
-        expect(function () {
-            analytics.trackImpression(impression);
-        }).to.throwException(function (exception) {
-            expect(exception).to.be.a(errors.InvalidInputData);
-        });
+        const impression = {};
+        expect(() => analytics.trackImpression(impression)).to.throw(errors.InvalidInputData);
     });
 
     it('should break on engagements without labels', function () {
-        var analytics = new StreamAnalytics({
+        const analytics = new StreamAnalytics({
             apiKey: 'key',
             token: 'token',
             baseUrl,
         });
-        var engagement = {};
-        expect(function () {
-            analytics.trackEngagement(engagement);
-        }).to.throwException(function (exception) {
-            expect(exception).to.be.a(errors.InvalidInputData);
-        });
+        const engagement = {};
+        expect(() => analytics.trackEngagement(engagement)).to.throw(errors.InvalidInputData);
     });
 
     it('should break on impression without user_data & default userData', function () {
-        var analytics = new StreamAnalytics({ apiKey: 'key', token: 'token', baseUrl });
-        var impression = { content_list: ['song:34349698'], feed_id: 'flat:tommaso', location: 'android-app' };
-        expect(function () {
-            analytics.trackImpression(impression);
-        }).to.throwException(function (exception) {
-            expect(exception).to.be.a(errors.MissingUserId);
-        });
+        const analytics = new StreamAnalytics({ apiKey: 'key', token: 'token', baseUrl });
+        const impression = { content_list: ['song:34349698'], feed_id: 'flat:tommaso', location: 'android-app' };
+        expect(() => analytics.trackImpression(impression)).to.throw(errors.MissingUserId);
     });
 
     it('should break on engagement without user_data & default userData', function () {
-        var analytics = new StreamAnalytics({ apiKey: 'key', token: 'token', baseUrl });
-        var engagement = { content: '2', label: 'click', features: [{ group: 'topic', value: 'go' }] };
-        expect(function () {
-            analytics.trackEngagement(engagement);
-        }).to.throwException(function (exception) {
-            expect(exception).to.be.a(errors.MissingUserId);
-        });
+        const analytics = new StreamAnalytics({ apiKey: 'key', token: 'token', baseUrl });
+        const engagement = { content: '2', label: 'click', features: [{ group: 'topic', value: 'go' }] };
+        expect(() => analytics.trackEngagement(engagement)).to.throw(errors.MissingUserId);
     });
 
     it('should break on engagements without user_data & default userData', function () {
-        var analytics = new StreamAnalytics({ apiKey: 'key', token: 'token', baseUrl });
-        var engagement = { content: '2', label: 'click', features: [{ group: 'topic', value: 'go' }] };
-        expect(function () {
-            analytics.trackEngagements([engagement, engagement]);
-        }).to.throwException(function (exception) {
-            expect(exception).to.be.a(errors.MissingUserId);
-        });
+        const analytics = new StreamAnalytics({ apiKey: 'key', token: 'token', baseUrl });
+        const engagement = { content: '2', label: 'click', features: [{ group: 'topic', value: 'go' }] };
+        expect(() => analytics.trackEngagements([engagement, engagement])).to.throw(errors.MissingUserId);
     });
 
     it('should validate engagements with wrong features', function () {
-        var analytics = new StreamAnalytics({
+        const analytics = new StreamAnalytics({
             apiKey: 'key',
             token: 'token',
             baseUrl,
         });
-        var engagement = {
+        let engagement = {
             label: 'messing_around',
             features: 'asdasd',
         };
-        expect(function () {
-            analytics.trackEngagement(engagement);
-        }).to.throwException(function (exception) {
-            expect(exception).to.be.a(errors.InvalidInputData);
-        });
+        expect(() => analytics.trackEngagement(engagement)).to.throw(errors.InvalidInputData);
 
         engagement = {
             label: 'messing_around',
             features: [{ group: 'group', value: '' }],
         };
-        expect(function () {
-            analytics.trackEngagement(engagement);
-        }).to.throwException(function (exception) {
-            expect(exception).to.be.a(errors.InvalidInputData);
-        });
+        expect(() => analytics.trackEngagement(engagement)).to.throw(errors.InvalidInputData);
     });
 
     it('should validate impressions with string foreign ids', function () {
-        var analytics = new StreamAnalytics({
+        const analytics = new StreamAnalytics({
             apiKey: 'key',
             token: 'token',
             baseUrl,
         });
-        var impression = {
+        const impression = {
             foreign_ids: 'messing_around',
         };
 
-        expect(function () {
-            analytics.trackImpression(impression);
-        }).to.throwException(function (exception) {
-            expect(exception).to.be.a(errors.InvalidInputData);
-        });
+        expect(() => analytics.trackImpression(impression)).to.throw(errors.InvalidInputData);
     });
 
-    it('should validate impressions with wrong features', function (done) {
-        var analytics = new StreamAnalytics({
+    it('should validate impressions with wrong features', async function () {
+        const analytics = new StreamAnalytics({
             apiKey: 'key',
             token: 'token',
             baseUrl,
         });
-        var impression = {
+        let impression = {
             content_list: ['messing_around'],
             features: 'asdasd',
         };
-        expect(function () {
-            analytics.trackImpression(impression);
-        }).to.throwException(function (exception) {
-            expect(exception).to.be.a(errors.InvalidInputData);
-        });
+        expect(() => analytics.trackImpression(impression)).to.throw(errors.InvalidInputData);
         impression = {
             label: 'messing_around',
             features: [{ group: 'group', value: '' }],
         };
-        expect(function () {
-            analytics.trackImpression(impression);
-        }).to.throwException(function (exception) {
-            expect(exception).to.be.a(errors.InvalidInputData);
-        });
-        done();
+        expect(() => analytics.trackImpression(impression)).to.throw(errors.InvalidInputData);
     });
 });
 
 describe('analytics client', function () {
-    it('should store apiKey and token', function (done) {
-        var client = new StreamAnalytics({ apiKey: 'key', token: 'token', baseUrl });
+    it('should store apiKey and token', async function () {
+        const client = new StreamAnalytics({ apiKey: 'key', token: 'token', baseUrl });
         expect(client.apiKey).to.eql('key');
         expect(client.token).to.eql('token');
-        done();
     });
 
-    it('should validate apiKey and token', function (done) {
-        expect(function () {
-            new StreamAnalytics({ apiKey: 'key', baseUrl });
-        }).to.throwException(misconfiguredClientError);
-        expect(function () {
-            new StreamAnalytics({ token: 'token', baseUrl });
-        }).to.throwException(misconfiguredClientError);
-        expect(function () {
-            new StreamAnalytics({ baseUrl });
-        }).to.throwException(misconfiguredClientError);
-        expect(function () {
-            new StreamAnalytics();
-        }).to.throwException(misconfiguredClientError);
-        done();
+    it('should validate apiKey and token', async function () {
+        expect(() => new StreamAnalytics({ apiKey: 'key', baseUrl })).to.throw(errors.MisconfiguredClient);
+        expect(() => new StreamAnalytics({ token: 'token', baseUrl })).to.throw(errors.MisconfiguredClient);
+        expect(() => new StreamAnalytics({ baseUrl })).to.throw(errors.MisconfiguredClient);
+        expect(() => new StreamAnalytics()).to.throw(errors.MisconfiguredClient);
     });
 });
 
@@ -211,9 +154,9 @@ describe('analytics client integration', function () {
     this.timeout(5000);
 
     it('should store code example #1', function () {
-        var client = new StreamAnalytics({ apiKey, token, baseUrl });
+        const client = new StreamAnalytics({ apiKey, token, baseUrl });
         client.setUser({ id: '486892', alias: 'Julian' });
-        var impression = {
+        const impression = {
             // the list of content IDs displayed to the user
             content_list: ['song:34349698', 'song:34349699', 'song:34349697'],
             // (optional) the feed where this content is coming from
@@ -227,9 +170,9 @@ describe('analytics client integration', function () {
     });
 
     it('should store code example #2', function () {
-        var client = new StreamAnalytics({ apiKey, token, baseUrl });
+        const client = new StreamAnalytics({ apiKey, token, baseUrl });
         client.setUser({ id: '486892', alias: 'Julian' });
-        var engagement = {
+        const engagement = {
             // the label for the engagement, ie click, retweet etc.
             label: 'click',
             // the ID of the content that the user clicked
@@ -250,16 +193,16 @@ describe('analytics client integration', function () {
     });
 
     it('should store code example #3', function () {
-        var client = new StreamAnalytics({ apiKey, token, baseUrl });
+        const client = new StreamAnalytics({ apiKey, token, baseUrl });
         client.setUser({ id: '486892', alias: 'Julian' });
-        var features = [
+        const features = [
             {
                 group: 'gener',
                 value: 'latin-pop',
             },
         ];
 
-        var engagement = {
+        const engagement = {
             label: 'click',
             content: 'song:34349698',
             feed_id: 'playlist:Thierry',
@@ -270,16 +213,16 @@ describe('analytics client integration', function () {
     });
 
     it('should store code example #4', function () {
-        var client = new StreamAnalytics({ apiKey, token, baseUrl });
+        const client = new StreamAnalytics({ apiKey, token, baseUrl });
         client.setUser({ id: '486892', alias: 'Julian' });
-        var features = [
+        const features = [
             {
                 group: 'genre',
                 value: 'latin-pop',
             },
         ];
 
-        var impression = {
+        const impression = {
             content_list: ['song:34349698'],
             feed_id: 'user:thierry',
             features: features,
@@ -289,9 +232,9 @@ describe('analytics client integration', function () {
     });
 
     it('should store code example #5', function () {
-        var client = new StreamAnalytics({ apiKey, token, baseUrl });
+        const client = new StreamAnalytics({ apiKey, token, baseUrl });
         client.setUser({ id: '486892', alias: 'Julian' });
-        var engagement = {
+        const engagement = {
             label: 'click',
             content: {
                 foreign_id: 'post:42',
@@ -305,9 +248,9 @@ describe('analytics client integration', function () {
     });
 
     it('should store code example #6', function () {
-        var client = new StreamAnalytics({ apiKey, token, baseUrl });
+        const client = new StreamAnalytics({ apiKey, token, baseUrl });
         client.setUser({ id: '486892', alias: 'Julian' });
-        var impression = {
+        const impression = {
             content_list: [
                 {
                     foreign_id: 'post:42',
@@ -323,9 +266,9 @@ describe('analytics client integration', function () {
     });
 
     it('should store code example #7', function () {
-        var client = new StreamAnalytics({ apiKey, token, baseUrl });
+        const client = new StreamAnalytics({ apiKey, token, baseUrl });
         client.setUser({ id: '486892', alias: 'Julian' });
-        var engagement = {
+        const engagement = {
             label: 'click',
             content: {
                 foreign_id: 'post:42',
@@ -346,7 +289,7 @@ describe('analytics client integration', function () {
     });
 
     it('should store track impressions', function () {
-        var analytics = new StreamAnalytics({ apiKey, token, baseUrl });
+        const analytics = new StreamAnalytics({ apiKey, token, baseUrl });
         analytics.setUser('tommaso');
         return analytics.trackImpression({
             content_list: ['1', '2', '3'],
@@ -358,7 +301,7 @@ describe('analytics client integration', function () {
     });
 
     it('should track multiple impressions', function () {
-        var analytics = new StreamAnalytics({ apiKey, token, baseUrl });
+        const analytics = new StreamAnalytics({ apiKey, token, baseUrl });
         analytics.setUser('tommaso');
         return analytics.trackImpressions([
             {
@@ -378,7 +321,7 @@ describe('analytics client integration', function () {
     });
 
     it('should store track engagements', function () {
-        var analytics = new StreamAnalytics({ apiKey, token, baseUrl });
+        const analytics = new StreamAnalytics({ apiKey, token, baseUrl });
         analytics.setUser('tommaso');
         return analytics.trackEngagement({
             content: '1',
@@ -391,7 +334,7 @@ describe('analytics client integration', function () {
     });
 
     it('should store track multiple engagements', function () {
-        var analytics = new StreamAnalytics({ apiKey, token, baseUrl });
+        const analytics = new StreamAnalytics({ apiKey, token, baseUrl });
         analytics.setUser('tommaso');
         return analytics.trackEngagements([
             {
@@ -414,7 +357,7 @@ describe('analytics client integration', function () {
     });
 
     it('should track single engagement with user_data', function () {
-        var analytics = new StreamAnalytics({ apiKey, token, baseUrl });
+        const analytics = new StreamAnalytics({ apiKey, token, baseUrl });
         return analytics.trackEngagement({
             content: '1',
             label: 'click',
@@ -427,7 +370,7 @@ describe('analytics client integration', function () {
     });
 
     it('should track multiple engagements with different user_data', function () {
-        var analytics = new StreamAnalytics({ apiKey, token, baseUrl });
+        const analytics = new StreamAnalytics({ apiKey, token, baseUrl });
         return analytics.trackEngagements([
             {
                 content: '1',
@@ -457,7 +400,7 @@ describe('analytics client integration', function () {
     });
 
     it('should track impression with user_data', function () {
-        var analytics = new StreamAnalytics({ apiKey, token, baseUrl });
+        const analytics = new StreamAnalytics({ apiKey, token, baseUrl });
         return analytics.trackImpression({
             content_list: ['1', '2', '3'],
             features: [
@@ -469,7 +412,7 @@ describe('analytics client integration', function () {
     });
 
     it('should track multiple impressions with different user_data', function () {
-        var analytics = new StreamAnalytics({ apiKey, token, baseUrl });
+        const analytics = new StreamAnalytics({ apiKey, token, baseUrl });
         return analytics.trackImpressions([
             {
                 content_list: ['1', '2', '3'],
@@ -485,5 +428,23 @@ describe('analytics client integration', function () {
                 user_data: { id: '486892', alias: 'Julian' },
             },
         ]);
+    });
+
+    it('should throw exception with wrong user_data and contain detail from API', async function () {
+        const analytics = new StreamAnalytics({ apiKey, token, baseUrl });
+        const impression = {
+            content_list: ['1', '2', '3'],
+            features: [{ group: 'topic', value: 'js' }],
+            user_data: { id: '486892', alias: 123 },
+        };
+
+        try {
+            await analytics.trackImpression(impression);
+            throw new Error('API should have failed instead');
+        } catch (err) {
+            expect(() => {
+                throw err;
+            }).to.throw(errors.APIError, /user_data/);
+        }
     });
 });

@@ -25,12 +25,7 @@ module.exports = function (config) {
         frameworks: ['mocha'],
 
         // list of files / patterns to load in the browser
-        files: [
-            'node_modules/expect.js/index.js',
-            'dist/js/stream-analytics.js',
-            'browser-test-helper.js',
-            'tests/*.js',
-        ],
+        files: ['node_modules/chai/chai.js', 'dist/js/stream-analytics.js', 'browser-test-helper.js', 'tests/*.js'],
 
         // list of files to exclude
         exclude: [],
