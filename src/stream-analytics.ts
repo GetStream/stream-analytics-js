@@ -73,21 +73,13 @@ class StreamAnalytics<UserType extends User = User> {
                 'stream-auth-type': 'jwt',
                 Authorization: this.token,
             },
-        })
-            .then((response) => {
-                if (response.ok) return response.json();
-                return Promise.resolve(response.json()).then((data) => {
-                    if (data.detail)
-                        return Promise.reject(new errors.APIError(`${response.statusText}: ${data.detail}`));
-                    return Promise.reject(new errors.APIError(response.statusText));
-                });
-            })
-            .then(
-                (success) => success,
-                (error) => {
-                    throw error;
-                }
-            );
+        }).then((response) => {
+            if (response.ok) return response.json();
+            return response.json().then((data) => {
+                if (data.detail) throw new errors.APIError(`${response.statusText}: ${data.detail}`);
+                throw new errors.APIError(response.statusText);
+            });
+        });
     }
 
     trackImpression(eventData: Impression<UserType>) {

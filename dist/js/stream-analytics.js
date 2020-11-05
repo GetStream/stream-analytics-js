@@ -192,18 +192,14 @@ var StreamAnalytics = /** @class */ (function () {
                 'stream-auth-type': 'jwt',
                 Authorization: this.token,
             },
-        })
-            .then(function (response) {
+        }).then(function (response) {
             if (response.ok)
                 return response.json();
-            return Promise.resolve(response.json()).then(function (data) {
+            return response.json().then(function (data) {
                 if (data.detail)
-                    return Promise.reject(new errors.APIError(response.statusText + ": " + data.detail));
-                return Promise.reject(new errors.APIError(response.statusText));
+                    throw new errors.APIError(response.statusText + ": " + data.detail);
+                throw new errors.APIError(response.statusText);
             });
-        })
-            .then(function (success) { return success; }, function (error) {
-            throw error;
         });
     };
     StreamAnalytics.prototype.trackImpression = function (eventData) {
