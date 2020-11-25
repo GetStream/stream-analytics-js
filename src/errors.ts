@@ -27,7 +27,14 @@ export class MissingUserId extends ErrorAbstract {}
 
 export class MisconfiguredClient extends ErrorAbstract {}
 
-export class APIError extends ErrorAbstract {}
+export class APIError extends ErrorAbstract {
+    response: Response;
+
+    constructor(msg: string, response: Response) {
+        super(msg);
+        this.response = response;
+    }
+}
 
 export class InvalidInputData extends ErrorAbstract {
     constructor(msg: string, errorInfo: string[]) {

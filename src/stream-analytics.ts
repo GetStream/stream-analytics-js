@@ -76,8 +76,8 @@ class StreamAnalytics<UserType extends User = User> {
         }).then((response) => {
             if (response.ok) return response.json();
             return response.json().then((data) => {
-                if (data.detail) throw new errors.APIError(`${response.statusText}: ${data.detail}`);
-                throw new errors.APIError(response.statusText);
+                if (data.detail) throw new errors.APIError(`${response.statusText}: ${data.detail}`, response);
+                throw new errors.APIError(response.statusText, response);
             });
         });
     }
