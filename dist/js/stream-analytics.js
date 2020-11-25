@@ -197,8 +197,8 @@ var StreamAnalytics = /** @class */ (function () {
                 return response.json();
             return response.json().then(function (data) {
                 if (data.detail)
-                    throw new errors.APIError(response.statusText + ": " + data.detail);
-                throw new errors.APIError(response.statusText);
+                    throw new errors.APIError(response.statusText + ": " + data.detail, response);
+                throw new errors.APIError(response.statusText, response);
             });
         });
     };
@@ -280,8 +280,10 @@ var MisconfiguredClient = /** @class */ (function (_super) {
 exports.MisconfiguredClient = MisconfiguredClient;
 var APIError = /** @class */ (function (_super) {
     __extends(APIError, _super);
-    function APIError() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function APIError(msg, response) {
+        var _this = _super.call(this, msg) || this;
+        _this.response = response;
+        return _this;
     }
     return APIError;
 }(ErrorAbstract));
