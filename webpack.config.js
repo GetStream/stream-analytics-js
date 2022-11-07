@@ -1,6 +1,6 @@
 const path = require('path');
 
-module.exports = (env, argv = []) => ({
+module.exports = (env = {}, argv = []) => ({
     entry: ['./src/stream-analytics.ts'],
 
     mode: env.production ? 'production' : 'development',
