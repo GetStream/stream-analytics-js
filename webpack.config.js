@@ -11,10 +11,6 @@ module.exports = (env = {}, argv = []) => ({
 
     resolve: { extensions: ['.ts', '.js'] },
 
-    optimization: {
-        minimize: argv.minify !== undefined,
-    },
-
     output: {
         path: path.join(__dirname, 'dist', 'js'),
         publicPath: 'dist/',
