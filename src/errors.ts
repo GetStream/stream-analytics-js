@@ -10,7 +10,7 @@ interface ErrorAbstract {
     stack?: string;
 }
 // workaround for ES5 compilation to preserve the Error class
-const ErrorAbstract = (function (this: ErrorAbstract, message: string) {
+const ErrorAbstract = function (this: ErrorAbstract, message: string) {
     Error.call(this, message);
 
     this.message = message;
@@ -19,7 +19,7 @@ const ErrorAbstract = (function (this: ErrorAbstract, message: string) {
     if (canCapture) Error.captureStackTrace(this);
     else if (canStack) this.stack = new Error().stack;
     else this.stack = '';
-} as unknown) as ErrorAbstractConstructor;
+} as unknown as ErrorAbstractConstructor;
 
 ErrorAbstract.prototype = Object.create(Error.prototype);
 
