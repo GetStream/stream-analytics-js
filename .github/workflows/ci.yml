@@ -11,6 +11,9 @@ jobs:
     env:
       STREAM_API_KEY: ${{ secrets.STREAM_API_KEY }}
       STREAM_ANALYTICS_TOKEN: ${{ secrets.STREAM_ANALYTICS_TOKEN }}
+
+      # node 17+ support
+      NODE_OPTIONS: --openssl-legacy-provider
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v3.5.1
