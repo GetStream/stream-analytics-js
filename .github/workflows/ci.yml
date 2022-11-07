@@ -7,13 +7,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [10, 12, 14, 16]
+        node: [10, 12, 14, 16, 18]
     env:
       STREAM_API_KEY: ${{ secrets.STREAM_API_KEY }}
       STREAM_ANALYTICS_TOKEN: ${{ secrets.STREAM_ANALYTICS_TOKEN }}
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/setup-node@v3.5.1
         with:
           node-version: ${{ matrix.node }}
 
