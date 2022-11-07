@@ -15,7 +15,6 @@ jobs:
     env:
       STREAM_API_KEY: ${{ secrets.STREAM_API_KEY }}
       STREAM_ANALYTICS_TOKEN: ${{ secrets.STREAM_ANALYTICS_TOKEN }}
-      NODE_OPTIONS: ${{ matrix.node_options }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v3.5.1
@@ -23,13 +22,21 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - name: Install deps
+        env:
+          NODE_OPTIONS: ${{ matrix.node_options }}
         run: yarn install
 
       - name: Lint ${{ matrix.node }}
+        env:
+          NODE_OPTIONS: ${{ matrix.node_options }}
         run: yarn run lint
 
       - name: Build with ${{ matrix.node }}
+        env:
+          NODE_OPTIONS: ${{ matrix.node_options }}
         run: yarn run build
 
       - name: Lint and Test with ${{ matrix.node }}
+        env:
+          NODE_OPTIONS: ${{ matrix.node_options }}
         run: yarn run test
