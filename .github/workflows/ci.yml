@@ -7,11 +7,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [10, 12, 14, 16, 18]
+        node: [10, 12, 14, 16]
+        node_options: ['']
+        include:
+          - node: 18
+            node_options: '--openssl-legacy-provider' # node 17+ support
     env:
       STREAM_API_KEY: ${{ secrets.STREAM_API_KEY }}
       STREAM_ANALYTICS_TOKEN: ${{ secrets.STREAM_ANALYTICS_TOKEN }}
-      NODE_OPTIONS: '--openssl-legacy-provider' # node 17+ support
+      NODE_OPTIONS: ${{ matrix.node_options }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v3.5.1
