@@ -94,287 +94,76 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
 /************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, exports, __webpack_require__) {
+/******/ ({
 
-module.exports = __webpack_require__(1);
-
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-var cross_fetch_1 = __importDefault(__webpack_require__(2));
-var errors = __importStar(__webpack_require__(3));
-var specs_1 = __webpack_require__(4);
-// use native fetch in browser mode to reduce bundle size
-// webpack skip bundling the cross-fetch
-var request = typeof cross_fetch_1.default === 'function' ? cross_fetch_1.default : window.fetch;
-var pkg = __webpack_require__(5); // eslint-disable-line @typescript-eslint/no-var-requires
-var StreamAnalytics = /** @class */ (function () {
-    function StreamAnalytics(config) {
-        if (!config || !config.apiKey || !config.token) {
-            throw new errors.MisconfiguredClient('the client must be initialized with apiKey and token');
-        }
-        this.userData = null;
-        this.apiKey = config.apiKey;
-        this.token = config.token;
-        this.baseUrl = config.baseUrl || 'https://analytics.stream-io-api.com/analytics/v1.0/';
-        this.node = typeof window === 'undefined';
-    }
-    StreamAnalytics.prototype.setUser = function (data) {
-        this.userData = data;
-    };
-    StreamAnalytics.prototype.userAgent = function () {
-        return "stream-javascript-analytics-client-" + (this.node ? 'node' : 'browser') + "-" + (pkg.version || 'unknown');
-    };
-    StreamAnalytics.prototype._throwMissingUserData = function (event) {
-        if (this.userData || event.user_data)
-            return;
-        throw new errors.MissingUserId('user_data should be in each event or set the default with StreamAnalytics.setUser()');
-    };
-    StreamAnalytics.prototype._validateAndNormalizeUserData = function (resource, eventList) {
-        var _this = this;
-        return eventList.map(function (event, i) {
-            var err = resource === 'impression'
-                ? specs_1.validateImpression(event)
-                : specs_1.validateEngagement(event);
-            if (err)
-                throw new errors.InvalidInputData('invalid event data', i ? err.map(function (e) { return i + ": " + e; }) : err);
-            _this._throwMissingUserData(event);
-            return __assign(__assign({}, event), { user_data: event.user_data || _this.userData });
-        });
-    };
-    StreamAnalytics.prototype._sendEvent = function (resource, eventList) {
-        var events = this._validateAndNormalizeUserData(resource, eventList);
-        return request(this.baseUrl + resource + "/?api_key=" + this.apiKey, {
-            method: 'POST',
-            body: JSON.stringify(resource === 'impression' ? events : { content_list: events }),
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Stream-Client': this.userAgent(),
-                'stream-auth-type': 'jwt',
-                Authorization: this.token,
-            },
-        }).then(function (response) {
-            if (response.ok)
-                return response.json();
-            return response.json().then(function (data) {
-                if (data.detail)
-                    throw new errors.APIError(response.statusText + ": " + data.detail, response);
-                throw new errors.APIError(response.statusText, response);
-            });
-        });
-    };
-    StreamAnalytics.prototype.trackImpression = function (eventData) {
-        return this.trackImpressions([eventData]);
-    };
-    StreamAnalytics.prototype.trackImpressions = function (eventDataList) {
-        return this._sendEvent('impression', eventDataList);
-    };
-    StreamAnalytics.prototype.trackEngagement = function (eventData) {
-        return this.trackEngagements([eventData]);
-    };
-    StreamAnalytics.prototype.trackEngagements = function (eventDataList) {
-        return this._sendEvent('engagement', eventDataList);
-    };
-    return StreamAnalytics;
-}());
-StreamAnalytics.errors = errors;
-module.exports = StreamAnalytics;
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-/* (ignored) */
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.InvalidInputData = exports.APIError = exports.MisconfiguredClient = exports.MissingUserId = void 0;
-var canCapture = typeof Error.captureStackTrace === 'function';
-var canStack = !!new Error().stack;
-// workaround for ES5 compilation to preserve the Error class
-var ErrorAbstract = function (message) {
-    Error.call(this, message);
-    this.message = message;
-    this.name = this.constructor.name;
-    if (canCapture)
-        Error.captureStackTrace(this);
-    else if (canStack)
-        this.stack = new Error().stack;
-    else
-        this.stack = '';
-};
-ErrorAbstract.prototype = Object.create(Error.prototype);
-var MissingUserId = /** @class */ (function (_super) {
-    __extends(MissingUserId, _super);
-    function MissingUserId() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return MissingUserId;
-}(ErrorAbstract));
-exports.MissingUserId = MissingUserId;
-var MisconfiguredClient = /** @class */ (function (_super) {
-    __extends(MisconfiguredClient, _super);
-    function MisconfiguredClient() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    return MisconfiguredClient;
-}(ErrorAbstract));
-exports.MisconfiguredClient = MisconfiguredClient;
-var APIError = /** @class */ (function (_super) {
-    __extends(APIError, _super);
-    function APIError(msg, response) {
-        var _this = _super.call(this, msg) || this;
-        _this.response = response;
-        return _this;
-    }
-    return APIError;
-}(ErrorAbstract));
-exports.APIError = APIError;
-var InvalidInputData = /** @class */ (function (_super) {
-    __extends(InvalidInputData, _super);
-    function InvalidInputData(msg, errorInfo) {
-        return _super.call(this, msg + ": \n\t" + errorInfo.join('\n\t')) || this;
-    }
-    return InvalidInputData;
-}(ErrorAbstract));
-exports.InvalidInputData = InvalidInputData;
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateImpression = exports.validateEngagement = void 0;
-function isForeginIdType(content) {
-    return typeof content === 'object';
-}
-var validateFeatures = function (features) {
-    if (!features)
-        return '';
-    if (!Array.isArray(features))
-        return 'features should be array';
-    for (var i = 0; i < features.length; i += 1) {
-        if (!features[i].group || typeof features[i].group !== 'string')
-            return 'feature.group should be string';
-        if (!features[i].value || typeof features[i].value !== 'string')
-            return 'feature.value should be string';
-    }
-    return '';
-};
-exports.validateEngagement = function (engagement) {
-    if (!engagement)
-        return ['engagement should be an object'];
-    var errors = [];
-    if (!engagement.label && typeof engagement.label !== 'string')
-        errors.push('label should be string');
-    if (!engagement.content || (typeof engagement.content !== 'string' && typeof engagement.content !== 'object'))
-        errors.push('content should be string or object');
-    if (isForeginIdType(engagement.content) && !engagement.content.foreign_id)
-        errors.push('content.foreign_id should be string');
-    if (engagement.position !== undefined && typeof engagement.position !== 'number')
-        errors.push('position should be number');
-    if (engagement.score !== undefined && typeof engagement.score !== 'number')
-        errors.push('score should be number');
-    if (engagement.boost !== undefined && typeof engagement.boost !== 'number')
-        errors.push('boost should be number');
-    if (engagement.feed_id !== undefined && typeof engagement.feed_id !== 'string')
-        errors.push('feed_id should be string)');
-    if (engagement.location !== undefined && typeof engagement.location !== 'string')
-        errors.push('location should be string');
-    var featureErr = validateFeatures(engagement.features);
-    if (featureErr)
-        errors.push(featureErr);
-    return errors.length ? errors : false;
-};
-exports.validateImpression = function (impression) {
-    if (!impression)
-        return ['impression should be an object'];
-    var errors = [];
-    if (!Array.isArray(impression.content_list) || !impression.content_list.length)
-        errors.push('content should be array of strings or objects');
-    if (Array.isArray(impression.content_list))
-        impression.content_list.forEach(function (content, i) {
-            if (isForeginIdType(content) && !content.foreign_id)
-                errors.push("content_list[" + i + "].foreign_id should be string");
-        });
-    if (impression.feed_id !== undefined && typeof impression.feed_id !== 'string')
-        errors.push('feed_id should be string');
-    if (impression.location !== undefined && typeof impression.location !== 'string')
-        errors.push('location should be string');
-    var featureErr = validateFeatures(impression.features);
-    if (featureErr)
-        errors.push(featureErr);
-    return errors.length ? errors : false;
-};
-
-
-/***/ }),
-/* 5 */
+/***/ "./package.json":
+/*!**********************!*\
+  !*** ./package.json ***!
+  \**********************/
+/*! exports provided: name, version, description, main, module, types, scripts, repository, keywords, author, license, bugs, homepage, engines, browser, dependencies, devDependencies, files, default */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"name\":\"stream-analytics\",\"version\":\"3.4.2\",\"description\":\"Analytics JS client for GetStream.io.\",\"main\":\"./lib/stream-analytics.js\",\"module\":\"./lib/stream-analytics.js\",\"types\":\"./lib/stream-analytics.d.ts\",\"scripts\":{\"test\":\"yarn test-node && yarn test-browser\",\"test-node\":\"mocha tests --exit\",\"test-browser\":\"karma start karma.config.js\",\"lint\":\"yarn run prettier && yarn run eslint\",\"eslint\":\"eslint '**/*.{js,ts}' --max-warnings 0\",\"prettier\":\"prettier --config ./.prettierrc --list-different \\\"**/*.{js,ts,md,html,json}\\\"\",\"prettier-fix\":\"prettier --config ./.prettierrc --write \\\"**/*.{js,ts,md,html,json}\\\"\",\"build\":\"tsc && webpack && webpack --minify\",\"preversion\":\"yarn run build && yarn test\",\"version\":\"git add -A dist\",\"postversion\":\"git push && git push --tags\"},\"repository\":{\"type\":\"git\",\"url\":\"git://github.com/GetStream/stream-analytics-js.git\"},\"keywords\":[\"npm\",\"stream-analytics\",\"getstream.io\",\"stream.io\"],\"author\":\"Tommaso Barbugli <tommaso@getstream.io>\",\"license\":\"MIT\",\"bugs\":{\"url\":\"https://github.com/GetStream/stream-analytics-js/issues\"},\"homepage\":\"https://github.com/GetStream/stream-analytics-js\",\"engines\":{\"node\":\"10 || 12 || >=14\"},\"browser\":{\"cross-fetch\":false},\"dependencies\":{\"cross-fetch\":\"^3.0.6\"},\"devDependencies\":{\"@types/node\":\"^14.11.2\",\"@typescript-eslint/eslint-plugin\":\"^4.3.0\",\"@typescript-eslint/parser\":\"^4.3.0\",\"chai\":\"^4.2.0\",\"dotenv\":\"^8.2.0\",\"eslint\":\"^7.10.0\",\"eslint-config-airbnb-base\":\"^14.2.0\",\"eslint-config-prettier\":\"^6.12.0\",\"eslint-plugin-import\":\"^2.22.1\",\"eslint-plugin-prettier\":\"^3.1.4\",\"eslint-plugin-typescript-sort-keys\":\"^1.5.0\",\"karma\":\"^5.2.3\",\"karma-chrome-launcher\":\"^3.1.0\",\"karma-mocha\":\"^2.0.1\",\"karma-mocha-reporter\":\"~2.2.5\",\"karma-sauce-launcher\":\"^4.1.5\",\"karma-sourcemap-loader\":\"~0.3.8\",\"karma-webpack\":\"^4.0.2\",\"mocha\":\"^8.1.3\",\"prettier\":\"^2.1.2\",\"ts-loader\":\"^8.0.4\",\"typescript\":\"^4.0.3\",\"webpack\":\"^4.44.2\",\"webpack-cli\":\"^3.3.12\"},\"files\":[\"src\",\"dist\",\"lib\"]}");
+eval("module.exports = JSON.parse(\"{\\\"name\\\":\\\"stream-analytics\\\",\\\"version\\\":\\\"3.4.3\\\",\\\"description\\\":\\\"Analytics JS client for GetStream.io.\\\",\\\"main\\\":\\\"./lib/stream-analytics.js\\\",\\\"module\\\":\\\"./lib/stream-analytics.js\\\",\\\"types\\\":\\\"./lib/stream-analytics.d.ts\\\",\\\"scripts\\\":{\\\"test\\\":\\\"yarn test-node && yarn test-browser\\\",\\\"test-node\\\":\\\"mocha tests --exit\\\",\\\"test-browser\\\":\\\"karma start karma.config.js\\\",\\\"lint\\\":\\\"yarn run prettier && yarn run eslint\\\",\\\"eslint\\\":\\\"eslint '**/*.{js,ts}' --max-warnings 0\\\",\\\"prettier\\\":\\\"prettier --config ./.prettierrc --list-different \\\\\\\"**/*.{js,ts,md,html,json}\\\\\\\"\\\",\\\"prettier-fix\\\":\\\"prettier --config ./.prettierrc --write \\\\\\\"**/*.{js,ts,md,html,json}\\\\\\\"\\\",\\\"build\\\":\\\"tsc && webpack && webpack --env production\\\",\\\"preversion\\\":\\\"yarn run build && yarn test\\\",\\\"version\\\":\\\"git add -A dist\\\",\\\"postversion\\\":\\\"git push && git push --tags\\\"},\\\"repository\\\":{\\\"type\\\":\\\"git\\\",\\\"url\\\":\\\"git://github.com/GetStream/stream-analytics-js.git\\\"},\\\"keywords\\\":[\\\"npm\\\",\\\"stream-analytics\\\",\\\"getstream.io\\\",\\\"stream.io\\\"],\\\"author\\\":\\\"Tommaso Barbugli <tommaso@getstream.io>\\\",\\\"license\\\":\\\"MIT\\\",\\\"bugs\\\":{\\\"url\\\":\\\"https://github.com/GetStream/stream-analytics-js/issues\\\"},\\\"homepage\\\":\\\"https://github.com/GetStream/stream-analytics-js\\\",\\\"engines\\\":{\\\"node\\\":\\\"10 || 12 || >=14\\\"},\\\"browser\\\":{\\\"cross-fetch\\\":false},\\\"dependencies\\\":{\\\"cross-fetch\\\":\\\"^3.1.5\\\"},\\\"devDependencies\\\":{\\\"@types/node\\\":\\\"^14.11.2\\\",\\\"@typescript-eslint/eslint-plugin\\\":\\\"^4.3.0\\\",\\\"@typescript-eslint/parser\\\":\\\"^4.3.0\\\",\\\"chai\\\":\\\"^4.2.0\\\",\\\"dotenv\\\":\\\"^8.2.0\\\",\\\"eslint\\\":\\\"^7.10.0\\\",\\\"eslint-config-airbnb-base\\\":\\\"^14.2.0\\\",\\\"eslint-config-prettier\\\":\\\"^6.12.0\\\",\\\"eslint-plugin-import\\\":\\\"^2.22.1\\\",\\\"eslint-plugin-prettier\\\":\\\"^3.1.4\\\",\\\"eslint-plugin-typescript-sort-keys\\\":\\\"^1.5.0\\\",\\\"karma\\\":\\\"^5.2.3\\\",\\\"karma-chrome-launcher\\\":\\\"^3.1.0\\\",\\\"karma-mocha\\\":\\\"^2.0.1\\\",\\\"karma-mocha-reporter\\\":\\\"~2.2.5\\\",\\\"karma-sauce-launcher\\\":\\\"^4.1.5\\\",\\\"karma-sourcemap-loader\\\":\\\"~0.3.8\\\",\\\"karma-webpack\\\":\\\"^4.0.2\\\",\\\"mocha\\\":\\\"^8.1.3\\\",\\\"prettier\\\":\\\"^2.1.2\\\",\\\"ts-loader\\\":\\\"^8.0.4\\\",\\\"typescript\\\":\\\"^4.0.3\\\",\\\"webpack\\\":\\\"^4.46.0\\\",\\\"webpack-cli\\\":\\\"^4.10.0\\\"},\\\"files\\\":[\\\"src\\\",\\\"dist\\\",\\\"lib\\\"]}\");\n\n//# sourceURL=webpack://StreamAnalytics/./package.json?");
+
+/***/ }),
+
+/***/ "./src/errors.ts":
+/*!***********************!*\
+  !*** ./src/errors.ts ***!
+  \***********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\nvar __extends = (this && this.__extends) || (function () {\n    var extendStatics = function (d, b) {\n        extendStatics = Object.setPrototypeOf ||\n            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||\n            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };\n        return extendStatics(d, b);\n    };\n    return function (d, b) {\n        extendStatics(d, b);\n        function __() { this.constructor = d; }\n        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n    };\n})();\nObject.defineProperty(exports, \"__esModule\", { value: true });\nexports.InvalidInputData = exports.APIError = exports.MisconfiguredClient = exports.MissingUserId = void 0;\nvar canCapture = typeof Error.captureStackTrace === 'function';\nvar canStack = !!new Error().stack;\n// workaround for ES5 compilation to preserve the Error class\nvar ErrorAbstract = function (message) {\n    Error.call(this, message);\n    this.message = message;\n    this.name = this.constructor.name;\n    if (canCapture)\n        Error.captureStackTrace(this);\n    else if (canStack)\n        this.stack = new Error().stack;\n    else\n        this.stack = '';\n};\nErrorAbstract.prototype = Object.create(Error.prototype);\nvar MissingUserId = /** @class */ (function (_super) {\n    __extends(MissingUserId, _super);\n    function MissingUserId() {\n        return _super !== null && _super.apply(this, arguments) || this;\n    }\n    return MissingUserId;\n}(ErrorAbstract));\nexports.MissingUserId = MissingUserId;\nvar MisconfiguredClient = /** @class */ (function (_super) {\n    __extends(MisconfiguredClient, _super);\n    function MisconfiguredClient() {\n        return _super !== null && _super.apply(this, arguments) || this;\n    }\n    return MisconfiguredClient;\n}(ErrorAbstract));\nexports.MisconfiguredClient = MisconfiguredClient;\nvar APIError = /** @class */ (function (_super) {\n    __extends(APIError, _super);\n    function APIError(msg, response) {\n        var _this = _super.call(this, msg) || this;\n        _this.response = response;\n        return _this;\n    }\n    return APIError;\n}(ErrorAbstract));\nexports.APIError = APIError;\nvar InvalidInputData = /** @class */ (function (_super) {\n    __extends(InvalidInputData, _super);\n    function InvalidInputData(msg, errorInfo) {\n        return _super.call(this, msg + \": \\n\\t\" + errorInfo.join('\\n\\t')) || this;\n    }\n    return InvalidInputData;\n}(ErrorAbstract));\nexports.InvalidInputData = InvalidInputData;\n\n\n//# sourceURL=webpack://StreamAnalytics/./src/errors.ts?");
+
+/***/ }),
+
+/***/ "./src/specs.ts":
+/*!**********************!*\
+  !*** ./src/specs.ts ***!
+  \**********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nexports.validateImpression = exports.validateEngagement = void 0;\nfunction isForeginIdType(content) {\n    return typeof content === 'object';\n}\nvar validateFeatures = function (features) {\n    if (!features)\n        return '';\n    if (!Array.isArray(features))\n        return 'features should be array';\n    for (var i = 0; i < features.length; i += 1) {\n        if (!features[i].group || typeof features[i].group !== 'string')\n            return 'feature.group should be string';\n        if (!features[i].value || typeof features[i].value !== 'string')\n            return 'feature.value should be string';\n    }\n    return '';\n};\nexports.validateEngagement = function (engagement) {\n    if (!engagement)\n        return ['engagement should be an object'];\n    var errors = [];\n    if (!engagement.label && typeof engagement.label !== 'string')\n        errors.push('label should be string');\n    if (!engagement.content || (typeof engagement.content !== 'string' && typeof engagement.content !== 'object'))\n        errors.push('content should be string or object');\n    if (isForeginIdType(engagement.content) && !engagement.content.foreign_id)\n        errors.push('content.foreign_id should be string');\n    if (engagement.position !== undefined && typeof engagement.position !== 'number')\n        errors.push('position should be number');\n    if (engagement.score !== undefined && typeof engagement.score !== 'number')\n        errors.push('score should be number');\n    if (engagement.boost !== undefined && typeof engagement.boost !== 'number')\n        errors.push('boost should be number');\n    if (engagement.feed_id !== undefined && typeof engagement.feed_id !== 'string')\n        errors.push('feed_id should be string)');\n    if (engagement.location !== undefined && typeof engagement.location !== 'string')\n        errors.push('location should be string');\n    var featureErr = validateFeatures(engagement.features);\n    if (featureErr)\n        errors.push(featureErr);\n    return errors.length ? errors : false;\n};\nexports.validateImpression = function (impression) {\n    if (!impression)\n        return ['impression should be an object'];\n    var errors = [];\n    if (!Array.isArray(impression.content_list) || !impression.content_list.length)\n        errors.push('content should be array of strings or objects');\n    if (Array.isArray(impression.content_list))\n        impression.content_list.forEach(function (content, i) {\n            if (isForeginIdType(content) && !content.foreign_id)\n                errors.push(\"content_list[\" + i + \"].foreign_id should be string\");\n        });\n    if (impression.feed_id !== undefined && typeof impression.feed_id !== 'string')\n        errors.push('feed_id should be string');\n    if (impression.location !== undefined && typeof impression.location !== 'string')\n        errors.push('location should be string');\n    var featureErr = validateFeatures(impression.features);\n    if (featureErr)\n        errors.push(featureErr);\n    return errors.length ? errors : false;\n};\n\n\n//# sourceURL=webpack://StreamAnalytics/./src/specs.ts?");
+
+/***/ }),
+
+/***/ "./src/stream-analytics.ts":
+/*!*********************************!*\
+  !*** ./src/stream-analytics.ts ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\nvar __assign = (this && this.__assign) || function () {\n    __assign = Object.assign || function(t) {\n        for (var s, i = 1, n = arguments.length; i < n; i++) {\n            s = arguments[i];\n            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))\n                t[p] = s[p];\n        }\n        return t;\n    };\n    return __assign.apply(this, arguments);\n};\nvar __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {\n    if (k2 === undefined) k2 = k;\n    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });\n}) : (function(o, m, k, k2) {\n    if (k2 === undefined) k2 = k;\n    o[k2] = m[k];\n}));\nvar __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {\n    Object.defineProperty(o, \"default\", { enumerable: true, value: v });\n}) : function(o, v) {\n    o[\"default\"] = v;\n});\nvar __importStar = (this && this.__importStar) || function (mod) {\n    if (mod && mod.__esModule) return mod;\n    var result = {};\n    if (mod != null) for (var k in mod) if (k !== \"default\" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);\n    __setModuleDefault(result, mod);\n    return result;\n};\nvar __importDefault = (this && this.__importDefault) || function (mod) {\n    return (mod && mod.__esModule) ? mod : { \"default\": mod };\n};\nvar cross_fetch_1 = __importDefault(__webpack_require__(/*! cross-fetch */ 1));\nvar errors = __importStar(__webpack_require__(/*! ./errors */ \"./src/errors.ts\"));\nvar specs_1 = __webpack_require__(/*! ./specs */ \"./src/specs.ts\");\n// use native fetch in browser mode to reduce bundle size\n// webpack skip bundling the cross-fetch\nvar request = typeof cross_fetch_1.default === 'function' ? cross_fetch_1.default : window.fetch;\nvar pkg = __webpack_require__(/*! ../package.json */ \"./package.json\"); // eslint-disable-line @typescript-eslint/no-var-requires\nvar StreamAnalytics = /** @class */ (function () {\n    function StreamAnalytics(config) {\n        if (!config || !config.apiKey || !config.token) {\n            throw new errors.MisconfiguredClient('the client must be initialized with apiKey and token');\n        }\n        this.userData = null;\n        this.apiKey = config.apiKey;\n        this.token = config.token;\n        this.baseUrl = config.baseUrl || 'https://analytics.stream-io-api.com/analytics/v1.0/';\n        this.node = typeof window === 'undefined';\n    }\n    StreamAnalytics.prototype.setUser = function (data) {\n        this.userData = data;\n    };\n    StreamAnalytics.prototype.userAgent = function () {\n        return \"stream-javascript-analytics-client-\" + (this.node ? 'node' : 'browser') + \"-\" + (pkg.version || 'unknown');\n    };\n    StreamAnalytics.prototype._throwMissingUserData = function (event) {\n        if (this.userData || event.user_data)\n            return;\n        throw new errors.MissingUserId('user_data should be in each event or set the default with StreamAnalytics.setUser()');\n    };\n    StreamAnalytics.prototype._validateAndNormalizeUserData = function (resource, eventList) {\n        var _this = this;\n        return eventList.map(function (event, i) {\n            var err = resource === 'impression'\n                ? specs_1.validateImpression(event)\n                : specs_1.validateEngagement(event);\n            if (err)\n                throw new errors.InvalidInputData('invalid event data', i ? err.map(function (e) { return i + \": \" + e; }) : err);\n            _this._throwMissingUserData(event);\n            return __assign(__assign({}, event), { user_data: event.user_data || _this.userData });\n        });\n    };\n    StreamAnalytics.prototype._sendEvent = function (resource, eventList) {\n        var events = this._validateAndNormalizeUserData(resource, eventList);\n        return request(this.baseUrl + resource + \"/?api_key=\" + this.apiKey, {\n            method: 'POST',\n            body: JSON.stringify(resource === 'impression' ? events : { content_list: events }),\n            headers: {\n                'Content-Type': 'application/json',\n                'X-Stream-Client': this.userAgent(),\n                'stream-auth-type': 'jwt',\n                Authorization: this.token,\n            },\n        }).then(function (response) {\n            if (response.ok)\n                return response.json();\n            return response.json().then(function (data) {\n                if (data.detail)\n                    throw new errors.APIError(response.statusText + \": \" + data.detail, response);\n                throw new errors.APIError(response.statusText, response);\n            });\n        });\n    };\n    StreamAnalytics.prototype.trackImpression = function (eventData) {\n        return this.trackImpressions([eventData]);\n    };\n    StreamAnalytics.prototype.trackImpressions = function (eventDataList) {\n        return this._sendEvent('impression', eventDataList);\n    };\n    StreamAnalytics.prototype.trackEngagement = function (eventData) {\n        return this.trackEngagements([eventData]);\n    };\n    StreamAnalytics.prototype.trackEngagements = function (eventDataList) {\n        return this._sendEvent('engagement', eventDataList);\n    };\n    return StreamAnalytics;\n}());\nStreamAnalytics.errors = errors;\nmodule.exports = StreamAnalytics;\n\n\n//# sourceURL=webpack://StreamAnalytics/./src/stream-analytics.ts?");
+
+/***/ }),
+
+/***/ 0:
+/*!***************************************!*\
+  !*** multi ./src/stream-analytics.ts ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("module.exports = __webpack_require__(/*! ./src/stream-analytics.ts */\"./src/stream-analytics.ts\");\n\n\n//# sourceURL=webpack://StreamAnalytics/multi_./src/stream-analytics.ts?");
+
+/***/ }),
+
+/***/ 1:
+/*!*****************************!*\
+  !*** cross-fetch (ignored) ***!
+  \*****************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("/* (ignored) */\n\n//# sourceURL=webpack://StreamAnalytics/cross-fetch_(ignored)?");
 
 /***/ })
-/******/ ]);
+
+/******/ });
 });
